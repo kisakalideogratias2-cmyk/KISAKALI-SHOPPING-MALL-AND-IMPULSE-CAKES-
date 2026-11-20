@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#FE980F">
+<title>You are offline - Kisakali</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon-192.png" type="image/png">
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0D0D0D;color:#fff;font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px;text-align:center}
+.card{max-width:420px;width:100%;background:#262423;border:1px solid #444;border-radius:12px;padding:32px 24px}
+.mark{width:64px;height:64px;border-radius:14px;margin:0 auto 16px;display:block}
+h1{font-size:22px;margin:0 0 8px}
+h1 span{color:#FE980F}
+p{color:#b3b1ae;margin:0 0 20px;font-size:15px}
+button{background:#FE980F;color:#0D0D0D;border:0;border-radius:6px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer}
+button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+#st{margin-top:16px;font-size:13px;color:#b3b1ae}
+</style>
+</head>
+<body>
+<main class="card">
+  <img class="mark" src="/icon-192.png" alt="" width="64" height="64">
+  <h1>You are <span>offline</span></h1>
+  <p>Kisakali needs an internet connection to show products, orders and your account. Check your data or Wi-Fi, then try again. Your cart is saved on this device.</p>
+  <button type="button" id="retry">Try again</button>
+  <div id="st" role="status" aria-live="polite">Waiting for connection&hellip;</div>
+</main>
+<script>
+(function () {
+  var st = document.getElementById("st"), busy = false;
+  /* navigator.onLine can be wrong (Wi-Fi without internet), so check the network for real before leaving this page.
+     A plain fetch() is not handled by the service worker, so this reflects true connectivity. */
+  function check() {
+    if (busy) return; busy = true; st.textContent = "Checking connection\u2026";
+    fetch("/icon-192.png?ping=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("bad"); st.textContent = "Back online. Reconnecting\u2026"; location.href = "/"; })
+      .catch(function () { st.textContent = "Still offline. Please check your connection."; })
+      .then(function () { busy = false; });
+  }
+  document.getElementById("retry").addEventListener("click", check);
+  window.addEventListener("online", check);
+})();
+</script>
+</body>
+</html>

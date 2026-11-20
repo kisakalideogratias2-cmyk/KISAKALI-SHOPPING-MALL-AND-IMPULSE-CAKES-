@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FE980F">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <title>Kisakali Shopping Mall - Ifakara, Morogoro</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Enhanced Dark Mode & Blueprint Overrides for index.html */
+        body {
+            background-color: #0D0D0D;
+            color: #FFFFFF;
+        }
+        header {
+            background-color: #363432 !important;
+            border-bottom: 1px solid #444;
+        }
+        .logo h1 { color: #FFFFFF; }
+        .logo h1 span { color: #FE980F; }
+        .kx-clabel { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #FE980F; margin: 12px 0 4px; text-transform: uppercase; }
+        .kx-clabel:first-child { margin-top: 0; }
+        .kx-fabp .kx-clabel { padding: 6px 10px 0; margin: 4px 0 0; }
+        .kx-fabp .kx-clabel:first-child { padding-top: 2px; }
+        .kx-fabp { width: 260px !important; }
+        nav ul li a { color: #FFFFFF !important; }
+        nav ul li a.active, nav ul li a:hover { color: #FE980F !important; }
+        
+        .hero-banner-super {
+            background: linear-gradient(#262423, #0D0D0D);
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 20px auto;
+            border: 1px solid #FE980F;
+        }
+        .category-bubbles {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 15px 0;
+            scrollbar-width: thin;
+        }
+        .category-bubble {
+            background: #363432;
+            border: 1px solid #FE980F;
+            padding: 12px 20px;
+            border-radius: 30px;
+            white-space: nowrap;
+            color: #FFFFFF;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .category-bubble:hover { background: #FE980F; color: #0D0D0D; }
+        
+        .widget-card {
+            background: #363432;
+            border: 1px solid #444;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .cart-sidebar {
+            background: #1a1a1a !important;
+            color: #fff;
+            border-left: 1px solid #444;
+        }
+        .cart-header { border-bottom: 1px solid #333 !important; }
+        .cart-footer { background: #262423 !important; border-top: 1px solid #333 !important; }
+
+        /* ===== NEW: homepage upgrade (kx-) ===== */
+        html { scroll-behavior: smooth; }
+        .kx-title { margin-bottom: 16px; border-left: 4px solid #FE980F; padding-left: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .kx-title a { font-size: 13px; color: #FE980F; text-decoration: none; font-weight: bold; }
+        .kx-sec { margin: 40px auto; }
+        .kx-btn { background: #FE980F; color: #0D0D0D; font-weight: bold; border: 0; border-radius: 4px; padding: 12px 22px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+        .kx-btn.ghost { background: transparent; color: #fff; border: 1px solid #FE980F; }
+        /* search */
+        .kx-search-wrap { margin-top: 18px; }
+        .kx-search { position: relative; display: flex; align-items: center; gap: 10px; background: #363432; border: 1px solid #FE980F; border-radius: 40px; padding: 6px 6px 6px 18px; }
+        .kx-search i { color: #FE980F; }
+        .kx-search input { flex: 1; min-width: 0; background: transparent; border: 0; outline: 0; color: #fff; font-size: 16px; padding: 10px 4px; }
+        .kx-search .kx-btn { border-radius: 30px; }
+        .kx-sugg { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: #363432; border: 1px solid #FE980F; border-radius: 10px; z-index: 120; overflow: hidden; max-height: 300px; overflow-y: auto; }
+        .kx-sugg a { display: block; padding: 12px 16px; color: #fff; text-decoration: none; border-bottom: 1px solid #444; font-size: 14px; cursor: pointer; }
+        .kx-sugg a:hover, .kx-sugg a.on { background: #FE980F; color: #0D0D0D; }
+        .kx-sugg small { color: #b3b1ae; margin-left: 8px; }
+        .kx-try { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; color: #b3b1ae; }
+        .kx-chip { background: #262423; border: 1px solid #555; color: #fff; border-radius: 20px; padding: 6px 14px; font-size: 13px; text-decoration: none; cursor: pointer; }
+        .kx-chip:hover { border-color: #FE980F; color: #FE980F; }
+        /* hero slider */
+        .kx-hero { position: relative; }
+        .kx-slides { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 0; }
+        .kx-slides::-webkit-scrollbar { display: none; }
+        .kx-slides > .hero-banner-super { flex: 0 0 100%; scroll-snap-align: start; box-sizing: border-box; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 340px; }
+        .hero-banner-super.kx-s2 { background: linear-gradient(135deg, #3a1d00, #0D0D0D 55%, #FE980F 140%); }
+        .hero-banner-super.kx-s3 { background: linear-gradient(135deg, #2a0f1f, #0D0D0D 55%, #c2185b 160%); }
+        .kx-icons { font-size: 34px; color: #FE980F; letter-spacing: 14px; margin-bottom: 8px; }
+        .kx-cta { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+        .kx-dots { display: flex; gap: 8px; justify-content: center; margin-top: -6px; }
+        .kx-dots button { width: 10px; height: 10px; border-radius: 50%; border: 0; background: #555; cursor: pointer; padding: 0; }
+        .kx-dots button.on { background: #FE980F; width: 26px; border-radius: 6px; }
+        /* cards grids */
+        .kx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+        .kx-cat { background: linear-gradient(145deg, #363432, #262423); border: 1px solid #444; border-radius: 10px; padding: 22px 10px; text-align: center; color: #fff; text-decoration: none; transition: .2s; display: block; }
+        .kx-cat i { font-size: 30px; color: #FE980F; margin-bottom: 10px; display: block; }
+        .kx-cat b { font-size: 14px; display: block; }
+        .kx-cat:hover { border-color: #FE980F; transform: translateY(-3px); }
+        .kx-occ { background: #262423; border: 1px solid #444; border-radius: 40px; padding: 14px 10px; text-align: center; color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; transition: .2s; }
+        .kx-occ i { color: #FE980F; margin-right: 6px; }
+        .kx-occ:hover { background: #FE980F; color: #0D0D0D; } .kx-occ:hover i { color: #0D0D0D; }
+        .kx-pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
+        .kx-card { background: #363432; border: 1px solid #444; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+        .kx-img { position: relative; aspect-ratio: 1 / 1; background: #262423; display: flex; align-items: center; justify-content: center; color: #FE980F; font-size: 34px; }
+        .kx-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .kx-off { position: absolute; top: 8px; left: 8px; background: #ff3333; color: #fff; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
+        .kx-body { padding: 12px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
+        .kx-body h4 { font-size: 14px; margin: 0; }
+        .kx-vendor { font-size: 12px; color: #b3b1ae; }
+        .kx-rate { font-size: 12px; color: #FE980F; }
+        .kx-price b { color: #FE980F; font-size: 15px; } .kx-price s { color: #888; font-size: 12px; margin-left: 6px; }
+        .kx-timer { font-size: 12px; color: #ff9999; font-weight: bold; }
+        .kx-act { display: flex; gap: 6px; margin-top: auto; padding-top: 6px; }
+        .kx-act button { flex: 1; font-size: 12px; padding: 8px 4px; border-radius: 4px; border: 1px solid #FE980F; background: transparent; color: #fff; cursor: pointer; font-weight: bold; }
+        .kx-act button.p { background: #FE980F; color: #0D0D0D; }
+        .kx-vcard { background: #363432; border: 1px solid #444; border-radius: 10px; overflow: hidden; }
+        .kx-cover { height: 90px; background: linear-gradient(135deg, #3a1d00, #262423); background-size: cover; background-position: center; }
+        .kx-logo { width: 56px; height: 56px; border-radius: 50%; border: 3px solid #363432; background: #262423; margin: -28px auto 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: #FE980F; position: relative; }
+        .kx-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .kx-vbody { text-align: center; padding: 0 12px 14px; font-size: 13px; }
+        .kx-ver { color: #00cc66; font-size: 12px; font-weight: bold; }
+        .kx-gift { background: linear-gradient(135deg, #363432, #1a1a1a); border: 1px solid #FE980F; border-radius: 10px; padding: 34px 20px; text-align: center; }
+        .kx-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .kx-step { text-align: center; }
+        .kx-step .n { width: 54px; height: 54px; border-radius: 50%; background: #FE980F; color: #0D0D0D; font-weight: bold; font-size: 22px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+        .kx-news { background: #363432; border: 1px solid #444; border-radius: 10px; padding: 26px 20px; }
+        .kx-news input[type=email] { width: 100%; box-sizing: border-box; padding: 12px; background: #0D0D0D; border: 1px solid #555; color: #fff; border-radius: 4px; margin: 10px 0; font-size: 16px; }
+        .kx-news label { display: inline-block; margin: 4px 14px 4px 0; font-size: 13px; color: #ddd; }
+        /* floating support */
+        .kx-fab { position: fixed; right: 16px; bottom: 16px; z-index: 250; }
+        .kx-fab > button { width: 56px; height: 56px; border-radius: 50%; border: 0; background: #25D366; color: #fff; font-size: 26px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.5); }
+        .kx-fabp { display: none; position: absolute; right: 0; bottom: 66px; width: 230px; background: #363432; border: 1px solid #444; border-radius: 10px; padding: 8px; box-shadow: 0 8px 20px rgba(0,0,0,.6); }
+        .kx-fabp.open { display: block; }
+        .kx-fabp a { display: block; padding: 10px; color: #fff; text-decoration: none; font-size: 14px; border-radius: 6px; }
+        .kx-fabp a:hover { background: #FE980F; color: #0D0D0D; } .kx-fabp i { width: 22px; color: #FE980F; } .kx-fabp a:hover i { color: #0D0D0D; }
+        /* modal */
+        .kx-modal { position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 400; display: none; align-items: center; justify-content: center; padding: 16px; }
+        .kx-modal.open { display: flex; }
+        .kx-mbox { background: #363432; border: 1px solid #FE980F; border-radius: 10px; max-width: 420px; width: 100%; padding: 22px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .kx-mbox .x { position: absolute; top: 8px; right: 12px; background: none; border: 0; color: #FE980F; font-size: 24px; cursor: pointer; }
+        /* footer */
+        .kx-fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 26px; padding: 30px 0; }
+        .kx-fgrid h3 { font-size: 15px; margin-bottom: 10px; }
+        .kx-fgrid ul { list-style: none; padding: 0; margin: 0; font-size: 13px; color: #b3b1ae; line-height: 2; }
+        .kx-fgrid a, .kx-fgrid button.lnk { color: #b3b1ae; text-decoration: none; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+        .kx-fgrid a:hover, .kx-fgrid button.lnk:hover { color: #FE980F; }
+        .kx-soc { display: flex; gap: 10px; flex-wrap: wrap; } .kx-soc a { width: 38px; height: 38px; border-radius: 50%; border: 1px solid #555; display: flex; align-items: center; justify-content: center; color: #FE980F; }
+        @media (max-width: 600px) { .kx-slides > .hero-banner-super { min-height: 300px; padding: 40px 14px; } .hero-banner-super h2 { font-size: 24px !important; } .kx-search .kx-btn { padding: 10px 14px; } }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .kx-cat, .kx-occ { transition: none; } }
+    
+        /* ===== v4: background photo slideshow + new features ===== */
+        html { background: #0D0D0D !important; }
+        body { background: transparent !important; }
+        #kx-bg { position: fixed; inset: 0; z-index: -1; background: #0D0D0D; overflow: hidden; }
+        #kx-bg .l { position: absolute; inset: 0; z-index: 1; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.2s ease-in-out; }
+        #kx-bg .l.show { opacity: 1; }
+        #kx-bg .gif-layer { position:absolute; inset:0; z-index:2; width:100%; height:100%; object-fit:cover; opacity:.24; pointer-events:none; }
+        #kx-bg .shade { position: absolute; inset: 0; z-index:3; background: linear-gradient(rgba(13,13,13,.6), rgba(13,13,13,.82)); }
+        .kx-slides > .hero-banner-super { background: rgba(20,18,16,.55) !important; backdrop-filter: blur(3px); }
+        .hero-banner-super.kx-s2 { background: linear-gradient(135deg, rgba(58,29,0,.62), rgba(13,13,13,.5)) !important; }
+        .hero-banner-super.kx-s3 { background: linear-gradient(135deg, rgba(42,15,31,.62), rgba(13,13,13,.5)) !important; }
+        .kx-gift, .kx-news, .widget-card { background-color: rgba(38,36,35,.92); }
+        .kx-ic, .kx-burger { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #FE980F; background: transparent; color: #FE980F; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; text-decoration: none; flex: 0 0 auto; }
+        .kx-ic:hover, .kx-burger:hover { background: #FE980F; color: #0D0D0D; }
+        .kx-burger { margin-right: 8px; }
+        .kx-loc { width: 100%; margin-top: 14px; display: flex; align-items: center; gap: 12px; background: rgba(54,52,50,.95); border: 1px solid #555; border-radius: 12px; padding: 10px 14px; color: #fff; cursor: pointer; text-align: left; font: inherit; }
+        .kx-loc > i:first-child { color: #FE980F; font-size: 20px; }
+        .kx-loc span { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .kx-loc small { color: #b3b1ae; font-size: 12px; }
+        .kx-loc b { color: #FE980F; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .kx-tile { background: linear-gradient(145deg, #3a3735, #262423); border: 1px solid #444; border-radius: 14px; padding: 20px 8px; text-align: center; color: #fff; text-decoration: none; display: block; background-size: cover; background-position: center; position: relative; overflow: hidden; min-height: 110px; transition: .2s; }
+        .kx-tile i { font-size: 28px; color: #FE980F; display: block; margin-bottom: 8px; }
+        .kx-tile b { font-size: 14px; display: block; }
+        .kx-tile:hover { border-color: #FE980F; transform: translateY(-3px); }
+        .has-photo { text-shadow: 0 2px 6px #000; box-shadow: inset 0 0 0 100px rgba(0,0,0,.42); }
+        .has-photo i { display: none; }
+        .kx-row { display: flex; gap: 14px; overflow-x: auto; padding: 4px 2px 12px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+        .kx-brand { flex: 0 0 150px; scroll-snap-align: start; background: #f4f1ec; color: #222; border-radius: 12px; padding: 22px 10px; text-align: center; text-decoration: none; font-weight: 800; font-size: 15px; border-bottom: 5px solid #FE980F; }
+        .kx-brand small { display: block; font-weight: 600; font-size: 11px; color: #666; margin-top: 4px; }
+        .kx-story { flex: 0 0 210px; height: 330px; scroll-snap-align: start; position: relative; border-radius: 16px; overflow: hidden; background: linear-gradient(160deg, #3a1d00, #1a1a1a); border: 1px solid #444; }
+        .kx-story video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .kx-story .ov { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; justify-content: space-between; }
+        .kx-story .ov button, .kx-story .pl { border: 0; border-radius: 50%; width: 36px; height: 36px; background: rgba(0,0,0,.55); color: #fff; cursor: pointer; }
+        .kx-story .pl { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; font-size: 20px; }
+        .kx-story.playing .pl { opacity: 0; }
+        .kx-story .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 12px 12px; background: linear-gradient(transparent, rgba(0,0,0,.85)); font-size: 13px; font-weight: bold; }
+        .kx-story.novid::after { content: "Video coming soon"; position: absolute; left: 0; right: 0; top: 42%; text-align: center; color: #b3b1ae; font-size: 13px; }
+        .kx-offer { background: rgba(54,52,50,.95); border: 1px solid #FE980F; border-radius: 12px; padding: 18px 12px; text-align: center; }
+        .kx-offer i { font-size: 26px; color: #FE980F; margin-bottom: 8px; display: block; }
+        .kx-offer b { font-size: 14px; display: block; }
+        .kx-offer small { color: #b3b1ae; font-size: 12px; }
+        .kx-sheet { position: fixed; inset: 0; z-index: 500; background: #121110; display: none; flex-direction: column; }
+        .kx-sheet.open { display: flex; }
+        .kx-sh { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: #363432; border-bottom: 1px solid #444; font-size: 17px; }
+        .kx-sh button { background: none; border: 0; color: #FE980F; font-size: 28px; cursor: pointer; line-height: 1; }
+        .kx-sbody { flex: 1; overflow-y: auto; padding: 16px 16px 100px; max-width: 720px; width: 100%; margin: 0 auto; box-sizing: border-box; }
+        .kx-tabs { display: flex; margin-bottom: 14px; border-bottom: 1px solid #444; }
+        .kx-tabs button { flex: 1; background: none; border: 0; color: #b3b1ae; padding: 12px; font-size: 15px; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; }
+        .kx-tabs button.on { color: #fff; border-bottom-color: #FE980F; }
+        .kx-acc { background: #1d1b1a; border: 1px solid #444; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+        .kx-acc > button { width: 100%; display: flex; align-items: center; gap: 12px; background: none; border: 0; color: #fff; padding: 14px; font-size: 15px; cursor: pointer; text-align: left; }
+        .kx-acc > button i.l { color: #FE980F; width: 22px; text-align: center; }
+        .kx-acc > button i.c { margin-left: auto; transition: .2s; }
+        .kx-acc.open > button i.c { transform: rotate(180deg); }
+        .kx-acc .in { display: none; padding: 0 14px 14px 46px; }
+        .kx-acc.open .in { display: block; }
+        .kx-acc .in a { display: block; padding: 9px 0; color: #ddd; text-decoration: none; border-bottom: 1px solid #333; font-size: 14px; }
+        .kx-acc .in a:hover { color: #FE980F; }
+        .kx-menu a, .kx-menu button.m { display: flex; align-items: center; gap: 14px; width: 100%; background: none; border: 0; border-bottom: 1px solid #333; color: #fff; text-decoration: none; padding: 15px 4px; font-size: 15px; cursor: pointer; text-align: left; font-family: inherit; }
+        .kx-menu i { color: #FE980F; width: 24px; text-align: center; }
+        .kx-menu .ar { margin-left: auto; color: #777; width: auto; }
+        .kx-form label { display: block; font-size: 12px; color: #b3b1ae; margin: 12px 0 4px; font-weight: bold; text-transform: uppercase; letter-spacing: .5px; }
+        .kx-form input, .kx-form select, .kx-form textarea { width: 100%; box-sizing: border-box; padding: 12px; background: #0D0D0D; border: 1px solid #555; color: #fff; border-radius: 8px; font-size: 16px; font-family: inherit; }
+        .kx-form .kx-btn { margin-top: 14px; width: 100%; }
+        .kx-seg { display: flex; gap: 8px; } .kx-seg button { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #555; background: #1d1b1a; color: #fff; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .kx-seg button.on { background: #FE980F; color: #0D0D0D; border-color: #FE980F; }
+        .kx-item { background: #1d1b1a; border: 1px solid #444; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
+        .kx-item .t { flex: 1; min-width: 0; font-size: 14px; } .kx-item small { color: #b3b1ae; display: block; }
+        .kx-item button, .kx-item a.sm { background: none; border: 1px solid #FE980F; color: #FE980F; border-radius: 6px; padding: 6px 9px; font-size: 12px; cursor: pointer; text-decoration: none; }
+        .kx-days { background: #FE980F; color: #0D0D0D; font-weight: bold; font-size: 12px; padding: 3px 8px; border-radius: 10px; }
+        .kx-sw { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #333; font-size: 15px; }
+        .kx-sw input { width: 22px; height: 22px; accent-color: #FE980F; }
+        .kx-note { font-size: 12px; color: #b3b1ae; margin: 10px 0; line-height: 1.5; }
+        #kx-bnav { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 600; background: #1d1b1a; border-top: 1px solid #444; padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px)); }
+        #kx-bnav button { flex: 1; background: none; border: 0; color: #b3b1ae; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; position: relative; padding: 4px 0; }
+        #kx-bnav button i { font-size: 20px; } #kx-bnav button.on { color: #FE980F; }
+        #kx-bnav .bd { position: absolute; top: 0; left: 55%; background: #ff3333; color: #fff; border-radius: 9px; font-size: 10px; min-width: 16px; height: 16px; line-height: 16px; text-align: center; }
+        #kx-top { position: fixed; left: 14px; bottom: 16px; z-index: 240; width: 46px; height: 46px; border-radius: 50%; border: 0; background: #FE980F; color: #0D0D0D; font-size: 18px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.5); display: none; }
+        #kx-top.on { display: block; }
+        #kx-drawer { position: fixed; inset: 0; z-index: 700; display: none; }
+        #kx-drawer.open { display: block; }
+        #kx-drawer .kx-dov { position: absolute; inset: 0; background: rgba(0,0,0,.65); }
+        #kx-drawer aside { position: absolute; left: 0; top: 0; bottom: 0; width: 290px; max-width: 85%; background: #1d1b1a; border-right: 1px solid #FE980F; overflow-y: auto; }
+        #kx-drawer .kx-dh { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #363432; color: #FE980F; font-size: 17px; }
+        #kx-drawer .kx-dh button { background: none; border: 0; color: #FE980F; font-size: 28px; cursor: pointer; }
+        #kx-drawer .kx-menu { padding: 0 14px 30px; }
+        #kx-toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #FE980F; color: #0D0D0D; font-weight: bold; padding: 10px 18px; border-radius: 24px; z-index: 800; font-size: 14px; display: none; max-width: 88%; text-align: center; }
+        #kx-toast.on { display: block; }
+        #kx-recent a { display: block; font-size: 12px; color: #FE980F; text-decoration: none; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @media (max-width: 800px) {
+            header nav { display: none !important; }
+            #kx-bnav { display: flex; }
+            body { padding-bottom: 72px; }
+            .kx-fab { bottom: 84px; }
+            #kx-top { bottom: 84px; }
+            #auth-node { font-size: 0 !important; padding: 10px 11px !important; }
+            #auth-node i { font-size: 16px; }
+            .header-container { gap: 8px; }
+            .logo .location-tag { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) { #kx-bg .l { transition: none; } .kx-tile { transition: none; } }
+    </style>
+</head>
+<body>
+    <div id="kx-bg" aria-hidden="true"><div class="l"></div><div class="l"></div><img class="gif-layer" src="homepage-background.gif" alt=""><div class="shade"></div></div>
+    <header>
+        <div class="container header-container">
+            <button type="button" class="kx-burger" id="kx-burger" aria-label="Menu"><i class="fas fa-bars"></i></button>
+            <div class="logo">
+                <h1 class="brand-swap" aria-label="Kisakali Shopping Mall and Impulse Cakes"><b class="brand-item brand-k" aria-hidden="true">KISAKALI<span>SHOPPING MALL</span></b><b class="brand-item brand-i" aria-hidden="true">IMPULSE<span>CAKES</span></b></h1>
+                <p class="location-tag" style="color: #b3b1ae;"><i class="fas fa-map-marker-alt" style="color: #FE980F;"></i> Ifakara, Morogoro, Tanzania</p>
+            </div>
+            <nav>
+                <ul style="display: flex; align-items: center; list-style: none; gap: 10px;">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="shop.html">Marketplace</a></li>
+                    <li><a href="checkout.html">Checkout</a></li>
+                    <li><a href="track.html">Track Order</a></li>
+                    
+                    <!-- System Portals Dropdown Menu -->
+                    <li class="dropdown" style="position: relative;">
+                        <a href="javascript:void(0)" onclick="togglePortalDropdown()" style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <i class="fas fa-bars"></i> System Portals <i class="fas fa-caret-down" style="font-size: 11px;"></i>
+                        </a>
+                        <div id="portal-dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; background: #363432; border: 1px solid #444; border-radius: 6px; min-width: 200px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); z-index: 300; padding: 8px 0;">
+                            <a href="driver.html" style="display: block; padding: 10px 15px; color: #fff; text-decoration: none; font-size: 14px; border-bottom: 1px solid #444; transition: 0.2s;" onmouseover="this.style.background='#FE980F'; this.style.color='#0D0D0D'" onmouseout="this.style.background='transparent'; this.style.color='#fff'">1. Rider Portal</a>
+                            <a href="vendor.html" style="display: block; padding: 10px 15px; color: #fff; text-decoration: none; font-size: 14px; border-bottom: 1px solid #444; transition: 0.2s;" onmouseover="this.style.background='#FE980F'; this.style.color='#0D0D0D'" onmouseout="this.style.background='transparent'; this.style.color='#fff'">2. Vendor Panel</a>
+                            <a href="admin.html" style="display: block; padding: 10px 15px; color: #FE980F; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.2s;" onmouseover="this.style.background='#FE980F'; this.style.color='#0D0D0D'" onmouseout="this.style.background='transparent'; this.style.color='#FE980F'">3. Super Admin</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a class="kx-ic" id="kx-hcall" href="#" aria-label="Call us"><i class="fas fa-phone-alt"></i></a><button type="button" class="kx-ic" id="kx-hsearch" aria-label="Search"><i class="fas fa-search"></i></button>
+                <div id="auth-node" style="cursor: pointer; font-size: 14px; background: #FE980F; color: #0D0D0D; padding: 6px 12px; border-radius: 4px; font-weight: bold;" onclick="location.href='register.html'" role="link" tabindex="0">
+                    <i class="fas fa-user-plus"></i> Register / Create Account
+                </div>
+                <div class="cart-icon-container" id="cart-toggle" style="color: #fff;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Where to deliver -->
+    <div class="container"><button type="button" class="kx-loc" id="kx-loc"><i class="fas fa-map-marker-alt"></i><span><small>Where to deliver?</small><b id="kx-loc-t">Choose delivery location</b></span><i class="fas fa-chevron-right"></i></button></div>
+
+    <!-- NEW: Smart search bar -->
+    <section class="container kx-search-wrap" id="kx-search-section">
+        <form class="kx-search" id="kx-search-form" role="search" autocomplete="off">
+            <i class="fas fa-search"></i>
+            <input id="kx-q" type="search" placeholder="Search cakes, flowers, chocolates, teddy bears, gift boxes..." aria-label="Search the marketplace">
+            <button type="submit" class="kx-btn">Search</button>
+            <div class="kx-sugg" id="kx-sugg" hidden></div>
+        </form>
+        <div class="kx-try"><span>Try searching:</span><span id="kx-try" style="display:flex;gap:8px;flex-wrap:wrap"></span></div>
+    </section>
+
+    <!-- Hero Banner with Super Sale 50% Off (rotating promotional banners) -->
+    <div class="container">
+        <div class="kx-hero">
+            <div class="kx-slides" id="kx-slides">
+                <div class="hero-banner-super">
+                    <span style="background: #FE980F; color: #0D0D0D; padding: 4px 12px; font-weight: bold; font-size: 12px; border-radius: 4px;">WELCOME TO KISAKALI</span>
+                    <h2 style="font-size: 36px; margin: 15px 0 10px;">Every Gift Tells a Story. Every Surprise Creates a Memory.</h2>
+                    <p style="color: #b3b1ae; margin-bottom: 20px;">The Premier Multi-Vendor Digital Gifting & Shopping Ecosystem by KISAKALI™ Digital Solutions.</p>
+                    <div class="kx-cta">
+                        <a href="shop.html" class="kx-btn">Shop Now</a>
+                        <a href="shop.html?cat=surprises" class="kx-btn ghost">Explore Gifts</a>
+                        <a href="shop.html" class="btn" style="background: #FE980F; color: #0D0D0D; font-weight: bold;">Explore Marketplace Catalog</a>
+                    </div>
+                </div>
+                <div class="hero-banner-super kx-s2">
+                    <div class="kx-icons"><i class="fas fa-birthday-cake"></i><i class="fas fa-gift"></i><i class="fas fa-spa"></i></div>
+                    <h2 style="font-size: 32px; margin: 10px 0;">Cakes, Flowers & Gifts from Local Vendors</h2>
+                    <p style="color: #ddd; margin-bottom: 20px;">Discover gifts from verified shops in Ifakara and Morogoro, all in one marketplace.</p>
+                    <div class="kx-cta"><a href="shop.html" class="kx-btn">Shop Now</a><a href="shop.html?cat=cakes" class="kx-btn ghost">Explore Cakes</a></div>
+                </div>
+                <div class="hero-banner-super kx-s3">
+                    <div class="kx-icons"><i class="fas fa-heart"></i><i class="fas fa-mask"></i><i class="fas fa-motorcycle"></i></div>
+                    <h2 style="font-size: 32px; margin: 10px 0;">Plan a Surprise They Will Remember</h2>
+                    <p style="color: #ddd; margin-bottom: 20px;">Choose a gift, add a personal touch and let our riders deliver the surprise.</p>
+                    <div class="kx-cta"><a href="shop.html?cat=surprises" class="kx-btn">Explore Gifts</a><a href="#kx-occasions" class="kx-btn ghost">Shop by Occasion</a></div>
+                </div>
+            </div>
+            <div class="kx-dots" id="kx-dots"></div>
+        </div>
+    </div>
+
+    <!-- 5 Core Category Bubble Sliders -->
+    <div class="container" style="margin: 30px auto;">
+        <h3 style="margin-bottom: 10px; border-left: 4px solid #FE980F; padding-left: 10px;">Core Store Categories</h3>
+        <div class="category-bubbles">
+            <div class="category-bubble" onclick="location.href='shop.html?cat=cakes'"><i class="fas fa-birthday-cake" style="color: #FE980F;"></i> Cakes & Pastries</div>
+            <div class="category-bubble" onclick="location.href='shop.html?cat=flowers'"><i class="fas fa-spa" style="color: #FE980F;"></i> Flower Bouquets</div>
+            <div class="category-bubble" onclick="location.href='shop.html?cat=surprises'"><i class="fas fa-gift" style="color: #FE980F;"></i> Surprise Boxes & Hampers</div>
+            <div class="category-bubble" onclick="location.href='shop.html?cat=fashion'"><i class="fas fa-tshirt" style="color: #FE980F;"></i> ZENVO™ Fashion & Wear</div>
+            <div class="category-bubble" onclick="location.href='shop.html?cat=electronics'"><i class="fas fa-laptop" style="color: #FE980F;"></i> Electronics & Beauty</div>
+        </div>
+    </div>
+
+    <!-- NEW: Shop by category cards -->
+    <!-- Partnership: KISAKALI and IMPULSE side by side, equal weight -->
+    <section class="container kx-partners" id="kx-partners">
+        <div class="pt-head"><small>In partnership</small></div>
+        <div class="pt-wrap">
+            <div class="pt-card" style="--c:#FE980F">
+                <h3>KISAKALI <span>SHOPPING MALL</span></h3>
+                <p>Multi-vendor shopping and surprise delivery in Ifakara, Morogoro.</p>
+                <div class="pt-act">
+                    <a data-wa href="#" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    <a data-tel="kisakali" href="#"><i class="fas fa-phone-alt"></i> Call</a>
+                </div>
+                <div class="pt-num" data-phone="kisakali"></div>
+            </div>
+            <div class="pt-x" aria-hidden="true"><i class="fas fa-handshake"></i></div>
+            <div class="pt-card" style="--c:#E8508A">
+                <h3>IMPULSE <span>CAKES</span></h3>
+                <p>Cakes and gifts made for your special moments.</p>
+                <div class="pt-act">
+                    <a data-wa-impulse href="#" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    <a data-tel="impulse" href="#"><i class="fas fa-phone-alt"></i> Call</a>
+                </div>
+                <div class="pt-num" data-phone="impulse"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container kx-sec" id="kx-categories">
+        <h3 class="kx-title">Shop by Category</h3>
+        <div class="kx-grid" id="kx-cat-grid"></div>
+    </section>
+
+    <!-- NEW: Shop by occasion -->
+    <section class="container kx-sec" id="kx-occasions">
+        <h3 class="kx-title">Shop by Occasion</h3>
+        <div class="kx-grid" id="kx-occ-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));"></div>
+    </section>
+
+    <!-- Gifts for everyone -->
+    <section class="container kx-sec" id="kx-recipients">
+        <h3 class="kx-title">Gifts for Everyone</h3>
+        <div class="kx-grid" id="kx-rec-grid"></div>
+    </section>
+
+    <!-- Gifts for every feeling -->
+    <section class="container kx-sec" id="kx-feelings">
+        <h3 class="kx-title">Gifts for Every Feeling</h3>
+        <div class="kx-grid" id="kx-feel-grid"></div>
+    </section>
+
+    <!-- New arrivals (latest published products from the database) -->
+    <section class="container kx-sec" id="kx-trending" hidden>
+        <h3 class="kx-title">New Arrivals <a href="shop.html">View all &rarr;</a></h3>
+        <div class="kx-pgrid" id="kx-trending-grid"></div>
+    </section>
+
+
+    <!-- Interactive Engagement & Reward Widgets Hub -->
+    <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px;">
+        <div class="widget-card">
+            <i class="fas fa-heart" style="font-size: 28px; color: #FE980F; margin-bottom: 10px;"></i>
+            <h4>Wishlist & Favourites</h4>
+            <p style="font-size: 13px; color: #b3b1ae; margin-top: 5px;"><span id="wishlist-count">0</span> items saved</p>
+        </div>
+        <div class="widget-card">
+            <i class="fas fa-coins" style="font-size: 28px; color: #FE980F; margin-bottom: 10px;"></i>
+            <h4>Loyalty Points</h4>
+            <p style="font-size: 13px; color: #b3b1ae; margin-top: 5px;">Coming soon</p>
+        </div>
+        <div class="widget-card">
+            <i class="fas fa-share-alt" style="font-size: 28px; color: #FE980F; margin-bottom: 10px;"></i>
+            <h4>Referral Rewards</h4>
+            <button type="button" class="kx-btn" id="kx-ref" style="margin-top:8px;padding:8px 16px;font-size:13px">Invite friends</button>
+        </div>
+        <div class="widget-card">
+            <i class="fas fa-history" style="font-size: 28px; color: #FE980F; margin-bottom: 10px;"></i>
+            <h4>Recently Viewed</h4>
+            <div id="kx-recent"></div>
+        </div>
+    </div>
+
+    <!-- Featured shops (approved shops that have published products) -->
+    <section class="container kx-sec" id="kx-vendors" hidden>
+        <h3 class="kx-title">Featured Shops <a href="shop.html">Browse marketplace &rarr;</a></h3>
+        <div class="kx-grid" id="kx-vendors-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));"></div>
+    </section>
+
+
+    <!-- Shop by brands -->
+    <section class="container kx-sec" id="kx-brands">
+        <h3 class="kx-title">Shop by Brands</h3>
+        <div class="kx-row" id="kx-brand-row"></div>
+    </section>
+
+    <!-- Joyful gifting stories (videos) -->
+    <section class="container kx-sec" id="kx-stories">
+        <h3 class="kx-title">Joyful Gifting Stories</h3>
+        <div class="kx-row" id="kx-story-row"></div>
+    </section>
+
+    <!-- Payment options and offers -->
+    <section class="container kx-sec" id="kx-offers">
+        <h3 class="kx-title">Payment Options &amp; Offers</h3>
+        <div class="kx-grid" id="kx-offer-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));"></div>
+    </section>
+
+    <!-- NEW: Personalized gift discovery -->
+    <section class="container kx-sec" id="kx-concierge">
+        <div class="kx-gift">
+            <i class="fas fa-gift" style="font-size: 36px; color: #FE980F;"></i>
+            <h3 style="font-size: 24px; margin: 10px 0;">Not Sure What to Gift?</h3>
+            <p style="color: #b3b1ae; margin-bottom: 18px;">Tell us who it is for and the occasion, and we will help you find the perfect gift.</p>
+            <a href="customer.html#gift-concierge" id="kx-concierge-btn" class="kx-btn">Find the Perfect Gift</a>
+            <p id="kx-concierge-msg" style="margin-top: 14px; font-size: 14px; color: #ddd;" hidden></p>
+        </div>
+    </section>
+
+    <!-- NEW: Best sellers (shows only products with verified sales) -->
+
+    <!-- NEW: Why shop with KISAKALI -->
+    <section class="container kx-sec" id="kx-why">
+        <h3 class="kx-title">Why Shop with KISAKALI?</h3>
+        <div class="kx-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="widget-card"><i class="fas fa-user-check" style="font-size:28px;color:#FE980F"></i><h4 style="margin:10px 0 4px">Verified Vendors</h4><p style="font-size:13px;color:#b3b1ae">Every shop is reviewed and approved by KISAKALI before it can sell.</p></div>
+            <div class="widget-card"><i class="fas fa-lock" style="font-size:28px;color:#FE980F"></i><h4 style="margin:10px 0 4px">Secure Payment Options</h4><p style="font-size:13px;color:#b3b1ae">Pay through our secure checkout.</p></div>
+            <div class="widget-card"><i class="fas fa-motorcycle" style="font-size:28px;color:#FE980F"></i><h4 style="margin:10px 0 4px">Convenient Delivery</h4><p style="font-size:13px;color:#b3b1ae">Delivery to your door in Ifakara and Morogoro.</p></div>
+            <div class="widget-card"><i class="fas fa-pen-fancy" style="font-size:28px;color:#FE980F"></i><h4 style="margin:10px 0 4px">Personalized Gift Experiences</h4><p style="font-size:13px;color:#b3b1ae">Add names, messages and special instructions to your gift.</p></div>
+            <div class="widget-card"><i class="fas fa-headset" style="font-size:28px;color:#FE980F"></i><h4 style="margin:10px 0 4px">Customer Support</h4><p style="font-size:13px;color:#b3b1ae">Reach us by WhatsApp, phone or email.</p></div>
+            <div class="widget-card"><i class="fas fa-mask" style="font-size:28px;color:#FE980F"></i><h4 style="margin:10px 0 4px">Surprise Delivery Options</h4><p style="font-size:13px;color:#b3b1ae">Send a gift discreetly, with the sender kept private when you ask.</p></div>
+        </div>
+    </section>
+
+    <!-- NEW: How KISAKALI works -->
+    <section class="container kx-sec" id="kx-how">
+        <h3 class="kx-title">How KISAKALI Works</h3>
+        <div class="kx-3">
+            <div class="widget-card kx-step"><div class="n">1</div><i class="fas fa-search" style="font-size:26px;color:#FE980F"></i><h4 style="margin:8px 0 4px">Discover Your Gift</h4><p style="font-size:13px;color:#b3b1ae">Browse cakes, flowers, hampers and more from local vendors.</p></div>
+            <div class="widget-card kx-step"><div class="n">2</div><i class="fas fa-pen-fancy" style="font-size:26px;color:#FE980F"></i><h4 style="margin:8px 0 4px">Customize and Place Your Order</h4><p style="font-size:13px;color:#b3b1ae">Add your personal touch and pay at checkout.</p></div>
+            <div class="widget-card kx-step"><div class="n">3</div><i class="fas fa-truck" style="font-size:26px;color:#FE980F"></i><h4 style="margin:8px 0 4px">Get Your Gift Delivered</h4><p style="font-size:13px;color:#b3b1ae">A rider collects it from the vendor and delivers it to the recipient.</p></div>
+        </div>
+    </section>
+
+    <!-- NEW: Newsletter -->
+    <section class="container kx-sec" id="kx-newsletter">
+        <form class="kx-news" id="kx-news-form">
+            <h3 style="margin-bottom:4px"><i class="fas fa-envelope-open-text" style="color:#FE980F"></i> Newsletter & Special Offers</h3>
+            <p style="font-size:13px;color:#b3b1ae">Optional. Tell us what you would like to hear about.</p>
+            <label><input type="checkbox" value="New product announcements" checked> New products</label>
+            <label><input type="checkbox" value="Special offers" checked> Special offers</label>
+            <label><input type="checkbox" value="Seasonal campaigns"> Seasonal campaigns</label>
+            <label><input type="checkbox" value="Gift inspiration"> Gift inspiration</label>
+            <input type="email" id="kx-email" placeholder="Your email address" required autocomplete="email">
+            <button type="submit" class="kx-btn">Subscribe</button>
+            <p style="font-size:12px;color:#888;margin-top:8px">This opens your email app so you can send your request to us.</p>
+        </form>
+    </section>
+
+    <!-- Smart Multi-Vendor Cart Sidebar -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header" style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="color: #fff;">Multi-Vendor Cart</h3>
+            <i class="fas fa-times" id="cart-close" style="cursor: pointer; font-size: 18px; color: #FE980F;"></i>
+        </div>
+        <div class="cart-items" id="cart-items-container" style="padding: 20px; flex: 1; overflow-y: auto;">
+            <p class="empty-msg" style="color: #b3b1ae;">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer" style="padding: 20px;">
+            <div class="cart-total" style="display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold;">
+                <span>Total:</span><span id="cart-total-amount" style="color: #FE980F;">0 TSh</span>
+            </div>
+            <a href="checkout.html" class="btn checkout-btn" style="background: #FE980F; color: #0D0D0D; text-align: center; display: block; font-weight: bold;">Proceed to Secure Checkout</a>
+        </div>
+    </div>
+
+    <!-- Footer (organised into sections; original text kept) -->
+    <footer>
+        <div class="container kx-fgrid">
+            <div>
+                <h3 style="color: #fff;">KISAKALI SHOPPING MALL</h3>
+                <p style="color: #b3b1ae; font-size: 13px;">Bringing premium multi-vendor shopping and surprise delivery conveniences right to your doorstep in Ifakara, Morogoro, Tanzania.</p>
+                <p style="color:#FE980F;font-size:12px;margin-top:8px">Every Gift Tells a Story. Every Surprise Creates a Memory.</p>
+            </div>
+            <div>
+                <h3 style="color: #fff;">Customer Support</h3>
+                <ul>
+                    <li><span class="kx-clabel">Kisakali Shopping Mall</span></li>
+                    <li><a data-wa href="#" target="_blank" rel="noopener"><i class="fab fa-whatsapp" style="color:#FE980F"></i> WhatsApp Kisakali</a></li>
+                    <li><a data-tel="kisakali" href="#"><i class="fas fa-phone-alt" style="color:#FE980F"></i> Call Kisakali</a></li>
+                    <li><span class="kx-clabel">Impulse Cakes</span></li>
+                    <li><a data-wa-impulse href="#" target="_blank" rel="noopener"><i class="fab fa-whatsapp" style="color:#FE980F"></i> WhatsApp Impulse</a></li>
+                    <li><a data-tel="impulse" href="#"><i class="fas fa-phone-alt" style="color:#FE980F"></i> Call Impulse</a></li>
+                    <li><a data-email href="#"><i class="fas fa-envelope" style="color:#FE980F"></i> Email us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="color: #fff;">Shopping Categories</h3>
+                <ul id="kx-foot-cats"></ul>
+            </div>
+            <div>
+                <h3 style="color: #fff;">Vendor Registration</h3>
+                <ul>
+                    <li><a href="vendor-apply.html">Apply to sell on Kisakali &amp; Impulse Cakes</a></li>
+                    <li><a href="vendor.html">Become a vendor / Vendor Panel</a></li>
+                    <li><a href="driver.html">Rider Portal</a></li>
+                </ul>
+                <h3 style="color: #fff; margin-top:14px">Information</h3>
+                <ul>
+                    <li><button class="lnk" data-info="delivery">Delivery Information</button></li>
+                    <li><button class="lnk" data-info="privacy">Privacy Policy</button></li>
+                    <li><button class="lnk" data-info="terms">Terms and Conditions</button></li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="color: #fff;">Social Media</h3>
+                <div class="kx-soc" id="kx-soc"></div>
+                <h3 style="color: #fff; margin-top:14px">Contact Information</h3>
+                <ul style="list-style: none; font-size: 13px; color: #b3b1ae;">
+                    <li><i class="fas fa-phone-alt" style="color: #FE980F;"></i> Kisakali: <span data-phone="kisakali"></span></li>
+                    <li><i class="fas fa-phone-alt" style="color: #FE980F;"></i> Impulse Cakes: <span data-phone="impulse"></span></li>
+                    <li><i class="fas fa-envelope" style="color: #FE980F;"></i> <span data-email-text></span></li>
+                    <li><i class="fas fa-map-marked-alt" style="color: #FE980F;"></i> Ifakara, Morogoro, Tanzania</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom" style="text-align: center; padding: 15px 0; font-size: 12px; background: #0D0D0D; color: #777; border-top: 1px solid #222;">
+            <p>&copy; 2026 KISAKALI™ Digital Solutions. All Rights Reserved. Super Admin Governance Portal.</p>
+        </div>
+    </footer>
+
+    <!-- NEW: floating support -->
+    <div class="kx-fab" id="kx-fab">
+        <div class="kx-fabp" id="kx-fabp">
+            <span class="kx-clabel">Kisakali Shopping Mall</span>
+            <a data-wa href="#" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp Kisakali</a>
+            <a data-tel="kisakali" href="#"><i class="fas fa-phone-alt"></i> Call Kisakali</a>
+            <span class="kx-clabel">Impulse Cakes</span>
+            <a data-wa-impulse href="#" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp Impulse</a>
+            <a data-tel="impulse" href="#"><i class="fas fa-phone-alt"></i> Call Impulse</a>
+            <a data-email href="#"><i class="fas fa-envelope"></i> Email us</a>
+        </div>
+        <button type="button" id="kx-fab-btn" aria-label="Customer support"><i class="fab fa-whatsapp"></i></button>
+    </div>
+
+    <!-- NEW: modal (quick view / info) -->
+    <div class="kx-modal" id="kx-modal"><div class="kx-mbox"><button class="x" id="kx-mx" aria-label="Close">&times;</button><div id="kx-mc"></div></div></div>
+
+    <!-- Drawer menu, sheets, bottom navigation, scroll-to-top -->
+    <div id="kx-drawer"><div class="kx-dov" data-close-drawer></div><aside><div class="kx-dh"><b>KISAKALI</b><button type="button" data-close-drawer aria-label="Close">&times;</button></div><div class="kx-menu" id="kx-dnav"></div></aside></div>
+    <div class="kx-sheet" id="kx-sheet"><div class="kx-sh"><b id="kx-st"></b><button type="button" id="kx-sx" aria-label="Close">&times;</button></div><div class="kx-sbody" id="kx-sb"></div></div>
+    <div id="kx-bnav">
+        <button type="button" data-nav="home" class="on"><i class="fas fa-home"></i>Home</button>
+        <button type="button" data-nav="gifts"><i class="fas fa-gift"></i>All Gifts</button>
+        <button type="button" data-nav="reminders"><i class="fas fa-calendar-check"></i>Reminders<span class="bd" id="kx-bd" style="display:none">0</span></button>
+        <button type="button" data-nav="account"><i class="fas fa-user"></i>Account</button>
+    </div>
+    <button type="button" id="kx-top" aria-label="Back to top"><i class="fas fa-chevron-up"></i></button>
+    <div id="kx-toast"></div>
+
+    <script src="brand.js"></script>
+    <script src="app.js"></script>
+    <script>
+        function openAuthModal() {
+            location.href = "customer.html";
+        }
+
+        function togglePortalDropdown() {
+            const menu = document.getElementById('portal-dropdown-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                const menu = document.getElementById('portal-dropdown-menu');
+                if(menu) menu.style.display = 'none';
+            }
+        });
+    </script>
+    <script>
+    /* ===== NEW: homepage upgrade logic ===== */
+    (function () {
+      /* Fill these in to show social icons in the footer (leave "" to hide) */
+      var B = window.KBRAND.brands; var SITE = { wa: B.kisakali.wa, phone: B.kisakali.phoneShow, waImpulse: B.impulse.wa, phoneImpulse: B.impulse.phoneShow, email: window.KBRAND.email, social: { facebook: "", instagram: "", tiktok: "", youtube: "" } };
+      function $(i) { return document.getElementById(i); }
+      function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
+      function money(n) { return Number(n).toLocaleString("en-US") + " TSh"; }
+      var WA = "https://wa.me/" + SITE.wa + "?text=" + encodeURIComponent("Hello KISAKALI, I need help.");
+      var WA_IMP = "https://wa.me/" + SITE.waImpulse + "?text=" + encodeURIComponent("Hello IMPULSE CAKES, I need help.");
+
+      var CATS = [["Cakes & Bakery", "fa-birthday-cake", "cakes"], ["Flowers & Bouquets", "fa-spa", "flowers"], ["Chocolates & Sweets", "fa-candy-cane", "chocolates"], ["Teddy Bears", "fa-paw", "teddy-bears"], ["Gift Hampers", "fa-gifts", "surprises"], ["Fashion & Accessories", "fa-tshirt", "fashion"], ["Personalized Gifts", "fa-pen-fancy", "personalized"], ["Special Surprises", "fa-magic", "surprises"], ["Combos & Bundles", "fa-box-open", "combos"], ["Kids Gifts", "fa-child", "kids"], ["Decor & Balloons", "fa-star", "decor"], ["Plants", "fa-seedling", "plants"], ["Under TSh 50,000", "fa-tags", "under-50000"]];
+      var OCCS = [["Birthday", "fa-birthday-cake", "birthday"], ["Anniversary", "fa-heart", "anniversary"], ["Graduation", "fa-graduation-cap", "graduation"], ["Wedding", "fa-ring", "wedding"], ["Valentine's Day", "fa-kiss-wink-heart", "valentines"], ["Mother's Day", "fa-hand-holding-heart", "mothers-day"], ["Christmas", "fa-tree", "christmas"], ["Just Because", "fa-smile", "just-because"]];
+      var TERMS = [["Cakes", "cakes"], ["Flowers", "flowers"], ["Chocolates", "chocolates"], ["Teddy bears", "teddy-bears"], ["Gift boxes", "surprises"], ["Gift hampers", "surprises"], ["Perfumes", ""], ["Personalized gifts", "personalized"], ["Surprise box", "surprises"]];
+      var INFO = {
+        delivery: ["Delivery Information", "KISAKALI and IMPULSE CAKES deliver in Ifakara and Morogoro, Tanzania. For delivery questions, contact us on WhatsApp, by phone (Kisakali: " + SITE.phone + " / Impulse Cakes: " + SITE.phoneImpulse + ") or by email (" + SITE.email + ")."],
+        privacy: ["Privacy Policy", "Our full Privacy Policy is being prepared and will be published here. For questions about your information, contact us on WhatsApp or at " + SITE.email + "."],
+        terms: ["Terms and Conditions", "Our full Terms and Conditions are being prepared and will be published here. For any question, contact us on WhatsApp or at " + SITE.email + "."]
+      };
+
+      /* static sections */
+      $("kx-cat-grid").innerHTML = CATS.map(function (c) { return '<a class="kx-cat" href="shop.html?cat=' + c[2] + '"><i class="fas ' + c[1] + '"></i><b>' + c[0] + '</b></a>'; }).join("");
+      $("kx-occ-grid").innerHTML = OCCS.map(function (o) { return '<a class="kx-occ" href="shop.html?occasion=' + o[2] + '"><i class="fas ' + o[1] + '"></i>' + o[0] + '</a>'; }).join("");
+      $("kx-foot-cats").innerHTML = CATS.filter(function (c, i, a) { return a.findIndex(function (x) { return x[2] === c[2]; }) === i; }).map(function (c) { return '<li><a href="shop.html?cat=' + c[2] + '">' + c[0] + '</a></li>'; }).join("");
+      $("kx-try").innerHTML = TERMS.slice(0, 6).map(function (t) { return '<a class="kx-chip" href="' + link(t[0]) + '">' + t[0] + '</a>'; }).join("");
+      [].forEach.call(document.querySelectorAll("[data-wa]"), function (a) { a.href = WA; });
+      [].forEach.call(document.querySelectorAll("[data-wa-impulse]"), function (a) { a.href = WA_IMP; });
+      var soc = '<a href="' + WA + '" target="_blank" rel="noopener" aria-label="WhatsApp Kisakali" title="WhatsApp Kisakali"><i class="fab fa-whatsapp"></i></a><a href="' + WA_IMP + '" target="_blank" rel="noopener" aria-label="WhatsApp Impulse Cakes" title="WhatsApp Impulse Cakes"><i class="fab fa-whatsapp"></i></a>', ic = { facebook: "fa-facebook-f", instagram: "fa-instagram", tiktok: "fa-tiktok", youtube: "fa-youtube" };
+      Object.keys(SITE.social).forEach(function (k) { if (SITE.social[k]) soc += '<a href="' + esc(SITE.social[k]) + '" target="_blank" rel="noopener" aria-label="' + k + '"><i class="fab ' + ic[k] + '"></i></a>'; });
+      $("kx-soc").innerHTML = soc;
+
+      function link(term) { var m = TERMS.filter(function (t) { return t[0].toLowerCase() === term.toLowerCase() && t[1]; })[0]; return m ? "shop.html?cat=" + m[1] : "shop.html?q=" + encodeURIComponent(term); }
+
+      /* hero slider */
+      var sl = $("kx-slides"), dots = $("kx-dots"), n = sl.children.length, cur = 0, timer = null;
+      dots.innerHTML = [].map.call(sl.children, function (c, i) { return '<button type="button" aria-label="Banner ' + (i + 1) + '" data-i="' + i + '"></button>'; }).join("");
+      function mark() { [].forEach.call(dots.children, function (d, i) { d.className = i === cur ? "on" : ""; }); }
+      function go(i) { cur = (i + n) % n; sl.scrollTo({ left: cur * sl.clientWidth, behavior: "smooth" }); mark(); }
+      dots.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { go(+b.getAttribute("data-i")); start(); } });
+      sl.addEventListener("scroll", function () { var i = Math.round(sl.scrollLeft / sl.clientWidth); if (i !== cur) { cur = i; mark(); } });
+      function stop() { clearInterval(timer); } function start() { stop(); if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(function () { go(cur + 1); }, 6000); }
+      sl.addEventListener("touchstart", stop, { passive: true }); sl.addEventListener("mouseenter", stop); sl.addEventListener("mouseleave", start); sl.addEventListener("touchend", start, { passive: true });
+      mark(); start();
+
+      /* real data only: products come from the database through app.js (published products of approved shops) */
+      var P = {};
+      function card(p) {
+        var out = p.stock <= 0;
+        return '<article class="kx-card"><div class="kx-img">' + (p.img ? '<img loading="lazy" decoding="async" alt="' + esc(p.name) + '" src="' + esc(p.img) + '">' : '<i class="fas fa-gift"></i>') + '</div>' +
+          '<div class="kx-body"><h4>' + esc(p.name) + '</h4>' + (p.vendor ? '<div class="kx-vendor">by ' + esc(p.vendor) + '</div>' : "") +
+          '<div class="kx-price"><b>' + money(p.price) + '</b></div>' +
+          '<div class="kx-act"><button type="button" data-qv="' + esc(p.id) + '">Quick View</button>' +
+          (out ? '<button type="button" disabled>Out of stock</button>' : '<button type="button" class="p" data-add="' + esc(p.id) + '">Add to Cart</button>') +
+          '</div></div></article>';
+      }
+      function fill(sec, grid, html) { if (html) { $(grid).innerHTML = html; $(sec).hidden = false; } else $(sec).hidden = true; }
+      function build(list, state) {
+        list = Array.isArray(list) ? list : [];
+        P = {};
+        if (!list.length) {
+          var note = state === "offline" ? "Shop connection is unavailable. Please check the website connection and try again." :
+            state === "error" ? "Products could not be loaded. Please refresh or contact KISAKALI support." :
+            state === "loading" ? "Loading the latest products…" : "No products are currently published by approved shops.";
+          fill("kx-trending", "kx-trending-grid", '<p style="grid-column:1/-1;text-align:center;padding:28px 12px;color:#b3b1ae">' + note + '</p>');
+          fill("kx-vendors", "kx-vendors-grid", "");
+          return;
+        }
+        list.forEach(function (p) { P[String(p.id)] = { id: String(p.id), name: p.name || "Product", price: p.price, img: p.img || "", vendor: p.vendor || "KISAKALI Seller", stock: p.stock, desc: "", rating: 0 }; });
+        var newest = list.slice(0, 8).map(function (p) { return card(P[String(p.id)]); }).join("");
+        fill("kx-trending", "kx-trending-grid", newest);
+        var counts = {}, names = [];
+        list.forEach(function (p) { var vendor = p.vendor || "KISAKALI Seller"; if (!counts[vendor]) { counts[vendor] = 0; names.push(vendor); } counts[vendor]++; });
+        fill("kx-vendors", "kx-vendors-grid", names.slice(0, 8).map(function (v) {
+          return '<div class="kx-vcard"><div class="kx-cover"></div><div class="kx-logo"><i class="fas fa-store"></i></div><div class="kx-vbody"><h4>' + esc(v) + '</h4>' +
+            '<div class="kx-ver"><i class="fas fa-check-circle"></i> Verified by KISAKALI</div>' +
+            '<div class="kx-vendor">' + counts[v] + ' product' + (counts[v] > 1 ? 's' : '') + '</div>' +
+            '<a class="kx-btn" style="margin-top:8px;padding:8px 14px;font-size:13px" href="shop.html?q=' + encodeURIComponent(v) + '">Visit Shop</a></div></div>';
+        }).join(""));
+      }
+      window.addEventListener("kisakali:catalog", function (e) { var d = e.detail || {}; build(d.products, d.state); });
+      if (window.KCATALOG && Array.isArray(window.KCATALOG.products)) build(window.KCATALOG.products, window.KCATALOG.state);
+
+      /* modal: quick view + info */
+      function openModal(html) { $("kx-mc").innerHTML = html; $("kx-modal").classList.add("open"); }
+      $("kx-mx").addEventListener("click", function () { $("kx-modal").classList.remove("open"); });
+      $("kx-modal").addEventListener("click", function (e) { if (e.target === this) this.classList.remove("open"); });
+      function addToCart(id) { if (typeof window.addToCart === "function") window.addToCart(id); }
+      document.addEventListener("click", function (e) {
+        var q = e.target.closest("[data-qv]"), a = e.target.closest("[data-add]"), i = e.target.closest("[data-info]");
+        if (q) { var p = P[q.getAttribute("data-qv")]; if (!p) return; openModal((p.img ? '<img alt="' + esc(p.name) + '" src="' + esc(p.img) + '" style="width:100%;max-height:260px;object-fit:cover;border-radius:8px;margin-bottom:10px">' : "") + '<h3>' + esc(p.name) + '</h3>' + (p.vendor ? '<p class="kx-vendor">by ' + esc(p.vendor) + '</p>' : "") + (p.rating ? '<p class="kx-rate">&#9733; ' + p.rating.toFixed(1) + '</p>' : "") + '<p class="kx-price" style="margin:8px 0"><b>' + money(p.price) + '</b></p>' + (p.desc ? '<p style="font-size:14px;color:#ddd">' + esc(p.desc) + '</p>' : "") + '<div class="kx-cta" style="justify-content:flex-start;margin-top:12px"><button class="kx-btn" data-add="' + esc(p.id) + '">Add to Cart</button><a class="kx-btn ghost" href="product-details.html?id=' + encodeURIComponent(p.id) + '">View Details</a></div>'); }
+        else if (a) { addToCart(a.getAttribute("data-add")); }
+        else if (i) { var f = INFO[i.getAttribute("data-info")]; openModal('<h3>' + f[0] + '</h3><p style="font-size:14px;color:#ddd;margin-top:10px">' + esc(f[1]) + '</p><div class="kx-cta" style="justify-content:flex-start;margin-top:14px"><a class="kx-btn" href="' + WA + '" target="_blank" rel="noopener">WhatsApp us</a></div>'); }
+      });
+
+      /* search + suggestions */
+      var qi = $("kx-q"), sg = $("kx-sugg");
+      function suggest() {
+        var v = qi.value.trim().toLowerCase(), items = [];
+        TERMS.forEach(function (t) { if (!v || t[0].toLowerCase().indexOf(v) > -1) items.push([t[0], link(t[0]), "category"]); });
+        Object.keys(P).forEach(function (k) { if (v && P[k].name.toLowerCase().indexOf(v) > -1) items.push([P[k].name, "product-details.html?id=" + encodeURIComponent(k), "product"]); });
+        if (v) items.push(['Search for "' + qi.value.trim() + '"', "shop.html?q=" + encodeURIComponent(qi.value.trim()), ""]);
+        items = items.slice(0, 8); sg.innerHTML = items.map(function (x) { return '<a href="' + x[1] + '">' + esc(x[0]) + (x[2] ? '<small>' + x[2] + '</small>' : "") + '</a>'; }).join(""); sg.hidden = !items.length;
+      }
+      qi.addEventListener("input", suggest); qi.addEventListener("focus", suggest);
+      document.addEventListener("click", function (e) { if (!e.target.closest("#kx-search-form")) sg.hidden = true; });
+      $("kx-search-form").addEventListener("submit", function (e) { e.preventDefault(); var v = qi.value.trim(); location.href = v ? link(v) : "shop.html"; });
+
+      /* gift concierge: go to the Customer Portal when it exists, otherwise offer WhatsApp */
+      $("kx-concierge-btn").addEventListener("click", function (e) {
+        e.preventDefault(); var href = this.getAttribute("href"), msg = $("kx-concierge-msg");
+        function soon() { msg.hidden = false; msg.innerHTML = 'The Gift Concierge is coming soon to the Customer Portal. For gift ideas now, message us on WhatsApp.<br><a class="kx-btn" style="margin-top:10px" target="_blank" rel="noopener" href="https://wa.me/' + SITE.wa + '?text=' + encodeURIComponent("Hello KISAKALI, please help me choose a gift.") + '">Ask on WhatsApp</a>'; }
+        fetch("customer.html", { method: "HEAD" }).then(function (r) { if (r.ok) location.href = href; else soon(); }).catch(soon);
+      });
+
+      /* newsletter (sent by email: no server yet) */
+      $("kx-news-form").addEventListener("submit", function (e) {
+        e.preventDefault(); var want = [].map.call(this.querySelectorAll("input[type=checkbox]:checked"), function (c) { return c.value; });
+        location.href = "mailto:" + SITE.email + "?subject=" + encodeURIComponent("Newsletter subscription") + "&body=" + encodeURIComponent("Please add me to your mailing list.\nEmail: " + $("kx-email").value + "\nInterested in: " + (want.join(", ") || "all updates"));
+      });
+
+      /* floating support */
+      $("kx-fab-btn").addEventListener("click", function () { $("kx-fabp").classList.toggle("open"); });
+      document.addEventListener("click", function (e) { if (!e.target.closest("#kx-fab")) $("kx-fabp").classList.remove("open"); });
+    })();
+    </script>
+    <script>
+    /* Waits (up to ~12s) until the Supabase connection (window.KAPI) is ready, then runs cb once. */
+    window.kxWhenKAPI = function (cb) {
+      var tries = 0;
+      (function check() {
+        if (window.KAPI && window.KAPI.live && window.KAPI.sb) { try { cb(); } catch (e) { console.error(e); } return; }
+        if (window.KAPI && window.KAPI.live === false) return;   // backend not configured: nothing to wait for
+        if (++tries < 48) setTimeout(check, 250);
+      })();
+    };
+    </script>
+    <script>
+(function () {
+  var KB = window.KBRAND, B = KB.brands, EMAIL = KB.email;
+  function $(i) { return document.getElementById(i); }
+  function qa(s, r) { return [].slice.call((r || document).querySelectorAll(s)); }
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function get(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function put(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function wa(t, imp) { return "https://wa.me/" + (imp ? B.impulse.wa : B.kisakali.wa) + "?text=" + encodeURIComponent(t); }
+  function tel(b) { return "tel:" + String(b.tel).replace(/[^\d+]/g, ""); }
+  function toast(m) { var t = $("kx-toast"); t.textContent = m; t.className = "on"; clearTimeout(toast.t); toast.t = setTimeout(function () { t.className = ""; }, 2600); }
+  function uid() { return String(Date.now()) + Math.floor(Math.random() * 1000); }
+
+  /* ---------- 1. Background photos changing every 4 seconds ---------- */
+  var GRADS = [
+    "linear-gradient(135deg,#7a3e00,#1a0f00)", "linear-gradient(135deg,#8a1c4a,#1a0510)",
+    "linear-gradient(135deg,#124a3a,#04140f)", "linear-gradient(135deg,#2a2f7a,#0a0b1f)",
+    "linear-gradient(135deg,#6b4a12,#1d1403)"
+  ];
+  var layers = [$("kx-bg").children[0], $("kx-bg").children[1]], scenes = GRADS.slice(), photos = false, idx = -1, front = 0, seen = {};
+  function addPhoto(u) {
+    if (!u || seen[u]) return; seen[u] = 1;
+    var im = new Image();
+    im.onload = function () { if (!photos) { scenes = []; photos = true; idx = -1; } scenes.push('url("' + u + '")'); };
+    im.src = u;
+  }
+  function nextScene() {
+    if (!scenes.length) return;
+    idx = (idx + 1) % scenes.length;
+    var on = layers[front], off = layers[1 - front];
+    on.style.backgroundImage = scenes[idx]; on.className = "l show"; off.className = "l"; front = 1 - front;
+  }
+  for (var i = 1; i <= 10; i++) addPhoto("bg/" + i + ".jpg");
+  function bgFromCatalog(list) { (list || []).slice(0, 8).forEach(function (p) { if (p.img) addPhoto(p.img); }); }
+  window.addEventListener("kisakali:catalog", function (e) { bgFromCatalog(e.detail && e.detail.products); });
+  if (window.KCATALOG && window.KCATALOG.state === "ready") bgFromCatalog(window.KCATALOG.products);
+  nextScene(); setInterval(nextScene, 4000);
+  // Add vendor-uploaded public photos to the existing four-second cross-fade rotation.
+  // Public vendor photos are added to the rotating background when available.
+  window.kxWhenKAPI(function () {
+    KAPI.sb.from("vendor_media").select("media_url").eq("is_public", true).eq("media_type", "image")
+      .order("created_at", { ascending: false }).limit(20)
+      .then(function (r) { if (!r.error && r.data) r.data.forEach(function (m) { addPhoto(m.media_url); }); }).catch(function () {});
+
+  });
+
+  /* ---------- helpers: tile photos (img/<slug>.jpg if you add them) ---------- */
+  function tilePhoto(el, slug) {
+    var u = "img/" + slug + ".jpg", im = new Image();
+    im.onload = function () { el.style.backgroundImage = 'url("' + u + '")'; el.className += " has-photo"; };
+    im.src = u;
+  }
+  qa('a[href$="cat=under-50000"]').forEach(function (a) { a.href = "shop.html?max=50000"; });
+  qa("#kx-cat-grid a.kx-cat").forEach(function (a) { var m = /cat=([^&]+)/.exec(a.getAttribute("href")); if (m) { a.className += " kx-tile"; a.className = a.className.replace("kx-cat", "kx-cat"); tilePhoto(a, m[1]); } });
+
+  /* ---------- 2. Recipients + Feelings ---------- */
+  var REC = [["Him", "fa-male", "him"], ["Her", "fa-female", "her"], ["Boyfriend", "fa-heart", "boyfriend"], ["Girlfriend", "fa-heart", "girlfriend"], ["Wife", "fa-ring", "wife"], ["Husband", "fa-user-tie", "husband"], ["Friends", "fa-users", "friends"], ["Mother", "fa-hand-holding-heart", "mother"], ["Father", "fa-user-tie", "father"], ["Kids", "fa-child", "kids"]];
+  var FEEL = [["Love & Romance", "fa-heart", "love"], ["Thinking of You", "fa-comment-dots", "thinking-of-you"], ["Apology", "fa-dove", "apology"], ["Miss You", "fa-cloud", "miss-you"], ["Sympathy", "fa-leaf", "sympathy"], ["Congratulations", "fa-award", "congratulations"], ["Thank You", "fa-hands", "thank-you"]];
+  function tiles(list, key) { return list.map(function (x) { return '<a class="kx-tile" data-slug="' + x[2] + '" href="shop.html?' + key + '=' + x[2] + '"><i class="fas ' + x[1] + '"></i><b>' + x[0] + '</b></a>'; }).join(""); }
+  $("kx-rec-grid").innerHTML = tiles(REC, "for"); $("kx-feel-grid").innerHTML = tiles(FEEL, "feeling");
+  qa("#kx-rec-grid a, #kx-feel-grid a").forEach(function (a) { tilePhoto(a, a.getAttribute("data-slug")); });
+
+  /* ---------- 3. Brands ---------- */
+  var brandHtml0 = '<a class="kx-brand" href="shop.html?q=kisakali">KISAKALI<small>Shopping Mall</small></a><a class="kx-brand" href="shop.html?q=impulse">IMPULSE<small>Cakes</small></a><a class="kx-brand" href="shop.html?cat=fashion">ZENVO&trade;<small>Fashion &amp; Wear</small></a>';
+  function brands(list) {
+    var names = [], h = brandHtml0;
+    (list || []).forEach(function (p) { if (p.vendor && names.indexOf(p.vendor) < 0) names.push(p.vendor); });
+    names.slice(0, 12).forEach(function (v) { h += '<a class="kx-brand" href="shop.html?q=' + encodeURIComponent(v) + '">' + esc(v) + '<small>Verified shop</small></a>'; });
+    $("kx-brand-row").innerHTML = h;
+  }
+  brands([]);
+  window.addEventListener("kisakali:catalog", function (e) { brands(e.detail && e.detail.products); });
+  if (window.KCATALOG && window.KCATALOG.state === "ready") brands(window.KCATALOG.products);
+
+  /* ---------- 4. Gifting stories (put your videos in the videos folder) ---------- */
+  var STORIES = [["videos/story1.mp4", "Gifting story 1"], ["videos/story2.mp4", "Gifting story 2"], ["videos/story3.mp4", "Gifting story 3"], ["videos/story4.mp4", "Gifting story 4"]];
+  $("kx-story-row").innerHTML = STORIES.map(function (s) {
+    return '<div class="kx-story"><video src="' + s[0] + '" muted playsinline loop preload="metadata"></video><div class="ov"><button type="button" data-mute aria-label="Sound"><i class="fas fa-volume-mute"></i></button><button type="button" data-share="' + esc(s[1]) + '" aria-label="Share"><i class="fas fa-share"></i></button></div><button type="button" class="pl" data-play aria-label="Play"><i class="fas fa-play"></i></button><div class="cap">' + esc(s[1]) + '</div></div>';
+  }).join("");
+  // Prefer videos vendors publish for homepage stories; keep the original four local story cards as fallback.
+  window.kxWhenKAPI(function () {
+    KAPI.sb.from("vendor_media").select("media_url,caption,created_at")
+      .eq("is_public", true).eq("media_type", "video").order("created_at", { ascending: false }).limit(12)
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) return;
+        var rows = r.data;
+        $("kx-story-row").innerHTML = rows.map(function (m) {
+          var label = m.caption || "Gifting story";
+          return '<div class="kx-story"><video src="' + esc(m.media_url) + '" muted playsinline loop preload="metadata"></video><div class="ov"><button type="button" data-mute aria-label="Sound"><i class="fas fa-volume-mute"></i></button><button type="button" data-share="' + esc(label) + '" aria-label="Share"><i class="fas fa-share"></i></button></div><button type="button" class="pl" data-play aria-label="Play"><i class="fas fa-play"></i></button><div class="cap">' + esc(label) + '</div></div>';
+        }).join("");
+        qa("#kx-story-row video").forEach(function (v) { v.addEventListener("error", function () { v.parentNode.className += " novid"; v.style.display = "none"; }); });
+      }).catch(function () {});
+  });
+  qa("#kx-story-row video").forEach(function (v) { v.addEventListener("error", function () { v.parentNode.className += " novid"; v.style.display = "none"; }); });
+  $("kx-story-row").addEventListener("click", function (e) {
+    var card = e.target.closest(".kx-story"); if (!card) return; var v = card.querySelector("video");
+    if (e.target.closest("[data-play]")) {
+      if (card.className.indexOf("novid") > -1) { toast("This video is coming soon"); return; }
+      qa("#kx-story-row video").forEach(function (o) { if (o !== v) { o.pause(); o.parentNode.className = o.parentNode.className.replace(" playing", ""); } });
+      if (v.paused) { v.play(); card.className += " playing"; } else { v.pause(); card.className = card.className.replace(" playing", ""); }
+    } else if (e.target.closest("[data-mute]")) { v.muted = !v.muted; e.target.closest("[data-mute]").innerHTML = '<i class="fas ' + (v.muted ? "fa-volume-mute" : "fa-volume-up") + '"></i>'; }
+    else if (e.target.closest("[data-share]")) { var t = "KISAKALI Shopping Mall - " + e.target.closest("[data-share]").getAttribute("data-share"); if (navigator.share) navigator.share({ title: t, url: location.href }).catch(function () {}); else location.href = wa(t + " " + location.href); }
+  });
+
+  /* ---------- 5. Payment options + bulk ---------- */
+  var PAY = [["Vodacom M-Pesa", "fa-mobile-alt"], ["Tigo Pesa", "fa-mobile-alt"], ["Airtel Money", "fa-mobile-alt"], ["HaloPesa", "fa-mobile-alt"], ["CRDB / NMB Bank Transfer", "fa-university"]];
+  $("kx-offer-grid").innerHTML = PAY.map(function (p) { return '<div class="kx-offer"><i class="fas ' + p[1] + '"></i><b>' + p[0] + '</b><small>Pay at secure checkout</small></div>'; }).join("") +
+    '<a class="kx-offer" style="text-decoration:none;color:#fff" target="_blank" rel="noopener" href="' + wa("Hello KISAKALI, I want to place a corporate / bulk gift order.") + '"><i class="fas fa-building"></i><b>Corporate &amp; Bulk Orders</b><small>Ask us on WhatsApp</small></a>';
+
+  /* ---------- 6. Referral + Recently viewed widgets ---------- */
+  var ref = $("kx-ref");
+  if (ref) ref.addEventListener("click", function () {
+    var txt = "Shop gifts, cakes and flowers on KISAKALI Shopping Mall (Ifakara, Morogoro):";
+    if (navigator.share) navigator.share({ title: "KISAKALI Shopping Mall", text: txt, url: location.href }).catch(function () {}); else window.open("https://wa.me/?text=" + encodeURIComponent(txt + " " + location.href), "_blank");
+  });
+  function recent() {
+    var r = get("kx_recent", []), box = $("kx-recent"); if (!box) return;
+    box.innerHTML = r.length ? r.slice(0, 3).map(function (p) { return '<a href="product-details.html?id=' + encodeURIComponent(p.id) + '">' + esc(p.name) + '</a>'; }).join("") : '<p style="font-size:13px;color:#b3b1ae;margin-top:5px">Nothing viewed yet</p>';
+  }
+  recent();
+  document.addEventListener("click", function (e) {
+    var q = e.target.closest("[data-qv]"); if (!q) return; var c = q.closest(".kx-card"); if (!c) return;
+    var id = q.getAttribute("data-qv"), r = get("kx_recent", []).filter(function (x) { return x.id !== id; });
+    var h = c.querySelector("h4"); r.unshift({ id: id, name: h ? h.textContent : "Product" }); put("kx_recent", r.slice(0, 8)); recent();
+  });
+
+  /* ---------- 7. Scroll to top ---------- */
+  var topb = $("kx-top");
+  window.addEventListener("scroll", function () { topb.className = window.pageYOffset > 400 ? "on" : ""; }, { passive: true });
+  topb.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+
+  /* ---------- 8. Header icons ---------- */
+  $("kx-hcall").href = tel(B.kisakali);
+  $("kx-hsearch").addEventListener("click", function () { var s = $("kx-search-section"); s.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function () { $("kx-q").focus(); }, 400); });
+
+  /* ---------- Sheets (All Gifts, Reminders, Account, Location...) ---------- */
+  var sheet = $("kx-sheet"), sTitle = $("kx-st"), sBody = $("kx-sb"), cur = "", giftTab = "type";
+  var GTYPES = [["Cakes & Bakery", "fa-birthday-cake", "cakes"], ["Flowers & Bouquets", "fa-spa", "flowers"], ["Personalised Gifts", "fa-pen-fancy", "personalized"], ["Plants", "fa-seedling", "plants"], ["Balloons & Decor", "fa-star", "decor"], ["Chocolates & Sweets", "fa-candy-cane", "chocolates"], ["Teddy Bears", "fa-paw", "teddy-bears"], ["Combos & Bundles", "fa-box-open", "combos"], ["Kids Gifts", "fa-child", "kids"], ["Gift Hampers & Surprises", "fa-gifts", "surprises"], ["Fashion & Accessories", "fa-tshirt", "fashion"]];
+  var OCCS = [["Birthday", "fa-birthday-cake", "birthday"], ["Anniversary", "fa-heart", "anniversary"], ["Wedding", "fa-ring", "wedding"], ["Graduation", "fa-graduation-cap", "graduation"], ["Valentine's Day", "fa-kiss-wink-heart", "valentines"], ["Mother's Day", "fa-hand-holding-heart", "mothers-day"], ["Christmas", "fa-tree", "christmas"], ["Just Because", "fa-smile", "just-because"]];
+  function acc(icon, title, links) { return '<div class="kx-acc"><button type="button" data-acc><i class="fas ' + icon + ' l"></i>' + title + '<i class="fas fa-chevron-down c"></i></button><div class="in">' + links + '</div></div>'; }
+  function menuItem(icon, label, href, act, ext) { return href ? '<a href="' + href + '"' + (ext ? ' target="_blank" rel="noopener"' : "") + '><i class="fas ' + icon + '"></i>' + label + '<i class="fas fa-chevron-right ar"></i></a>' : '<button type="button" class="m" data-open="' + act + '"><i class="fas ' + icon + '"></i>' + label + '<i class="fas fa-chevron-right ar"></i></button>'; }
+
+  /* location state */
+  function loc() { return get("kx_loc", { mode: "delivery", area: "", addr: "" }); }
+  function locLabel() { var l = loc(); return l.mode === "pickup" ? "Pickup from the vendor" : (l.area ? l.area + (l.addr ? " - " + l.addr : "") : "Choose delivery location"); }
+  function showLoc() { $("kx-loc-t").textContent = locLabel(); }
+  showLoc();
+
+  /* reminders */
+  function nextDays(d) { var p = d.split("-"), n = new Date(), t = new Date(n.getFullYear(), n.getMonth(), n.getDate()), x = new Date(t.getFullYear(), +p[1] - 1, +p[2]); if (x < t) x = new Date(t.getFullYear() + 1, +p[1] - 1, +p[2]); return Math.round((x - t) / 864e5); }
+  function badge() {
+    var n = get("kx_rem", []).filter(function (r) { return nextDays(r.date) <= 7; }).length, b = $("kx-bd");
+    b.textContent = n; b.style.display = n ? "block" : "none";
+  }
+  badge();
+  function pad(n) { return ("0" + n).slice(-2); }
+  function icsFile(r) {
+    var d = r.date.replace(/-/g, ""), nd = new Date(r.date + "T00:00:00"); nd.setDate(nd.getDate() + 1);
+    var e = nd.getFullYear() + pad(nd.getMonth() + 1) + pad(nd.getDate()), st = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    var t = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//KISAKALI//Reminders//EN", "BEGIN:VEVENT", "UID:kx" + r.id + "@kisakali", "DTSTAMP:" + st, "DTSTART;VALUE=DATE:" + d, "DTEND;VALUE=DATE:" + e, "RRULE:FREQ=YEARLY", "SUMMARY:" + r.occ + " - " + r.name, "BEGIN:VALARM", "TRIGGER:-P3D", "ACTION:DISPLAY", "DESCRIPTION:Gift reminder", "END:VALARM", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([t], { type: "text/calendar" })); a.download = "reminder-" + r.id + ".ics"; document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  var FAQ = [["Where do you deliver?", "KISAKALI and IMPULSE CAKES deliver in Ifakara and Morogoro, Tanzania."], ["How do I pay?", "At secure checkout with mobile money (Vodacom M-Pesa, Tigo Pesa, Airtel Money, HaloPesa) or CRDB / NMB bank transfer."], ["Can I add a message or a name?", "Yes. You can add names, messages and special instructions to your gift at checkout."], ["Can I send a surprise without the receiver knowing who sent it?", "Yes. Ask for surprise delivery and the sender is kept private."], ["How do I follow my order?", "Open Track Order from the menu and enter your order details."], ["How do I sell on KISAKALI?", "Apply on the vendor page. Every shop is reviewed and approved before it can sell."]];
+
+  var R = {
+    gifts: { title: "All Gifts", nav: "gifts", html: function () {
+      var h = '<div class="kx-tabs"><button type="button" data-gtab="type" class="' + (giftTab === "type" ? "on" : "") + '">Gift Type</button><button type="button" data-gtab="occ" class="' + (giftTab === "occ" ? "on" : "") + '">Occasions</button></div>';
+      if (giftTab === "type") GTYPES.forEach(function (g) { h += acc(g[1], g[0], '<a href="shop.html?cat=' + g[2] + '">All ' + g[0] + '</a>' + OCCS.map(function (o) { return '<a href="shop.html?cat=' + g[2] + '&occasion=' + o[2] + '">' + g[0] + " for " + o[0] + '</a>'; }).join("")); });
+      else OCCS.forEach(function (o) { h += acc(o[1], o[0], '<a href="shop.html?occasion=' + o[2] + '">All ' + o[0] + ' gifts</a>' + GTYPES.map(function (g) { return '<a href="shop.html?occasion=' + o[2] + '&cat=' + g[2] + '">' + g[0] + '</a>'; }).join("")); });
+      return h;
+    } },
+    reminders: { title: "My Reminders", nav: "reminders", html: function () {
+      var list = get("kx_rem", []).slice().sort(function (a, b) { return nextDays(a.date) - nextDays(b.date); });
+      var h = '<h3 style="margin-bottom:4px">Never miss a celebration</h3><p class="kx-note">Save special dates. Tap "Add to calendar" and your phone will remind you 3 days before, every year.</p>';
+      h += '<div class="kx-form"><label>Name</label><input id="rm-name" placeholder="e.g. Mama, Anna"><button type="button" class="kx-btn ghost" id="rm-contact" style="display:none;margin-top:8px"><i class="fas fa-address-book"></i> Choose from contacts</button>';
+      h += '<label>Occasion</label><select id="rm-occ">' + ["Birthday", "Wedding Anniversary", "Engagement Anniversary", "Graduation", "Promotion", "New Job", "Retirement", "Other"].map(function (o) { return "<option>" + o + "</option>"; }).join("") + '</select>';
+      h += '<label>Date</label><input id="rm-date" type="date"><button type="button" class="kx-btn" data-act="rem-add"><i class="fas fa-plus"></i> Add reminder</button></div><h3 style="margin:22px 0 10px">Saved reminders</h3>';
+      if (!list.length) h += '<p class="kx-note">No reminders yet.</p>';
+      list.forEach(function (r) {
+        var d = nextDays(r.date), slug = /birth/i.test(r.occ) ? "birthday" : /anniv/i.test(r.occ) ? "anniversary" : /grad/i.test(r.occ) ? "graduation" : "just-because";
+        h += '<div class="kx-item"><div class="t"><b>' + esc(r.name) + '</b><small>' + esc(r.occ) + ' - ' + esc(r.date.slice(5)) + '</small><span class="kx-days">' + (d === 0 ? "Today" : d + " day" + (d > 1 ? "s" : "")) + '</span></div><div style="display:flex;flex-direction:column;gap:6px"><a class="sm" href="shop.html?occasion=' + slug + '">Send gift</a><button type="button" data-act="rem-ics" data-id="' + r.id + '">Add to calendar</button><button type="button" data-act="rem-del" data-id="' + r.id + '">Delete</button></div></div>';
+      });
+      return h;
+    }, after: function () { if (navigator.contacts && navigator.contacts.select) $("rm-contact").style.display = "block"; } },
+    account: { title: "My Account", nav: "account", html: function () {
+      return '<div class="kx-menu">' + menuItem("fa-box", "My Orders", "customer.html") + menuItem("fa-user-edit", "My Profile & Wallet", "customer.html") + menuItem("fa-comments", "Chat With Us", wa("Hello KISAKALI, I need help."), "", 1) + menuItem("fa-map-marker-alt", "Saved Addresses", "", "addr") + menuItem("fa-bell", "Notification Settings", "", "notif") + menuItem("fa-question-circle", "FAQ's", "", "faq") + menuItem("fa-building", "Corporate Gifts / Bulk Orders", wa("Hello KISAKALI, I want to place a corporate / bulk gift order."), "", 1) + menuItem("fa-store", "Become A Partner (Sell With Us)", "vendor-apply.html") + menuItem("fa-thumbs-up", "Share App Feedback", "", "feedback") + menuItem("fa-trash", "Delete My Account", "", "del") + '</div>';
+    } },
+    addr: { title: "Saved Addresses", nav: "account", html: function () {
+      var a = get("kx_addrs", []), h = '<div class="kx-form"><label>Label</label><input id="ad-l" placeholder="Home, Work, Mama\'s house"><label>Address / landmark</label><textarea id="ad-t" rows="3" placeholder="Area, street, landmark, phone of receiver"></textarea><button type="button" class="kx-btn" data-act="ad-add">Save address</button></div><h3 style="margin:22px 0 10px">Your addresses</h3>';
+      if (!a.length) h += '<p class="kx-note">No saved addresses yet. They are saved on this phone.</p>';
+      a.forEach(function (x) { h += '<div class="kx-item"><div class="t"><b>' + esc(x.l) + '</b><small>' + esc(x.t) + '</small></div><button type="button" data-act="ad-del" data-id="' + x.id + '">Delete</button></div>'; });
+      return h;
+    } },
+    notif: { title: "Notification Settings", nav: "account", html: function () {
+      var n = get("kx_notif", { orders: true, offers: false, rem: true });
+      return '<div class="kx-form"><p class="kx-note">Enable browser push notifications to receive order updates on this device. You can turn them off at any time.</p><button type="button" class="kx-btn" id="kx-enable-push"><i class="fas fa-bell"></i> Enable push notifications</button><p id="kx-push-status" class="kx-note" aria-live="polite">Push is not enabled on this device.</p></div>' + [["orders", "Order updates"], ["offers", "Offers and new gifts"], ["rem", "Reminder alerts"]].map(function (x) { return '<label class="kx-sw">' + x[1] + '<input type="checkbox" data-nf="' + x[0] + '"' + (n[x[0]] ? " checked" : "") + '></label>'; }).join("") + '<p class="kx-note">Your preferences are saved on this phone.</p>';
+    } },
+    faq: { title: "FAQ's", nav: "account", html: function () { return FAQ.map(function (f) { return acc("fa-question-circle", f[0], '<p style="font-size:14px;color:#ddd;padding-top:6px">' + f[1] + '</p>'); }).join(""); } },
+    feedback: { title: "Share App Feedback", nav: "account", html: function () {
+      return '<div class="kx-form"><label>Your feedback</label><textarea id="fb-t" rows="5" placeholder="Tell us what you like and what we can improve"></textarea><button type="button" class="kx-btn" data-act="fb-wa"><i class="fab fa-whatsapp"></i> Send on WhatsApp</button><button type="button" class="kx-btn ghost" data-act="fb-mail"><i class="fas fa-envelope"></i> Send by email</button></div>';
+    } },
+    del: { title: "Delete My Account", nav: "account", html: function () {
+      return '<p class="kx-note" style="font-size:14px">To delete your account and your data, send us a request. We will confirm with you before deleting.</p><div class="kx-form"><a class="kx-btn" target="_blank" rel="noopener" href="' + wa("Hello KISAKALI, I want to delete my account and data.") + '" style="text-align:center;margin-top:10px">Request on WhatsApp</a><a class="kx-btn ghost" style="text-align:center;margin-top:10px" href="mailto:' + EMAIL + '?subject=' + encodeURIComponent("Delete my account") + '&body=' + encodeURIComponent("Please delete my KISAKALI account and data.") + '">Request by email</a></div>';
+    } },
+    loc: { title: "Where to deliver?", nav: "home", html: function () {
+      var l = loc();
+      return '<div class="kx-form"><div class="kx-seg"><button type="button" data-lm="delivery" class="' + (l.mode === "delivery" ? "on" : "") + '"><i class="fas fa-motorcycle"></i> Delivery</button><button type="button" data-lm="pickup" class="' + (l.mode === "pickup" ? "on" : "") + '"><i class="fas fa-store"></i> Pickup</button></div>' +
+        '<div id="lc-del"' + (l.mode === "pickup" ? ' style="display:none"' : "") + '><label>Town</label><select id="lc-area">' + ["", "Ifakara Town", "Morogoro Town", "Other area"].map(function (a) { return '<option value="' + a + '"' + (l.area === a ? " selected" : "") + ">" + (a || "Choose town") + "</option>"; }).join("") + '</select><label>Street / landmark</label><textarea id="lc-addr" rows="2" placeholder="Street, landmark, receiver phone">' + esc(l.addr) + '</textarea><button type="button" class="kx-btn ghost" data-act="lc-gps" style="margin-top:8px"><i class="fas fa-crosshairs"></i> Use my current location</button></div>' +
+        '<p class="kx-note" id="lc-pk"' + (l.mode === "pickup" ? "" : ' style="display:none"') + '>You collect your order from the vendor. The pickup point is confirmed when you order.</p><button type="button" class="kx-btn" data-act="lc-save">Save</button></div>';
+    } }
+  };
+  var lmode = null;
+  function mark(n) { qa("#kx-bnav [data-nav]").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-nav") === n); }); }
+  function openSheet(n) { var r = R[n]; if (!r) return; cur = n; sTitle.textContent = r.title; sBody.innerHTML = r.html(); sheet.classList.add("open"); sBody.scrollTop = 0; document.body.style.overflow = "hidden"; mark(r.nav); if (r.after) r.after(); if (n === "loc") lmode = loc().mode; }
+  function closeSheet() { sheet.classList.remove("open"); cur = ""; document.body.style.overflow = ""; mark("home"); }
+  function rerender() { var y = sBody.scrollTop; sBody.innerHTML = R[cur].html(); sBody.scrollTop = y; if (R[cur].after) R[cur].after(); }
+  $("kx-sx").addEventListener("click", closeSheet);
+  $("kx-loc").addEventListener("click", function () { openSheet("loc"); });
+
+  /* bottom nav */
+  $("kx-bnav").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-nav]"); if (!b) return; var n = b.getAttribute("data-nav");
+    if (n === "home") { closeSheet(); window.scrollTo({ top: 0, behavior: "smooth" }); } else openSheet(n);
+  });
+
+  /* drawer */
+  var drawer = $("kx-drawer");
+  function dmenu() {
+    var h = menuItem("fa-home", "Home", "index.html") + menuItem("fa-store", "Marketplace", "shop.html") + menuItem("fa-gift", "All Gifts", "", "gifts") + menuItem("fa-bell", "My Reminders", "", "reminders") + menuItem("fa-user", "My Account", "", "account") + menuItem("fa-map-marker-alt", "Where to deliver?", "", "loc") + menuItem("fa-shopping-bag", "Checkout", "checkout.html") + menuItem("fa-truck", "Track Order", "track.html") + menuItem("fa-user-plus", "Register / Create Account", "register.html") +
+      menuItem("fa-building", "Corporate Gifts / Bulk Orders", wa("Hello KISAKALI, I want to place a corporate / bulk gift order."), "", 1) + menuItem("fa-store-alt", "Apply to sell", "vendor-apply.html") + menuItem("fa-motorcycle", "Rider Portal", "driver.html") + menuItem("fa-chart-line", "Vendor Panel", "vendor.html") + menuItem("fa-user-shield", "Super Admin", "admin.html") + menuItem("fa-thumbs-up", "Share App Feedback", "", "feedback") + menuItem("fa-comment-dots", "WhatsApp Kisakali", wa("Hello KISAKALI, I need help."), "", 1) + menuItem("fa-phone-alt", "Call Kisakali", tel(B.kisakali));
+    $("kx-dnav").innerHTML = h;
+  }
+  dmenu();
+  $("kx-burger").addEventListener("click", function () { drawer.classList.add("open"); });
+  drawer.addEventListener("click", function (e) { if (e.target.closest("[data-close-drawer]") || e.target.closest("a")) drawer.classList.remove("open"); });
+
+  /* all clicks inside drawer + sheet */
+  function clicks(e) {
+    var o = e.target.closest("[data-open]"); if (o) { drawer.classList.remove("open"); openSheet(o.getAttribute("data-open")); return; }
+    var t = e.target.closest("[data-gtab]"); if (t) { giftTab = t.getAttribute("data-gtab"); rerender(); return; }
+    var a = e.target.closest("[data-acc]"); if (a) { a.parentNode.classList.toggle("open"); return; }
+    var lm = e.target.closest("[data-lm]"); if (lm) { lmode = lm.getAttribute("data-lm"); qa("[data-lm]").forEach(function (b) { b.classList.toggle("on", b === lm); }); $("lc-del").style.display = lmode === "pickup" ? "none" : "block"; $("lc-pk").style.display = lmode === "pickup" ? "block" : "none"; return; }
+    var x = e.target.closest("[data-act]"); if (!x) return; var act = x.getAttribute("data-act"), id = x.getAttribute("data-id");
+    if (act === "rem-add") {
+      var nm = $("rm-name").value.trim(), dt = $("rm-date").value;
+      if (!nm || !dt) { toast("Enter a name and a date"); return; }
+      var l = get("kx_rem", []); l.push({ id: uid(), name: nm, occ: $("rm-occ").value, date: dt }); put("kx_rem", l); badge(); toast("Reminder saved"); rerender();
+    } else if (act === "rem-del") { put("kx_rem", get("kx_rem", []).filter(function (r) { return r.id !== id; })); badge(); rerender(); }
+    else if (act === "rem-ics") { var r = get("kx_rem", []).filter(function (r) { return r.id === id; })[0]; if (r) { icsFile(r); toast("Open the file to add it to your calendar"); } }
+    else if (act === "ad-add") { var lb = $("ad-l").value.trim(), tx = $("ad-t").value.trim(); if (!lb || !tx) { toast("Enter a label and an address"); return; } var ad = get("kx_addrs", []); ad.push({ id: uid(), l: lb, t: tx }); put("kx_addrs", ad); toast("Address saved"); openSheet("addr"); }
+    else if (act === "ad-del") { put("kx_addrs", get("kx_addrs", []).filter(function (r) { return r.id !== id; })); openSheet("addr"); }
+    else if (act === "fb-wa") { var f = $("fb-t").value.trim(); if (!f) { toast("Write your feedback first"); return; } window.open(wa("App feedback: " + f), "_blank"); }
+    else if (act === "fb-mail") { var f2 = $("fb-t").value.trim(); if (!f2) { toast("Write your feedback first"); return; } location.href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("App feedback") + "&body=" + encodeURIComponent(f2); }
+    else if (act === "lc-save") { var s = { mode: lmode || "delivery", area: $("lc-area").value, addr: $("lc-addr").value.trim() }; if (s.mode === "delivery" && !s.area && !s.addr) { toast("Choose a town or type an address"); return; } put("kx_loc", s); showLoc(); toast("Location saved"); closeSheet(); }
+    else if (act === "lc-gps") { if (!navigator.geolocation) { toast("Location is not available on this device"); return; } toast("Finding your location..."); navigator.geolocation.getCurrentPosition(function (p) { $("lc-addr").value = "GPS: " + p.coords.latitude.toFixed(5) + ", " + p.coords.longitude.toFixed(5); toast("Location added. Add a landmark if you can."); }, function () { toast("Could not get your location"); }, { timeout: 10000 }); }
+  }
+  sheet.addEventListener("click", clicks); drawer.addEventListener("click", clicks);
+  sheet.addEventListener("change", function (e) { var n = e.target.getAttribute("data-nf"); if (n) { var o = get("kx_notif", { orders: true, offers: false, rem: true }); o[n] = e.target.checked; put("kx_notif", o); } });
+  sheet.addEventListener("click", function (e) {
+    if (e.target.id === "rm-contact" || e.target.closest("#rm-contact")) {
+      navigator.contacts.select(["name"], { multiple: false }).then(function (c) { if (c && c[0] && c[0].name && c[0].name[0]) $("rm-name").value = c[0].name[0]; }).catch(function () {});
+    }
+  });
+})();
+</script>
+    <script src="kx-extras.js"></script>
+    <!-- Free-first web push: fill firebase-config.js after creating the Firebase project. -->
+    <script src="firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
+    <script src="push-client.js"></script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FE980F">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+<title>Create an Account - Kisakali Shopping Mall</title>
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+body{background:#0D0D0D;color:#fff}
+header{background:#363432!important;border-bottom:1px solid #444}
+.logo h1{color:#fff}.logo h1 span{color:#FE980F}
+nav ul li a{color:#fff!important}nav ul li a:hover{color:#FE980F!important}
+.wrap{max-width:560px;margin:0 auto;padding:36px 16px 60px}
+.wrap h2{text-align:center;margin-bottom:6px}
+.sub{text-align:center;color:#b3b1ae;font-size:13px;margin-bottom:22px}
+.types{display:grid;gap:12px;margin-bottom:20px}
+.type{display:flex;align-items:center;gap:14px;text-align:left;background:#363432;border:1px solid #444;border-radius:8px;padding:16px;color:#fff;cursor:pointer;width:100%;font-size:14px}
+.type i{font-size:26px;color:#FE980F;width:34px;text-align:center}
+.type b{display:block;font-size:16px;margin-bottom:2px}.type span{color:#b3b1ae;font-size:12px}
+.type.on{border-color:#FE980F;background:#2d2b29}
+.box{background:#363432;border:1px solid #444;border-top:4px solid #FE980F;border-radius:8px;padding:22px}
+.box label{display:block;font-size:13px;color:#b3b1ae;margin-top:12px}
+.box input,.box select{width:100%;box-sizing:border-box;margin-top:5px;padding:12px;background:#262423;color:#fff;border:1px solid #555;border-radius:4px;font-size:14px}
+.box h3{margin-bottom:4px;font-size:16px;color:#fff}
+.go{width:100%;margin-top:18px;padding:13px;background:#FE980F;color:#0D0D0D;border:0;border-radius:4px;font-weight:bold;font-size:15px;cursor:pointer}
+.go:disabled{opacity:.5;cursor:not-allowed}
+.info{background:#262423;border-left:4px solid #FE980F;border-radius:4px;padding:10px 12px;font-size:12px;color:#b3b1ae;margin:14px 0 0}
+#err{color:#ff4d4d;font-size:13px;min-height:18px;margin-top:12px}
+.done{text-align:center;padding:10px 0}.done i{font-size:42px;color:#00cc66;margin-bottom:10px}
+.done a{display:inline-block;margin-top:14px;background:#FE980F;color:#0D0D0D;padding:11px 22px;border-radius:4px;font-weight:bold;text-decoration:none}
+.hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
+.foot{text-align:center;font-size:13px;color:#b3b1ae;margin-top:18px}.foot a{color:#FE980F}
+</style>
+</head>
+<body>
+<header>
+  <div class="container header-container">
+    <div class="logo"><h1>KISAKALI<span>SHOPPING MALL</span></h1></div>
+    <nav><ul><li><a href="index.html">Home</a></li><li><a href="shop.html">Marketplace</a></li><li><a href="customer.html">Sign in</a></li></ul></nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <h2>Create your account</h2>
+  <p class="sub">Choose how you want to use KISAKALI and IMPULSE CAKES.</p>
+
+  <div class="types" id="types">
+    <button type="button" class="type" data-t="customer"><i class="fas fa-shopping-bag"></i><div><b>Customer</b><span>Buy gifts and track your deliveries</span></div></button>
+    <button type="button" class="type" data-t="vendor"><i class="fas fa-store"></i><div><b>Vendor</b><span>Sell on KISAKALI or IMPULSE CAKES (needs approval)</span></div></button>
+    <button type="button" class="type" data-t="rider"><i class="fas fa-motorcycle"></i><div><b>Rider</b><span>Deliver orders and earn (needs approval)</span></div></button>
+  </div>
+
+  <div class="box" id="box" hidden>
+    <h3 id="boxTitle"></h3>
+    <label>Full name</label><input id="fName" autocomplete="name" maxlength="100">
+    <label>Phone number</label><input id="fPhone" inputmode="tel" autocomplete="tel" placeholder="e.g. 0712345678">
+    <label>Email</label><input id="fEmail" type="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false">
+
+    <div id="xVendor" hidden>
+      <label>Shop name</label><input id="fShop" maxlength="100">
+      <label>What do you sell?</label>
+      <select id="fCat"><option>Cakes &amp; Bakery</option><option>Flowers &amp; Bouquets</option><option>Surprise Boxes</option><option>Fashion</option><option>Electronics &amp; Beauty</option><option>Other</option></select>
+      <label>Shop area / location</label><input id="fVArea" maxlength="100" placeholder="e.g. Kibaoni, Ifakara">
+    </div>
+    <div id="xRider" hidden>
+      <label>Vehicle (type and plate number)</label><input id="fVeh" maxlength="100" placeholder="e.g. Motorcycle - T456ABC">
+      <label>Area you can deliver in</label><input id="fRArea" maxlength="100" placeholder="e.g. Ifakara and Mlimba Rd">
+    </div>
+
+    <label>Password</label><input id="fPass" type="password" autocomplete="new-password" placeholder="At least 8 characters">
+    <label>Confirm password</label><input id="fPass2" type="password" autocomplete="new-password">
+    <input class="hp" id="fHp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+    <p class="info" id="info"></p>
+    <p id="err"></p>
+    <button type="button" class="go" id="go">Create account</button>
+  </div>
+
+  <p class="foot">Already have an account? <a href="customer.html">Sign in</a></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>window.supabase || document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>');</script>
+<script src="supabase-config.js"></script>
+<script src="api.js"></script>
+<script>
+/* built-in copy: used only when api.js is not found next to this page */
+if (!window.KAPI) {
+// KISAKALI backend client: the single place where the website talks to Supabase.
+// Loaded after supabase-js and supabase-config.js. Defines window.KAPI.
+// If the config is empty, KAPI.live is false and every page shows a "not connected" message.
+(function () {
+  var C = window.KISAKALI_CONFIG || {};
+  var live = !!(C.SUPABASE_URL && C.SUPABASE_ANON_KEY && window.supabase && window.supabase.createClient);
+  var sb = live ? window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  }) : null;
+
+  // Calls a database function and turns {error} into a thrown Error with a readable message.
+  function rpc(name, args) {
+    if (!sb) return Promise.reject(new Error('The shop is not connected yet.'));
+    return sb.rpc(name, args || {}).then(function (r) {
+      if (r.error) throw new Error(r.error.message || 'Request failed');
+      return r.data;
+    });
+  }
+
+
+  /* If the connection cannot start, say exactly why (red bar at the top of the page) so it can be fixed fast. */
+  if (!live) {
+    var why = !window.KISAKALI_CONFIG ? "supabase-config.js did not load. It must be in the SAME folder as this page (check the file name and spelling)."
+      : (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY) ? "supabase-config.js is empty. Fill in SUPABASE_URL and SUPABASE_ANON_KEY."
+      : !window.supabase ? "The Supabase library could not be downloaded (both cdn.jsdelivr.net and unpkg.com failed). Check the internet connection, data saver or ad-blocker, then refresh."
+      : "The Supabase client could not start.";
+    window.KAPI_WHY = why;
+    var bar = function () {
+      if (!document.body || document.getElementById("kapi-why")) return;
+      var d = document.createElement("div"); d.id = "kapi-why";
+      d.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#b00020;color:#fff;padding:10px 14px;font:13px/1.4 sans-serif;text-align:center";
+      d.textContent = "Not connected: " + why + (location.protocol === "file:" ? " (You opened this as a file from your device. Open it from your website address instead.)" : "");
+      document.body.appendChild(d);
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bar); else bar();
+  }
+
+  window.KAPI = {
+    live: live,
+    sb: sb,
+    rpc: rpc,
+    placeOrder: function (payload) { return rpc('place_order', { p: payload }); },
+    track: function (number, phone) { return rpc('track_order', { p_number: number, p_phone: phone }); },
+    applyVendor: function (payload) { return rpc('submit_vendor_application', { p: payload }); },
+    // delivery photos live in the public "delivery-proofs" bucket
+    photoUrl: function (path) {
+      if (!sb || !path) return '';
+      return sb.storage.from('delivery-proofs').getPublicUrl(path).data.publicUrl;
+    }
+  };
+})();
+
+}
+</script>
+<script>
+(function () {
+  var sb = window.KAPI && KAPI.live ? KAPI.sb : null;
+  var type = "";
+  function $(i) { return document.getElementById(i); }
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function err(t) { $("err").textContent = t || ""; }
+  function validPhone(p) { return /^(0|\+?255)[67]\d{8}$/.test(String(p || "").replace(/[\s-]/g, "")); }
+
+  var TITLE = { customer: "Customer account", vendor: "Vendor account", rider: "Rider account" };
+  var INFO = {
+    customer: "Your account is ready as soon as you sign up.",
+    vendor: "You get a customer account straight away. The KISAKALI / IMPULSE CAKES team reviews your shop, and once it is approved the same email and password open the Vendor Panel.",
+    rider: "You get a customer account straight away. The KISAKALI / IMPULSE CAKES team reviews your rider application, and once it is approved the same email and password open the Rider Portal."
+  };
+
+  function choose(t) {
+    type = t; err("");
+    [].forEach.call(document.querySelectorAll(".type"), function (b) { b.className = "type" + (b.getAttribute("data-t") === t ? " on" : ""); });
+    $("box").hidden = false; $("boxTitle").textContent = TITLE[t]; $("info").textContent = INFO[t];
+    $("xVendor").hidden = t !== "vendor"; $("xRider").hidden = t !== "rider";
+    $("go").textContent = t === "customer" ? "Create account" : "Create account and apply";
+    $("box").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  $("types").addEventListener("click", function (e) { var b = e.target.closest(".type"); if (b) choose(b.getAttribute("data-t")); });
+  var pre = new URLSearchParams(location.search).get("as");
+  if (pre === "customer" || pre === "vendor" || pre === "rider") choose(pre);
+
+  function finish(session, name) {
+    var pending = type !== "customer";
+    var html = '<div class="done"><i class="fas fa-check-circle"></i><h3>' + (session ? "Welcome, " + esc(name) + "!" : "Check your email") + '</h3>' +
+      '<p class="sub" style="margin:10px 0 0">' +
+      (session ? "Your account has been created." : "We sent you a link. Confirm your email, then sign in.") +
+      (pending ? " Your " + (type === "vendor" ? "shop" : "rider") + " application has been received and is waiting for review. We will contact you on the phone number you gave." : "") +
+      '</p><a href="customer.html">' + (session ? "Go to my account" : "Go to sign in") + '</a></div>';
+    $("box").innerHTML = html; $("types").hidden = true; window.scrollTo(0, 0);
+  }
+
+  $("go").addEventListener("click", function () {
+    if (!sb) { err("Registration is not available yet."); return; }
+    if (!type) { err("Choose an account type first."); return; }
+    var name = $("fName").value.trim(), phone = $("fPhone").value.replace(/[\s-]/g, ""), email = $("fEmail").value.trim(),
+        pass = $("fPass").value, pass2 = $("fPass2").value;
+    if (name.length < 2) { err("Enter your full name."); return; }
+    if (!validPhone(phone)) { err("Enter a valid phone number, e.g. 0712345678."); return; }
+    if (!/^\S+@\S+\.\S+$/.test(email)) { err("Enter a valid email."); return; }
+    var meta = { full_name: name, phone: phone };
+    if (type === "vendor") {
+      var shop = $("fShop").value.trim(), area = $("fVArea").value.trim();
+      if (!shop || !area) { err("Enter your shop name and area."); return; }
+      meta.apply_as = "vendor"; meta.shop_name = shop; meta.category = $("fCat").value; meta.area = area;
+    } else if (type === "rider") {
+      var veh = $("fVeh").value.trim(), rarea = $("fRArea").value.trim();
+      if (!veh || !rarea) { err("Enter your vehicle and delivery area."); return; }
+      meta.apply_as = "rider"; meta.vehicle_info = veh; meta.area = rarea;
+    }
+    if (pass.length < 8) { err("Password must be at least 8 characters."); return; }
+    if (pass !== pass2) { err("The two passwords do not match."); return; }
+    if ($("fHp").value) { finish(false, name); return; } /* bots fill the hidden field */
+
+    var btn = $("go"); btn.disabled = true; err("");
+    sb.auth.signUp({ email: email, password: pass, options: { data: meta } }).then(function (r) {
+      btn.disabled = false;
+      if (r.error) {
+        err(/already registered|already been registered/i.test(r.error.message) ? "This email already has an account. Sign in instead." :
+            /database error/i.test(r.error.message) ? "That phone number may already be registered." : r.error.message);
+        return;
+      }
+      /* an existing confirmed email returns a user with no identities and no error */
+      if (r.data.user && r.data.user.identities && r.data.user.identities.length === 0) { err("This email already has an account. Sign in instead."); return; }
+      finish(!!r.data.session, name);
+    });
+  });
+
+  if (!sb) { $("go").disabled = true; err("Registration is not available yet. Please check back soon."); $("box").hidden = false; $("boxTitle").textContent = "Create account"; }
+})();
+</script>
+    <script src="brand.js"></script>
+<script src="kx-extras.js"></script>
+</body>
+</html>

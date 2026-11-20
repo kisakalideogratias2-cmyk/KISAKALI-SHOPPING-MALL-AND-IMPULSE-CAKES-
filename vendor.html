@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FE980F">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+<title>Vendor Panel - Kisakali &amp; Impulse Cakes</title>
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+body{background:#0D0D0D;color:#fff}
+header{background:#363432!important;border-bottom:1px solid #444}
+.logo h1{color:#fff}.logo h1 span{color:#FE980F}
+nav ul li a{color:#fff!important}nav ul li a.active,nav ul li a:hover{color:#FE980F!important}
+.sub-title{color:#fff;font-size:18px;margin-bottom:15px}.sub-title i{color:#FE980F}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;margin-bottom:20px;border-bottom:1px solid #444}
+.tab-btn{flex:0 0 auto;background:#363432;color:#fff;border:1px solid #444;border-radius:20px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap}
+.tab-btn i{color:#FE980F;margin-right:6px}.tab-btn.on{background:#FE980F;color:#0D0D0D;border-color:#FE980F}.tab-btn.on i{color:#0D0D0D}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;font-size:13px;color:#b3b1ae}
+.topbar button{background:#363432;color:#fff;border:1px solid #555;border-radius:6px;padding:8px 14px;cursor:pointer}
+.badge{padding:4px 8px;border-radius:4px;font-size:11px;font-weight:bold;white-space:nowrap}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:#262423;border:1px solid #444;border-radius:6px;padding:14px}
+.stat-card h5{font-size:12px;color:#b3b1ae;font-weight:normal;margin-bottom:6px}.stat-card .num{font-size:18px;font-weight:bold;color:#FE980F}
+.num.green{color:#00cc66}.num.red{color:#ff4d4d}
+.alert-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin-bottom:8px;background:#262423;border-radius:6px;border-left:4px solid #FE980F;font-size:14px}
+.alert-item.danger{border-left-color:#ff4d4d}.alert-item.info{border-left-color:#4da6ff}
+.note-small{font-size:12px;color:#b3b1ae;margin-top:10px}
+.line{font-size:13px;color:#b3b1ae;margin:6px 0}
+.vb{background:#FE980F;color:#0D0D0D;border:0;border-radius:4px;padding:9px 14px;font-size:13px;font-weight:bold;cursor:pointer;margin:2px 4px 2px 0}
+.vb:disabled{opacity:.5;cursor:not-allowed}.vb.grey{background:#666;color:#fff}
+.fi{width:100%;box-sizing:border-box;padding:10px;background:#0D0D0D;border:1px solid #555;color:#fff;border-radius:4px;margin:4px 0}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0;font-size:13px;color:#b3b1ae}
+.box{background:#363432;border:1px solid #444;padding:20px;border-radius:6px;margin-bottom:20px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#FE980F;color:#0D0D0D;padding:10px 18px;border-radius:6px;font-weight:bold;display:none;z-index:2100;max-width:90%;text-align:center}
+#login{position:fixed;inset:0;background:#0D0D0D;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.lbox{background:#363432;border:1px solid #444;border-top:4px solid #FE980F;border-radius:8px;padding:28px;width:100%;max-width:360px;text-align:center}
+.lbox h2 span{color:#FE980F}
+.lbox input{width:100%;box-sizing:border-box;margin:8px 0;padding:12px;background:#262423;color:#fff;border:1px solid #555;border-radius:4px}
+.lbox button{width:100%;margin-top:8px;padding:12px;background:#FE980F;color:#0D0D0D;border:0;border-radius:4px;font-weight:bold;cursor:pointer}
+.lbox button:disabled{opacity:.5}
+#lgMsg{color:#ff4d4d;font-size:13px;min-height:18px}
+.pill{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:bold;background:#555;color:#fff}
+.pill.ok{background:#00cc66;color:#000}.pill.wait{background:#ff9900;color:#000}.pill.bad{background:#ff4d4d}
+.prow{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}.prow img,.prow .noimg{width:72px;height:72px;border-radius:6px;object-fit:cover;background:#262423;border:1px solid #444;display:flex;align-items:center;justify-content:center;color:#FE980F}
+.prow .info{flex:1;min-width:180px}.ta{width:100%;box-sizing:border-box;padding:10px;background:#0D0D0D;border:1px solid #555;color:#fff;border-radius:4px;margin:4px 0;font-family:inherit}
+.warn{background:#3a2a00;border-left:4px solid #ff9900;padding:10px 12px;border-radius:4px;font-size:13px;margin-bottom:14px}
+.rider-box{background:#262423;border:1px solid #444;border-left:4px solid #FE980F;border-radius:6px;padding:10px 12px;margin-top:10px}
+/* restored: tables, charts, tracker, media */
+.table-custom{width:100%;border-collapse:collapse;margin-top:15px;font-size:14px}
+.table-custom th,.table-custom td{padding:10px;text-align:left;border-bottom:1px solid #444;vertical-align:top}
+.table-custom th{background:#262423;color:#FE980F}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-bottom:20px}
+.chart-box{background:#363432;border:1px solid #444;border-radius:6px;padding:20px}
+.chart-box h4{font-size:15px;margin-bottom:15px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:140px;border-bottom:1px solid #555}
+.bar-col{flex:1;display:flex;align-items:flex-end;height:100%}.bar{width:100%;background:#FE980F;border-radius:3px 3px 0 0}
+.bar-labels{display:flex;gap:8px;margin-top:6px}.bar-labels span{flex:1;text-align:center;font-size:11px;color:#b3b1ae}
+.hbar-row{margin-bottom:12px;font-size:13px}.hbar-row .top{display:flex;justify-content:space-between;margin-bottom:4px}
+.hbar-track{background:#262423;border-radius:4px;height:10px;overflow:hidden}.hbar-fill{background:#FE980F;height:100%}
+.count{background:#ff4d4d;color:#fff;font-weight:bold;border-radius:12px;padding:2px 10px;font-size:12px;white-space:nowrap}
+.trk{margin-top:6px;font-size:11px}.trk span{color:#777}.trk span.on{color:#FE980F;font-weight:bold}.trk span.bad{color:#ff4d4d;font-weight:bold}
+.err{color:#ff4d4d;font-size:13px;margin:6px 0}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.mtile{background:#262423;border:1px solid #444;border-radius:6px;padding:8px;font-size:12px;position:relative;word-break:break-word}
+.mimg{width:100%;height:110px;object-fit:cover;border-radius:4px;display:block;background:#0D0D0D}
+.mph{display:flex;align-items:center;justify-content:center;color:#FE980F;font-size:28px}
+.mvid{width:100%;border-radius:4px;background:#000;max-height:220px}
+.mbadge{position:absolute;top:12px;left:12px;background:#FE980F;color:#000;font-weight:bold;font-size:10px;padding:2px 6px;border-radius:4px}
+.pgbar{background:#262423;border-radius:6px;height:12px;overflow:hidden;margin:8px 0}
+.pgbar div{background:#00cc66;height:100%;width:0;transition:width .2s}
+.pvmain{width:100%;max-height:320px;object-fit:contain;background:#000;border-radius:6px;cursor:zoom-in}
+.pvth{display:flex;gap:8px;overflow-x:auto;margin:8px 0}
+.pvth img{width:64px;height:64px;object-fit:cover;border-radius:4px;border:2px solid transparent;cursor:pointer}
+.pvth img.on{border-color:#FE980F}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;display:none;align-items:center;justify-content:center}
+#lb img{max-width:92%;max-height:84%}
+#lb button{position:absolute;background:#363432;color:#fff;border:0;font-size:28px;padding:8px 16px;border-radius:6px;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="login"><div class="lbox">
+  <h2>KISAKALI<span>&amp; IMPULSE</span></h2>
+  <p style="color:#b3b1ae;margin-bottom:10px">Vendor Login</p>
+  <input id="lgEmail" type="email" placeholder="Email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <input id="lgPass" type="password" placeholder="Password" autocomplete="current-password">
+  <button id="lgGo" type="button">Sign in</button>
+  <p id="lgMsg"></p>
+  <p class="note-small">New seller? <a href="register.html?as=vendor" style="color:#FE980F">Register as a vendor</a>. Your shop opens here once the admin approves it.</p>
+</div></div>
+
+<header>
+  <div class="container header-container">
+    <div class="logo">
+      <h1>KISAKALI<span>SHOPPING MALL</span></h1>
+      <p class="location-tag" style="color:#b3b1ae"><i class="fas fa-store" style="color:#FE980F"></i> Vendor Panel - shop, products, orders and wallet</p>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Marketplace</a></li>
+        <li><a href="vendor.html" class="active">Vendor Panel</a></li>
+        <li><a href="driver.html">Rider Portal</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="container" style="padding:40px 0;max-width:1000px">
+  <div class="topbar"><span><i class="fas fa-store" style="color:#FE980F"></i> <b id="who"></b> &middot; <span id="shopTag"></span></span><button id="logoutBtn" type="button">Logout</button></div>
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+</section>
+<div id="lb"><button id="lbx" style="top:16px;right:16px">&times;</button><button id="lbp" style="left:10px">&lsaquo;</button><img id="lbi" alt=""><button id="lbn" style="right:10px">&rsaquo;</button></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>window.supabase || document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>');</script>
+<script src="supabase-config.js"></script>
+<script src="api.js"></script>
+<script>
+/* built-in copy: used only when api.js is not found next to this page */
+if (!window.KAPI) {
+// KISAKALI backend client: the single place where the website talks to Supabase.
+// Loaded after supabase-js and supabase-config.js. Defines window.KAPI.
+// If the config is empty, KAPI.live is false and every page shows a "not connected" message.
+(function () {
+  var C = window.KISAKALI_CONFIG || {};
+  var live = !!(C.SUPABASE_URL && C.SUPABASE_ANON_KEY && window.supabase && window.supabase.createClient);
+  var sb = live ? window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  }) : null;
+
+  // Calls a database function and turns {error} into a thrown Error with a readable message.
+  function rpc(name, args) {
+    if (!sb) return Promise.reject(new Error('The shop is not connected yet.'));
+    return sb.rpc(name, args || {}).then(function (r) {
+      if (r.error) throw new Error(r.error.message || 'Request failed');
+      return r.data;
+    });
+  }
+
+
+  /* If the connection cannot start, say exactly why (red bar at the top of the page) so it can be fixed fast. */
+  if (!live) {
+    var why = !window.KISAKALI_CONFIG ? "supabase-config.js did not load. It must be in the SAME folder as this page (check the file name and spelling)."
+      : (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY) ? "supabase-config.js is empty. Fill in SUPABASE_URL and SUPABASE_ANON_KEY."
+      : !window.supabase ? "The Supabase library could not be downloaded (both cdn.jsdelivr.net and unpkg.com failed). Check the internet connection, data saver or ad-blocker, then refresh."
+      : "The Supabase client could not start.";
+    window.KAPI_WHY = why;
+    var bar = function () {
+      if (!document.body || document.getElementById("kapi-why")) return;
+      var d = document.createElement("div"); d.id = "kapi-why";
+      d.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#b00020;color:#fff;padding:10px 14px;font:13px/1.4 sans-serif;text-align:center";
+      d.textContent = "Not connected: " + why + (location.protocol === "file:" ? " (You opened this as a file from your device. Open it from your website address instead.)" : "");
+      document.body.appendChild(d);
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bar); else bar();
+  }
+
+  window.KAPI = {
+    live: live,
+    sb: sb,
+    rpc: rpc,
+    placeOrder: function (payload) { return rpc('place_order', { p: payload }); },
+    track: function (number, phone) { return rpc('track_order', { p_number: number, p_phone: phone }); },
+    applyVendor: function (payload) { return rpc('submit_vendor_application', { p: payload }); },
+    // delivery photos live in the public "delivery-proofs" bucket
+    photoUrl: function (path) {
+      if (!sb || !path) return '';
+      return sb.storage.from('delivery-proofs').getPublicUrl(path).data.publicUrl;
+    }
+  };
+})();
+
+}
+</script>
+<script>
+(function () {
+  var sb = window.KAPI && KAPI.live ? KAPI.sb : null;
+  var REC = {}, EXT = {}, PAYSET = null, PAYOK = false, KXOK = false, RF = {}, OQ = "", OF = "all";
+  var ME = null, SHOP = null, ORDERS = [], PRODS = [], CATS = [], WALLET = null, PAYOUTS = [], MOVES = [], DET = {}, cur = "dashboard", editing = null, busy = false;
+
+  function $(i) { return document.getElementById(i); }
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function money(n) { return Number(n || 0).toLocaleString("en-US") + " TSh"; }
+  function toast(m) { var t = $("toast"); t.textContent = m; t.style.display = "block"; clearTimeout(toast.h); toast.h = setTimeout(function () { t.style.display = "none"; }, 3200); }
+  function msg(t) { $("lgMsg").textContent = t || ""; }
+  function validPhone(p) { return /^(0|\+?255)[67]\d{8}$/.test(String(p || "").replace(/[\s-]/g, "")); }
+  function fmtDate(d) { try { return new Date(d + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }); } catch (e) { return d || ""; } }
+  function rpc(name, args) { return sb.rpc(name, args || {}).then(function (r) { if (r.error) throw new Error(r.error.message); return r.data; }); }
+  function pill(t, c) { return '<span class="pill ' + (c || "") + '">' + esc(t) + "</span>"; }
+  function tbl(h, rows) { return '<div style="overflow-x:auto"><table class="table-custom"><thead><tr>' + h.map(function (x) { return "<th>" + x + "</th>"; }).join("") + "</tr></thead><tbody>" + rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>"; }
+
+  /* ---------- rider delivery-fee confirmation helpers ---------- */
+  var DELIVERY_KEYS = ["delivery_status", "order_status", "rider_status", "status"];
+  function hasDeliveryInfo(o) {
+    return o.delivered === true || o.delivered_at != null || DELIVERY_KEYS.some(function (k) { return o[k] !== undefined; });
+  }
+  function isDelivered(o) {
+    if (o.delivered === true || o.delivered_at) return true;
+    return DELIVERY_KEYS.some(function (k) { return /^delivered$/i.test(String(o[k] == null ? "" : o[k]).trim()); });
+  }
+  function riderFeePaid(o) { return !!(o.rider_fee_paid || o.rider_paid || o.rider_fee_paid_at || /^paid$/i.test(String(o.rider_payment_status || "").trim())); }
+  function riderFeeAmount(o) { var f = o.delivery_fee != null ? o.delivery_fee : o.rider_fee; return f != null && f !== "" ? Number(f) : null; }
+  function riderBlock(o, i) {
+    if (!isDelivered(o)) return "";
+    if (riderFeePaid(o)) {
+      var when = o.rider_fee_paid_at ? " &middot; " + new Date(o.rider_fee_paid_at).toLocaleDateString("en-GB") : "";
+      return '<div class="rider-box"><i class="fas fa-motorcycle" style="color:#FE980F"></i> ' + pill("Rider fee paid", "ok") + '<span class="line">' + when + "</span></div>";
+    }
+    var fee = riderFeeAmount(o);
+    return '<div class="rider-box"><p class="line" style="margin-top:0"><i class="fas fa-motorcycle" style="color:#FE980F"></i> Delivered. The customer paid cash to the rider' +
+      (fee != null ? ", and the rider keeps the delivery fee of <b style=\"color:#FE980F\">" + money(fee) + "</b> from that cash" : ", and the rider keeps the delivery fee from that cash") + ".</p>" +
+      '<button class="vb" data-act="riderpaid" data-i="' + i + '">Confirm rider took the delivery fee</button></div>';
+  }
+
+  /* ---------- data ---------- */
+  function loadMe(user) {
+    return Promise.all([sb.from("profiles").select("full_name,phone,role").eq("id", user.id).maybeSingle(), rpc("vendor_my_shop").catch(function () { return null; })]).then(function (r) {
+      var p = r[0].data || {};
+      ME = { id: user.id, email: user.email || "", name: p.full_name || "", phone: p.phone || "", role: p.role || "" };
+      SHOP = r[1];
+    });
+  }
+  function loadAll() {
+    return Promise.all([
+      rpc("vendor_orders"),
+      sb.from("products").select("id,title,description,price,stock,status,image,category:categories(slug,name)").eq("vendor_id", SHOP.id).neq("status", "archived").order("created_at", { ascending: false }),
+      rpc("vendor_wallet"), rpc("vendor_payouts"),
+      sb.from("categories").select("name,slug").order("id"),
+      rpc("vendor_stock_moves").catch(function () { return []; }),
+      rpc("vendor_product_details").catch(function () { return []; })
+    ]).then(function (r) {
+      ORDERS = r[0] || [];
+      if (r[1].error) throw new Error(r[1].error.message);
+      PRODS = r[1].data || []; WALLET = r[2] || {}; PAYOUTS = r[3] || []; CATS = (r[4].data || []); MOVES = r[5] || [];
+      DET = {}; (r[6] || []).forEach(function (d) { DET[String(d.id)] = d; });
+    });
+  }
+  function refresh(keepEdit) { if (!keepEdit) editing = null; return loadAll().then(function () { show(cur); }).catch(function (e) { toast("Could not load: " + e.message); console.error(e); }); }
+  function prodById(id) { return PRODS.filter(function (p) { return String(p.id) === String(id); })[0]; }
+  function pname(id) { var p = prodById(id); return p ? p.title : "Removed product"; }
+  function why(p) { var d = DET[String(p.id)]; return d && d.rejection_reason ? d.rejection_reason : ""; }
+
+  function customText(c) {
+    if (!c || typeof c !== "object") return "";
+    var p = []; if (c.variant) p.push(c.variant); if (c.flavor) p.push(c.flavor);
+    if (c.addons && c.addons.length) p.push("+ " + c.addons.join(", "));
+    var t = p.join(" / "); if (c.cake_message) t += (t ? " | " : "") + "On the cake: " + c.cake_message;
+    if (c.inscription) t += (t ? " | " : "") + "Card: " + c.inscription; return t;
+  }
+  var STATUS = { draft: ["Draft", ""], submitted: ["Waiting for review", "wait"], approved: ["Approved - tap Publish", "wait"], published: ["Live in the shop", "ok"], rejected: ["Rejected - edit and send again", "bad"] };
+  function ostat(o) {
+    if (o.payment_status !== "Verified") return o.payment_status === "Failed" ? "Payment failed" : "Awaiting payment";
+    if (isDelivered(o)) return "Completed";
+    return o.vendor_status === "Ready" ? "Ready for pickup" : "Preparing";
+  }
+  function ostatPill(o) { var s = ostat(o); return pill(s, s === "Completed" || s === "Ready for pickup" ? "ok" : /failed/.test(s) ? "bad" : "wait"); }
+  function track(raw) {
+    if (raw === "rejected") return '<div class="trk"><span class="bad">Rejected</span> <span>&rsaquo; fix, then Resubmit</span></div>';
+    var s = ["draft", "submitted", "approved", "published"], L = ["Draft", "Submitted", "Approved", "Published"], i = s.indexOf(raw);
+    return '<div class="trk">' + L.map(function (l, k) { return '<span class="' + (k <= i ? "on" : "") + '">' + l + "</span>"; }).join(" &rsaquo; ") + "</div>";
+  }
+
+  /* ================= MEDIA SYSTEM (photos & videos) ================= */
+  var VENDOR = "", MEDIA = [], STG = [], ERR = [], MP = "", MG = "", MV = "", MQ = "", MF = "all", PVI = 0, LBL = [], LBI = 0, PF = { imgs: [], vids: [], busy: false };
+  var CDEF = { img: ["image/jpeg", "image/png", "image/webp"], vid: ["video/mp4", "video/webm", "video/quicktime"], imgMB: 5, vidMB: 50, maxImg: 10, maxVid: 3, quotaMB: 200 };
+  var ACC_I = ".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp", ACC_V = ".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime";
+  function mcfg() { var c = {}, o = {}; try { c = JSON.parse(localStorage.getItem("kMediaCfg") || "{}"); } catch (e) { } for (var k in CDEF) o[k] = c[k] != null ? c[k] : CDEF[k]; return o; }
+  var DB = null;
+  function idb() { return new Promise(function (res, rej) { if (DB) return res(DB); if (typeof indexedDB === "undefined") return rej(new Error("no storage")); var t = setTimeout(function () { rej(new Error("Media storage timed out")); }, 4000); var r = indexedDB.open("kisakali_media", 1); r.onupgradeneeded = function () { r.result.createObjectStore("media", { keyPath: "id" }); }; r.onsuccess = function () { clearTimeout(t); DB = r.result; res(DB); }; r.onerror = function () { clearTimeout(t); rej(r.error); }; r.onblocked = function () { clearTimeout(t); rej(new Error("Media storage is blocked")); }; }); }
+  function dbAll() { return idb().then(function (db) { return new Promise(function (res) { var q = db.transaction("media").objectStore("media").getAll(); q.onsuccess = function () { res(q.result || []); }; q.onerror = function () { res([]); }; }); }); }
+  function dbPut(m) { var c = Object.assign({}, m); delete c.url; return idb().then(function (db) { return new Promise(function (res, rej) { var t = db.transaction("media", "readwrite"); t.objectStore("media").put(c); t.oncomplete = res; t.onerror = function () { rej(t.error); }; }); }); }
+  function dbDel(id) { return idb().then(function (db) { return new Promise(function (res, rej) { var t = db.transaction("media", "readwrite"); t.objectStore("media").delete(id); t.oncomplete = res; t.onerror = function () { rej(t.error); }; }); }); }
+  function urls(m) { if (!m.url && m.blob) m.url = URL.createObjectURL(m.blob); return m; }
+  function loadMedia() { return dbAll().then(function (a) { MEDIA.forEach(function (m) { if (m.url) URL.revokeObjectURL(m.url); }); MEDIA = a.filter(function (m) { return m.vendor === VENDOR; }).map(urls); }).catch(function () { toast("Media storage is not available in this browser"); }); }
+  function mof(pid, type) { return MEDIA.filter(function (m) { return String(m.pid) === String(pid) && m.type === type; }).sort(function (a, b) { return (b.main ? 1 : 0) - (a.main ? 1 : 0) || a.order - b.order; }); }
+  function used() { return MEDIA.reduce(function (s, m) { return s + m.size; }, 0); }
+  function fsz(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB"; }
+  function pOpts(id, sel) { return '<select class="fi" id="' + id + '">' + PRODS.map(function (p) { return '<option value="' + p.id + '"' + (String(p.id) === String(sel) ? " selected" : "") + ">" + esc(p.title) + "</option>"; }).join("") + "</select>"; }
+  function thumb(m) { return m.type === "image" ? '<img src="' + m.url + '" class="mimg" alt="">' : (m.thumb ? '<img src="' + m.thumb + '" class="mimg" alt="">' : '<div class="mimg mph"><i class="fas fa-video"></i></div>'); }
+  function mbadge(m) { return m.status === "suspended" ? pill("Suspended by KISAKALI", "bad") : m.status === "reported" ? pill("Under review", "wait") : pill("Active", "ok"); }
+  function mb2(a, i, t, c) { return '<button type="button" class="vb ' + (c || "") + '" data-m="' + a + '" data-i="' + i + '">' + t + "</button>"; }
+  function live(m) { return m.status === "active"; }
+  function check(f, kind) {
+    var c = mcfg(), okT = kind === "image" ? c.img : c.vid, lim = kind === "image" ? c.imgMB : c.vidMB;
+    if (okT.indexOf(f.type) < 0) return f.name + ": file type not allowed (" + (f.type || "unknown") + "). Allowed: " + okT.map(function (x) { return x.split("/")[1].toUpperCase(); }).join(", ") + ".";
+    if (f.size > lim * 1048576) return f.name + ": too large (" + fsz(f.size) + "). The limit is " + lim + " MB.";
+    return "";
+  }
+  function stage(files, kind) {
+    var c = mcfg(); ERR = [];
+    [].slice.call(files).forEach(function (f) {
+      var e = check(f, kind); if (e) { ERR.push(e); return; }
+      var max = kind === "image" ? c.maxImg : c.maxVid, have = mof(MP, kind).length + STG.filter(function (s) { return s.kind === kind && s.pid === MP; }).length;
+      if (have >= max) { ERR.push(f.name + ": this product already has the maximum of " + max + " " + kind + "s."); return; }
+      if (used() + STG.reduce(function (s, x) { return s + x.file.size; }, 0) + f.size > c.quotaMB * 1048576) { ERR.push(f.name + ": your media storage (" + c.quotaMB + " MB) would be full."); return; }
+      STG.push({ file: f, kind: kind, pid: MP, url: URL.createObjectURL(f) });
+    });
+    show(cur);
+  }
+  function optimize(file) {
+    return new Promise(function (res) {
+      var img = new Image(), u = URL.createObjectURL(file);
+      img.onload = function () {
+        var w = img.width, h = img.height, s = Math.min(1, 1600 / Math.max(w, h));
+        if (s === 1 && file.size < 1500000) { URL.revokeObjectURL(u); return res({ blob: file, w: w, h: h }); }
+        var c = document.createElement("canvas"); c.width = Math.round(w * s); c.height = Math.round(h * s); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        var mt = file.type === "image/png" ? "image/png" : file.type === "image/webp" ? "image/webp" : "image/jpeg";
+        c.toBlob(function (b) { URL.revokeObjectURL(u); res({ blob: (b && b.size < file.size) ? b : file, w: c.width, h: c.height }); }, mt, 0.88);
+      };
+      img.onerror = function () { URL.revokeObjectURL(u); res(null); };
+      img.src = u;
+    });
+  }
+  function readVideo(file, prog) {
+    return new Promise(function (res, rej) { var r = new FileReader(); r.onprogress = function (e) { if (e.lengthComputable) prog(0.9 * e.loaded / e.total); }; r.onload = function () { res(new Blob([r.result], { type: file.type })); }; r.onerror = function () { rej(new Error("Could not read the video")); }; r.readAsArrayBuffer(file); });
+  }
+  function vthumb(blob) {
+    return new Promise(function (res) {
+      var v = document.createElement("video"), u = URL.createObjectURL(blob), done = false;
+      function fin(d) { if (done) return; done = true; URL.revokeObjectURL(u); res(d || ""); }
+      v.muted = true; v.preload = "metadata"; v.playsInline = true;
+      v.onloadeddata = function () { try { v.currentTime = Math.min(1, (v.duration || 1) / 2); } catch (e) { fin(); } };
+      v.onseeked = function () { try { var c = document.createElement("canvas"); c.width = 320; c.height = Math.round(320 * (v.videoHeight || 180) / (v.videoWidth || 320)); c.getContext("2d").drawImage(v, 0, 0, c.width, c.height); fin(c.toDataURL("image/jpeg", 0.7)); } catch (e) { fin(); } };
+      v.onerror = function () { fin(); }; setTimeout(fin, 4000); v.src = u;
+    });
+  }
+  async function build(file, kind, pid, prog) {
+    var rec = { id: "m" + Date.now() + Math.random().toString(36).slice(2, 7), vendor: VENDOR, pid: String(pid), type: kind, name: file.name, mime: file.type, date: new Date().toISOString(), status: "active", main: false, order: Date.now() };
+    if (kind === "image") { prog(0.3); var o = await optimize(file); if (!o) throw new Error("this image could not be read"); rec.blob = o.blob; rec.size = o.blob.size; rec.w = o.w; rec.h = o.h; }
+    else { var bl = await readVideo(file, prog); rec.blob = bl; rec.size = bl.size; rec.thumb = await vthumb(bl); }
+    prog(1);
+    if (kind === "image" && !mof(pid, "image").length) rec.main = true;
+    return rec;
+  }
+  /* Online copy of the MAIN photo: this is what customers see in the shop. Other photos and videos stay on this device. */
+  async function syncMain(pid) {
+    try {
+      var main = mof(pid, "image").filter(function (x) { return x.main && x.status !== "suspended"; })[0], url = null;
+      if (main && main.blob) {
+        var ext = main.blob.type === "image/png" ? "png" : main.blob.type === "image/webp" ? "webp" : "jpg";
+        var path = VENDOR + "/" + pid + "-" + Date.now() + "." + ext;
+        var up = await sb.storage.from("product-images").upload(path, main.blob, { contentType: main.blob.type || "image/jpeg", upsert: false });
+        if (up.error) throw new Error(up.error.message);
+        url = sb.storage.from("product-images").getPublicUrl(path).data.publicUrl;
+      }
+      await rpc("vendor_set_product_image", { p_id: Number(pid), p_url: url });
+      return true;
+    } catch (e) { console.error(e); toast("Photo saved on this device, but the online copy failed: " + (e.message || "unknown error")); return false; }
+  }
+  async function publishMedia() {
+    if (!STG.length) { toast("Choose files first"); return; }
+    busy = true; var items = STG.slice(), bar = $("pg"), lab = $("pgt"); ERR = [];
+    for (var i = 0; i < items.length; i++) {
+      var s = items[i];
+      try {
+        var rec = await build(s.file, s.kind, s.pid, function (p) { bar.style.width = Math.round((i + p) / items.length * 100) + "%"; lab.textContent = "Uploading " + (i + 1) + " of " + items.length + ": " + s.file.name + " (" + Math.round(p * 100) + "%)"; });
+        await dbPut(rec); MEDIA.push(urls(rec));
+      } catch (err) { ERR.push(s.file.name + ": upload failed (" + (err && err.message || "unknown error") + ")."); }
+      URL.revokeObjectURL(s.url);
+    }
+    var pids = []; items.forEach(function (s) { if (s.kind === "image" && pids.indexOf(s.pid) < 0) pids.push(s.pid); });
+    if (pids.length) lab.textContent = "Saving the shop photo online...";
+    for (var pi = 0; pi < pids.length; pi++) await syncMain(pids[pi]);
+    STG = []; busy = false; toast(items.length + " file(s) processed for " + pname(items[0].pid));
+    await refresh(true);
+  }
+  async function replaceMedia(id, file) {
+    var m = MEDIA.find(function (x) { return x.id === id && x.vendor === VENDOR; }); if (!m || !file) return;
+    if (m.status === "suspended") { toast("Suspended by KISAKALI. You can only delete it."); return; }
+    var e = check(file, m.type); if (e) { toast(e); return; }
+    try { var rec = await build(file, m.type, m.pid, function () { }); rec.id = m.id; rec.main = m.main; rec.order = m.order; if (m.url) URL.revokeObjectURL(m.url); await dbPut(rec); MEDIA[MEDIA.indexOf(m)] = urls(rec); if (rec.main) await syncMain(rec.pid); toast("Replaced " + m.name); } catch (er) { toast("Replace failed: " + er.message); }
+    show(cur);
+  }
+  async function mact(a, i) {
+    var m = MEDIA.find(function (x) { return x.id === i && x.vendor === VENDOR; }), p;
+    if (a === "pub") return publishMedia();
+    if (a === "unstage") { URL.revokeObjectURL(STG[+i].url); STG.splice(+i, 1); ERR = []; return show(cur); }
+    if (a === "clr") { STG.forEach(function (s) { URL.revokeObjectURL(s.url); }); STG = []; ERR = []; return show(cur); }
+    if (a === "filt") { MF = i; return show(cur); }
+    if (a === "pv") { PVI = +i; return show(cur); }
+    if (a === "lb") { LBL = mof(MV, "image").filter(live).map(function (x) { return x.url; }); LBI = +i; $("lbi").src = LBL[LBI]; $("lb").style.display = "flex"; return; }
+    if (a === "move") { p = i.split(":"); m = MEDIA.find(function (x) { return x.id === p[0]; }); }
+    if (!m) return;
+    if (m.status === "suspended" && a !== "del") { toast("Suspended by KISAKALI. You can only delete it."); return; }
+    if (a === "main") { var ims = mof(m.pid, "image"); for (var k = 0; k < ims.length; k++) { var was = ims[k].main; ims[k].main = ims[k].id === m.id; if (was !== ims[k].main) await dbPut(ims[k]); } await syncMain(m.pid); toast("Main photo set for " + pname(m.pid)); }
+    else if (a === "move") { var l = mof(m.pid, "image").filter(function (x) { return !x.main; }), ix = l.indexOf(m), nb = l[ix + (p[1] === "L" ? -1 : 1)]; if (!nb) return toast("Cannot move further"); var t = m.order; m.order = nb.order; nb.order = t; await dbPut(m); await dbPut(nb); }
+    else if (a === "del") { if (!confirm("Delete " + m.name + "? This cannot be undone.")) return; await dbDel(m.id); if (m.url) URL.revokeObjectURL(m.url); MEDIA.splice(MEDIA.indexOf(m), 1); if (m.main) { var nx = mof(m.pid, "image")[0]; if (nx) { nx.main = true; await dbPut(nx); } await syncMain(m.pid); } toast("Deleted " + m.name); }
+    else if (a === "reuse") {
+      var to = $("ru-" + i).value, c = mcfg(); if (String(to) === String(m.pid)) return toast("Pick a different product");
+      if (mof(to, m.type).length >= (m.type === "image" ? c.maxImg : c.maxVid)) return toast("That product already has the maximum number of " + m.type + "s");
+      if (used() + m.size > c.quotaMB * 1048576) return toast("Your media storage would be full");
+      var cp = Object.assign({}, m, { id: "m" + Date.now() + Math.random().toString(36).slice(2, 6), pid: String(to), main: m.type === "image" && !mof(to, "image").length, order: Date.now(), url: null, date: new Date().toISOString() }); await dbPut(cp); MEDIA.push(urls(cp)); if (cp.main) await syncMain(to); toast("Reused " + m.name + " for " + pname(to));
+    }
+    show(cur);
+  }
+
+  /* ---------- media screens ---------- */
+  function mediaUpload() {
+    var c = mcfg(), h = '<div class="fgrid"><div>Product' + pOpts("mu-p", MP) + "</div></div>" +
+      '<label class="vb"><i class="fas fa-images"></i> Photos (gallery)<input type="file" id="f-img" multiple accept="' + ACC_I + '" style="display:none"></label>' +
+      '<label class="vb grey"><i class="fas fa-camera"></i> Take photo<input type="file" id="f-cam" accept="image/*" capture="environment" style="display:none"></label>' +
+      '<label class="vb"><i class="fas fa-video"></i> Videos (gallery)<input type="file" id="f-vid" multiple accept="' + ACC_V + '" style="display:none"></label>' +
+      '<label class="vb grey"><i class="fas fa-video"></i> Record video<input type="file" id="f-vcam" accept="video/*" capture="environment" style="display:none"></label>' +
+      '<p class="note-small">Photos: JPG, PNG, WEBP up to ' + c.imgMB + " MB (max " + c.maxImg + " per product). Videos: MP4, WebM, MOV up to " + c.vidMB + " MB (max " + c.maxVid + " per product). Photos are resized to 1600 px to load faster. Pick several files at once.</p>";
+    h += ERR.map(function (e) { return '<div class="err"><i class="fas fa-exclamation-circle"></i> ' + esc(e) + "</div>"; }).join("");
+    if (STG.length) {
+      h += '<h4 style="margin:14px 0 8px">Preview before publishing (' + STG.length + ')</h4><div class="mgrid">' + STG.map(function (s, i) { return '<div class="mtile">' + (s.kind === "image" ? '<img class="mimg" src="' + s.url + '" alt="">' : '<video class="mvid" src="' + s.url + '" controls preload="metadata"></video>') + "<div>" + esc(s.file.name) + '</div><div style="color:#b3b1ae">' + fsz(s.file.size) + " &middot; " + esc(pname(s.pid)) + "</div>" + mb2("unstage", i, "Remove", "grey") + "</div>"; }).join("") + "</div>" +
+        '<div class="pgbar"><div id="pg"></div></div><p class="note-small" id="pgt">Ready to upload.</p>' + mb2("pub", 0, "Publish " + STG.length + " file(s)") + mb2("clr", 0, "Clear", "grey");
+    }
+    return h;
+  }
+  function mediaGallery() {
+    var im = mof(MG, "image"), vd = mof(MG, "video"), nm = im.filter(function (x) { return !x.main; });
+    function tile(m) {
+      var ix = nm.indexOf(m);
+      return '<div class="mtile">' + thumb(m) + (m.main ? '<span class="mbadge">MAIN</span>' : "") + '<div style="margin:6px 0">' + mbadge(m) + "</div><div>" + esc(m.name) + '</div><div style="color:#b3b1ae">' + fsz(m.size) + (m.w ? " &middot; " + m.w + "x" + m.h : "") + "</div>" +
+        (!m.main ? mb2("main", m.id, "Make main") + (ix > 0 ? mb2("move", m.id + ":L", "&larr;", "grey") : "") + (ix < nm.length - 1 ? mb2("move", m.id + ":R", "&rarr;", "grey") : "") : "") +
+        '<label class="vb grey">Replace<input type="file" data-rep="' + m.id + '" accept="' + ACC_I + '" style="display:none"></label>' + mb2("del", m.id, "Delete", "grey") + "</div>";
+    }
+    var h = '<div class="fgrid"><div>Product' + pOpts("mg-p", MG) + "</div></div>";
+    if (!im.length && !vd.length) return h + '<p class="note-small">No media for this product yet. Use "Upload photos and videos" above.</p>';
+    if (im.length) h += '<h4 style="margin:10px 0">Photos (' + im.length + ')</h4><div class="mgrid">' + im.map(tile).join("") + "</div>";
+    if (vd.length) h += '<h4 style="margin:14px 0 10px">Demonstration videos (' + vd.length + ')</h4><div class="mgrid">' + vd.map(function (m) { return '<div class="mtile"><video class="mvid" src="' + m.url + '"' + (m.thumb ? ' poster="' + m.thumb + '"' : "") + ' controls preload="metadata"></video>' + mbadge(m) + "<div>" + esc(m.name) + '</div><div style="color:#b3b1ae">' + fsz(m.size) + '</div><label class="vb grey">Replace<input type="file" data-rep="' + m.id + '" accept="' + ACC_V + '" style="display:none"></label>' + mb2("del", m.id, "Delete", "grey") + "</div>"; }).join("") + "</div>";
+    return h;
+  }
+  function libRows() {
+    var q = MQ.toLowerCase(), list = MEDIA.filter(function (m) { return (MF === "all" || m.type === MF) && (!q || pname(m.pid).toLowerCase().indexOf(q) > -1 || m.name.toLowerCase().indexOf(q) > -1); }).sort(function (a, b) { return b.date < a.date ? -1 : 1; });
+    if (!list.length) return '<p class="note-small">No media found.</p>';
+    return tbl(["Preview", "Product", "Type", "Size", "Uploaded", "Status", "Actions"], list.map(function (m) { return ['<div style="width:70px">' + thumb(m) + "</div>", esc(pname(m.pid)), m.type, fsz(m.size), m.date.slice(0, 10), mbadge(m), mb2("del", m.id, "Delete", "grey") + '<select class="fi" id="ru-' + m.id + '" style="width:130px">' + PRODS.map(function (p) { return '<option value="' + p.id + '">' + esc(p.title) + "</option>"; }).join("") + "</select>" + mb2("reuse", m.id, "Reuse")]; }));
+  }
+  function mediaLibrary() {
+    var c = mcfg(), u = used(), pct = Math.min(100, Math.round(u / (c.quotaMB * 1048576) * 100));
+    return '<p style="font-size:14px">Storage used: <b style="color:#FE980F">' + fsz(u) + "</b> of " + c.quotaMB + " MB (" + MEDIA.filter(function (m) { return m.type === "image"; }).length + " photos, " + MEDIA.filter(function (m) { return m.type === "video"; }).length + ' videos)</p><div class="pgbar"><div style="width:' + pct + '%"></div></div>' +
+      '<input class="fi" id="ml-q" placeholder="Search by product or file name" value="' + esc(MQ) + '">' + [["all", "All"], ["image", "Images"], ["video", "Videos"]].map(function (f) { return mb2("filt", f[0], f[1], MF === f[0] ? "" : "grey"); }).join("") + '<div id="mlBody">' + libRows() + '</div><p class="note-small">Delete unused media to free space, or reuse a file for another product.</p>';
+  }
+  function mediaPreview() {
+    var im = mof(MV, "image").filter(live), vd = mof(MV, "video").filter(live), p = prodById(MV);
+    var h = '<div class="fgrid"><div>Product' + pOpts("mv-p", MV) + "</div></div>";
+    if (!im.length && !vd.length) return h + '<p class="note-small">Nothing to show yet. Customers will see a product page like this once you publish photos or videos.</p>';
+    if (PVI >= im.length) PVI = 0;
+    h += "<div><h4>" + esc(pname(MV)) + ' &middot; <span style="color:#FE980F">' + money(p ? p.price : 0) + "</span></h4>" + (im.length ? '<img class="pvmain" src="' + im[PVI].url + '" data-m="lb" data-i="' + PVI + '" alt=""><div class="pvth">' + im.map(function (m, i) { return '<img class="' + (i === PVI ? "on" : "") + '" src="' + m.url + '" data-m="pv" data-i="' + i + '" alt="">'; }).join("") + "</div>" : "") + vd.map(function (m) { return '<video class="mvid" src="' + m.url + '"' + (m.thumb ? ' poster="' + m.thumb + '"' : "") + ' controls preload="metadata" style="margin-top:8px"></video>'; }).join("") + '</div><p class="note-small">Tap the big photo to open the full-screen gallery. Suspended media is hidden from customers.</p>';
+    return h;
+  }
+  function mediaRules() {
+    var c = mcfg(); return '<ul style="padding-left:18px;line-height:1.8;font-size:14px"><li>Allowed photos: ' + c.img.map(function (x) { return x.split("/")[1].toUpperCase(); }).join(", ") + " up to " + c.imgMB + " MB, max " + c.maxImg + " per product</li><li>Allowed videos: " + c.vid.map(function (x) { return x.split("/")[1].toUpperCase(); }).join(", ") + " up to " + c.vidMB + " MB, max " + c.maxVid + " per product</li><li>Total media storage: " + c.quotaMB + " MB</li><li>You can manage only your own media. KISAKALI can review, suspend or remove media that breaks marketplace policy.</li></ul>";
+  }
+
+  /* ---------- new-product form (photos + videos) ---------- */
+  function pfDraw(err) {
+    var el = $("pfPrev"); if (!el) return;
+    var h = err ? '<div class="err"><i class="fas fa-exclamation-circle"></i> ' + esc(err) + "</div>" : "";
+    if (PF.imgs.length) h += '<div class="mgrid" style="margin-bottom:10px">' + PF.imgs.map(function (s, i) { return '<div class="mtile"><img class="mimg" src="' + s.url + '" alt="">' + (i === 0 ? '<span class="mbadge">MAIN</span>' : "") + "<div>" + esc(s.file.name) + '</div><div style="color:#b3b1ae">' + fsz(s.file.size) + '</div><button type="button" class="vb grey" data-pf="img:' + i + '">Remove</button></div>'; }).join("") + "</div>";
+    if (PF.vids.length) h += '<div class="mgrid" style="margin-bottom:10px">' + PF.vids.map(function (s, i) { return '<div class="mtile"><video class="mvid" src="' + s.url + '" controls preload="metadata"></video><div>' + esc(s.file.name) + '</div><div style="color:#b3b1ae">' + fsz(s.file.size) + '</div><button type="button" class="vb grey" data-pf="vid:' + i + '">Remove</button></div>'; }).join("") + "</div>";
+    el.innerHTML = h;
+  }
+  function pfClear() { PF.imgs.concat(PF.vids).forEach(function (s) { URL.revokeObjectURL(s.url); }); PF.imgs = []; PF.vids = []; pfDraw(""); }
+  function pfAdd(files, kind) {
+    var c = mcfg(), list = kind === "image" ? PF.imgs : PF.vids, max = kind === "image" ? c.maxImg : c.maxVid, errs = [];
+    [].slice.call(files).forEach(function (f) {
+      var e = check(f, kind); if (e) { errs.push(e); return; }
+      if (list.length >= max) { errs.push(f.name + ": maximum of " + max + " " + kind + "s reached."); return; }
+      list.push({ file: f, url: URL.createObjectURL(f) });
+    });
+    pfDraw(errs.join(" "));
+  }
+  function pfBusy(on, text) { PF.busy = on; ["pf-draft", "pf-submit"].forEach(function (i) { if ($(i)) $(i).disabled = on; }); if (text && $("pfStatus")) $("pfStatus").textContent = text; }
+  var PF_NOTE = "Photo preview appears above before you save. A photo is required to send for approval. The first photo is the MAIN photo shown to customers.";
+  async function pfSave(submit) {
+    if (PF.busy || busy) return;
+    var title = $("pf-t").value.trim(), price = $("pf-p").value;
+    if (!title || price === "" || Number(price) < 0) { toast("Enter the product title and a valid price"); return; }
+    if (submit && !PF.imgs.length) { toast("Add at least one product photo before sending for approval"); return; }
+    pfBusy(true, "Saving product...");
+    try {
+      var res = await rpc("vendor_save_product", { p: { title: title, price: Number(price), stock: Number($("pf-s").value || 0), category: $("pf-c").value, description: $("pf-d").value } });
+      await loadAll();
+      var pid = (res && typeof res === "object" && res.id != null) ? res.id : (res != null && typeof res !== "object" ? res : null), prod = null;
+      if (pid != null) prod = prodById(pid);
+      if (!prod) prod = PRODS.filter(function (x) { return x.title === title; }).sort(function (a, b) { return Number(b.id) - Number(a.id); })[0];
+      if (!prod) throw new Error("The product was saved but could not be found again. Open the Products tab.");
+      var key = String(prod.id), all = PF.imgs.map(function (s) { return { f: s.file, k: "image" }; }).concat(PF.vids.map(function (s) { return { f: s.file, k: "video" }; })), fails = [];
+      for (var i = 0; i < all.length; i++) {
+        pfBusy(true, "Uploading " + (i + 1) + " of " + all.length + ": " + all[i].f.name);
+        try { var rec = await build(all[i].f, all[i].k, key, function () { }); await dbPut(rec); MEDIA.push(urls(rec)); }
+        catch (er) { fails.push(all[i].f.name + " (" + (er.message || "failed") + ")"); }
+      }
+      var synced = true;
+      if (PF.imgs.length) { pfBusy(true, "Saving the main photo online..."); synced = await syncMain(key); }
+      var m;
+      if (submit) {
+        if (PF.imgs.length && !synced) m = "Saved as Draft. The photo did not upload online, so it was NOT sent. Check the product-images bucket and press Send for review again.";
+        else { pfBusy(true, "Sending for approval..."); await rpc("vendor_submit_product", { p_id: prod.id }); m = "Sent to KISAKALI for approval."; }
+      } else m = "Saved as Draft. Send it for review when ready.";
+      if (fails.length) m += " Some files failed: " + fails.join(", ");
+      pfClear(); $("pf-form").reset(); toast(m);
+      await loadAll();
+    } catch (err) { toast(err.message || "Could not save the product"); }
+    pfBusy(false, PF_NOTE);
+    show(cur);
+  }
+
+  /* ---------- views ---------- */
+  function orderCard(o, i) {
+    var items = (o.items || []).map(function (it) {
+      var ct = customText(it.custom);
+      return '<div class="line"><b style="color:#fff">' + esc(it.name) + " x" + it.qty + "</b> &middot; " + money(it.unit_price * it.qty) + (ct ? "<br><small>" + esc(ct) + "</small>" : "") + "</div>";
+    }).join("");
+    var paid = o.payment_status === "Verified", ready = o.vendor_status === "Ready";
+    return '<div class="box"><b>' + esc(o.order_number) + "</b> " + pill(ready ? "Ready" : o.vendor_status, ready ? "ok" : "wait") + " " + pill("Payment: " + o.payment_status, paid ? "ok" : o.payment_status === "Pending" ? "wait" : "bad") +
+      '<p class="line"><i class="fas fa-user"></i> ' + esc(o.recipient) + "</p>" +
+      ((o.delivery_date || o.delivery_time) ? '<p class="line"><i class="fas fa-clock"></i> ' + (o.delivery_date ? fmtDate(o.delivery_date) : "") + " " + esc(o.delivery_time || "") + "</p>" : "") +
+      items + (o.note ? '<p class="line"><i class="fas fa-envelope-open-text"></i> Card message: ' + esc(o.note) + "</p>" : "") +
+      '<p class="line">Your part: <b style="color:#FE980F">' + money(o.subtotal) + "</b> (commission " + esc(o.commission_percent) + "%)</p>" +
+      (!ready && paid ? '<button class="vb" data-act="ready" data-i="' + i + '">Mark ready for pickup</button>' :
+        !paid && o.payment_status === "Pending" ? '<p class="note-small" style="margin:0">Waiting for the admin to verify payment. Do not start yet.</p>' : "") +
+      riderBlock(o, i) + '<button class="vb grey" data-act="invoice" data-i="' + i + '">Print invoice</button></div>';
+  }
+  function prodForm(p) {
+    var cats = CATS.map(function (c) { return '<option value="' + esc(c.slug) + '"' + (p.category && p.category.slug === c.slug ? " selected" : "") + ">" + esc(c.name) + "</option>"; }).join("");
+    return '<div class="box" style="border-color:#FE980F"><h3 class="sub-title"><i class="fas fa-pen"></i> Edit product</h3>' +
+      '<div class="fgrid"><div>Product name<input class="fi" id="pr-title" maxlength="150" value="' + esc(p.title) + '"></div>' +
+      '<div>Price (TSh)<input class="fi" id="pr-price" type="number" min="0" inputmode="numeric" value="' + esc(p.price) + '"></div>' +
+      '<div>Category<select class="fi" id="pr-cat">' + cats + "</select></div></div>" +
+      'Description<textarea class="ta" id="pr-desc" rows="3" maxlength="1000">' + esc(p.description) + "</textarea>" +
+      '<button class="vb" data-act="saveProd">Save changes</button>' + (p.status === "rejected" ? '<button class="vb" data-act="saveResub">Save &amp; resubmit for approval</button>' : "") + '<button class="vb grey" data-act="cancelProd">Cancel</button>' +
+      '<p class="note-small">To change photos use the Media tab. Stock is changed under the Stock tab.</p></div>';
+  }
+  function addForm() {
+    var cats = CATS.map(function (c) { return '<option value="' + esc(c.slug) + '">' + esc(c.name) + "</option>"; }).join("");
+    return '<div class="box"><h3 class="sub-title"><i class="fas fa-plus-circle"></i> Add new marketplace listing</h3><form id="pf-form" onsubmit="return false">' +
+      '<div class="fgrid"><div>Product title<input class="fi" id="pf-t" maxlength="150" placeholder="e.g. Red Velvet Anniversary Cake"></div><div>Base price (TSh)<input class="fi" id="pf-p" type="number" min="0" inputmode="numeric" placeholder="45000"></div>' +
+      '<div>Opening stock<input class="fi" id="pf-s" type="number" min="0" inputmode="numeric" value="0"></div><div>Category<select class="fi" id="pf-c">' + cats + "</select></div></div>" +
+      'Description<textarea class="ta" id="pf-d" rows="2" maxlength="1000"></textarea>' +
+      '<p class="line" style="margin-top:12px">Product photos (JPG, PNG, WEBP, several allowed; the first is the MAIN photo)</p>' +
+      '<label class="vb"><i class="fas fa-images"></i> Choose photos<input type="file" id="pf-img" multiple accept="' + ACC_I + '" style="display:none"></label>' +
+      '<label class="vb grey"><i class="fas fa-camera"></i> Take photo<input type="file" id="pf-cam" accept="image/*" capture="environment" style="display:none"></label>' +
+      '<p class="line">Product video (demonstration; MP4, WebM, MOV)</p>' +
+      '<label class="vb"><i class="fas fa-video"></i> Choose video<input type="file" id="pf-vid" multiple accept="' + ACC_V + '" style="display:none"></label>' +
+      '<label class="vb grey"><i class="fas fa-video"></i> Record video<input type="file" id="pf-vcam" accept="video/*" capture="environment" style="display:none"></label>' +
+      '<div id="pfPrev"></div><p class="note-small" id="pfStatus">' + PF_NOTE + '</p>' +
+      '<button type="button" class="vb grey" id="pf-draft" data-act="pfdraft">Save as draft</button><button type="button" class="vb" id="pf-submit" data-act="pfsubmit"><i class="fas fa-paper-plane"></i> Add product &amp; send for approval</button>' +
+      '<p class="note-small">Extra photos and videos are saved on this device. The main photo is saved online for customers.</p></form></div>';
+  }
+  function prodCard(p, i) {
+    var st = STATUS[p.status] || [p.status, ""], btns = "", rs = why(p);
+    if (p.status === "draft" || p.status === "rejected") btns += '<button class="vb" data-act="submit" data-id="' + p.id + '">' + (p.status === "rejected" ? "Resubmit for approval" : "Send for review") + "</button>";
+    if (p.status === "approved") btns += '<button class="vb" data-act="publish" data-id="' + p.id + '">Publish</button>';
+    btns += '<button class="vb grey" data-act="editProd" data-id="' + p.id + '">Edit</button><button class="vb grey" data-act="stock" data-id="' + p.id + '">Change stock</button>' +
+      '<label class="vb grey" style="display:inline-block">Photo<input type="file" accept="image/jpeg,image/png,image/webp" data-photo="' + p.id + '" style="display:none"></label>' +
+      '<button class="vb grey" data-act="archive" data-id="' + p.id + '">Archive</button><button class="vb grey" data-act="delProd" data-id="' + p.id + '">Delete</button>';
+    return '<div class="box"><div class="prow">' + (p.image ? '<img src="' + esc(p.image) + '" alt="">' : '<div class="noimg"><i class="fas fa-image"></i></div>') +
+      '<div class="info"><b>' + esc(p.title) + "</b> " + pill(st[0], st[1]) + (p.stock < 5 ? " " + pill("Low stock", "wait") : "") + '<p class="line">' + money(p.price) + " &middot; stock " + p.stock + (p.category ? " &middot; " + esc(p.category.name) : "") + "</p>" + track(p.status) + (p.status === "rejected" && rs ? '<div class="err">Reason: ' + esc(rs) + "</div>" : "") + "</div></div>" + btns + "</div>";
+  }
+  function bars(vals, labs) { return '<div class="bars">' + vals.map(function (v) { return '<div class="bar-col"><div class="bar" style="height:' + v + '%"></div></div>'; }).join("") + '</div><div class="bar-labels">' + labs.map(function (l) { return "<span>" + l + "</span>"; }).join("") + "</div>"; }
+  function hb(l, r, w) { return '<div class="hbar-row"><div class="top"><span>' + l + "</span><span>" + r + '</span></div><div class="hbar-track"><div class="hbar-fill" style="width:' + w + '%"></div></div></div>'; }
+  function notifications() {
+    var n = [];
+    ORDERS.slice(0, 5).forEach(function (o) { n.push(["Order", esc(o.order_number) + " - " + ostat(o)]); });
+    PRODS.forEach(function (p) {
+      if (p.status === "published" && p.stock < 5) n.push(["Low stock", esc(p.title) + ": " + p.stock + " left"]);
+      if (p.status === "approved") n.push(["Product approved", esc(p.title) + " is ready to publish"]);
+      if (p.status === "rejected") n.push(["Product rejected", esc(p.title) + " was not approved"]);
+    });
+    return n.length ? n.map(function (x) { return '<div class="alert-item info"><span><b>' + x[0] + ":</b> " + x[1] + "</span></div>"; }).join("") : '<p class="note-small">No notifications.</p>';
+  }
+  function pipeline() {
+    var list = ORDERS.map(function (o, i) { return { o: o, i: i }; }).filter(function (x) { return x.o.vendor_status === "Preparing" && x.o.payment_status !== "Failed" && x.o.payment_status !== "Refunded"; });
+    if (!list.length) return '<p class="note-small">No orders waiting for preparation.</p>';
+    return list.map(function (x) {
+      var o = x.o, its = (o.items || []).map(function (it) { return esc(it.name) + " x" + it.qty; }).join("<br>");
+      return '<div style="background:#262423;padding:15px;border-radius:4px;margin-bottom:15px;border-left:3px solid #FE980F"><div style="display:flex;justify-content:space-between;font-weight:bold"><span>Order ' + esc(o.order_number) + '</span><span style="color:#FE980F">' + ostat(o) + '</span></div><p style="font-size:13px;color:#b3b1ae;margin:8px 0">' + its + "</p>" +
+        (o.payment_status === "Verified" ? '<button class="vb" data-act="ready" data-i="' + x.i + '">Mark ready for rider pickup</button>' : "<small>Waiting for KISAKALI to verify payment.</small>") + "</div>";
+    }).join("");
+  }
+  /* ================= NEW: database-backed modules (need kx-vendor-modules.sql, run once) ================= */
+  var KINDS = ["gift", "surprise", "inquiry", "review", "coupon", "staff", "promo", "ticket", "plan", "log"];
+  var ROLES = ["Shop Manager", "Product Manager", "Inventory Officer", "Order Processing Officer", "Customer Service Agent", "Finance Viewer", "Marketing Officer"];
+  var CFG = {
+    gift: { t: "Gift package", f: [["name", "Package name", "text"], ["price", "Price (TSh)", "number"], ["occasion", "Occasion", "text"], ["items", "What is inside", "area"]], cols: ["name", "price", "occasion", "items"], st: ["Active", "Inactive"], req: ["name", "price"] },
+    surprise: { t: "Surprise booking", f: [["customer", "Customer name", "text"], ["phone", "Customer phone", "text"], ["occasion", "Occasion", "text"], ["date", "Delivery date", "date"], ["time", "Time", "text"], ["address", "Delivery address", "text"], ["details", "Details and budget", "area"]], cols: ["customer", "occasion", "date", "time", "address"], st: ["New", "Accepted", "In preparation", "Delivered", "Cancelled"], req: ["customer", "date"] },
+    inquiry: { t: "Customer inquiry", f: [["customer", "Customer name", "text"], ["phone", "Phone", "text"], ["message", "Message", "area"], ["reply", "Your reply", "area"]], cols: ["customer", "message", "reply"], st: ["Open", "Answered", "Closed"], req: ["customer", "message"] },
+    coupon: { t: "Coupon", f: [["code", "Coupon code", "text"], ["type", "Type", "sel:percent,fixed"], ["value", "Value (% or TSh)", "number"], ["min", "Minimum order (TSh)", "number"], ["expires", "Expires on", "date"], ["max", "Max uses", "number"]], cols: ["code", "type", "value", "min", "expires"], st: ["Active", "Inactive"], req: ["code", "value"] },
+    staff: { t: "Employee", f: [["name", "Full name", "text"], ["phone", "Phone", "text"], ["email", "Email", "text"], ["role", "Role", "sel:" + ROLES.join(",")]], cols: ["name", "role", "phone", "email"], st: ["Active", "Inactive"], req: ["name", "role"] },
+    promo: { t: "Promotion", f: [["kind", "Type", "sel:Product discount,Featured product,Promotional campaign,Seasonal offer,Shop announcement"], ["title", "Title", "text"], ["details", "Details", "area"], ["start", "Starts", "date"], ["end", "Ends", "date"]], cols: ["kind", "title", "start", "end"], st: ["Draft", "Submitted"], req: ["title"] },
+    ticket: { t: "Support ticket", f: [["subject", "Subject", "text"], ["message", "Message", "area"]], cols: ["subject", "message", "admin_reply"], st: null, req: ["subject", "message"], ro: true }
+  };
+  var PLANS = [["Basic Vendor", "Independent shop;Limited listings;Standard orders;Basic reports"], ["Professional Vendor", "Higher limits;Advanced analytics;Marketing tools;Multiple staff"], ["Enterprise Vendor", "High volume;Advanced reports;Corporate integrations;Priority support"]];
+  var GOV = [["Manage own shop", "Full", "Oversight"], ["Manage own products", "Full", "Moderation"], ["Set own prices", "Full", "Policy restrictions"], ["View own orders", "Full", "Marketplace oversight"], ["View another vendor's orders", "No", "Authorized access"], ["Configure commissions", "No", "Full"], ["Withdraw earnings", "Request only", "Authorize and process"], ["Suspend vendor account", "No", "Full"], ["Manage categories and platform settings", "No", "Full"]];
+  function noop() { }
+  function loadKx() {
+    if (!sb) return Promise.resolve();
+    var jobs = KINDS.map(function (k) { return rpc("kx_rec_list", { p_kind: k }).then(function (d) { REC[k] = d || []; return true; }).catch(function () { REC[k] = []; return false; }); });
+    jobs.push(rpc("kx_ext_get").then(function (d) { EXT = d || {}; return true; }).catch(function () { return false; }));
+    var pj = rpc("vendor_get_payment_settings").then(function (d) { PAYSET = d || { mode: "platform", channels: [] }; PAYOK = true; }).catch(function () { PAYOK = false; });
+    return Promise.all(jobs.concat([pj])).then(function (r) { KXOK = r[jobs.length - 1]; });
+  }
+  function klog(a) { if (KXOK) rpc("kx_log", { p_module: cur, p_action: String(a) }).catch(noop); }
+  function kxWarn() { return KXOK ? "" : '<div class="warn">This section is not connected to the database yet. Run <b>kx-vendor-modules.sql</b> once in the Supabase SQL Editor, then refresh this page.</div>'; }
+  function kbox(t, i, body) { return '<div class="box"><h3 class="sub-title"><i class="fas ' + i + '"></i> ' + t + "</h3>" + body + "</div>"; }
+  function fv(r, k) { return r && r[k] != null ? r[k] : ""; }
+  function lab(c, k) { if (k === "admin_reply") return "KISAKALI reply"; var f = c.f.filter(function (x) { return x[0] === k; })[0]; return f ? f[1] : k; }
+  function spill(s) { return pill(s || "-", /^(Active|Accepted|Delivered|Answered|Approved|Closed|Requested)$/.test(s) ? "ok" : /^(Inactive|Cancelled|Rejected)$/.test(s) ? "bad" : "wait"); }
+  function cell(kind, k, r) {
+    var v = fv(r, k);
+    if (k === "admin_reply") return v ? esc(v) : '<span class="note-small">Waiting for KISAKALI</span>';
+    if (v === "") return "-";
+    if (k === "price" || k === "min") return money(v);
+    if (k === "value" && r.type) return r.type === "percent" ? esc(v) + "%" : money(v);
+    return esc(v);
+  }
+  function recSection(kind) {
+    var c = CFG[kind], list = REC[kind] || [], st = RF[kind], rec = null, h = "";
+    if (st && st !== "new") rec = list.filter(function (x) { return String(x.id) === String(st); })[0] || null;
+    if (st) {
+      h += '<div class="box" style="border-color:#FE980F"><h4 style="margin-bottom:8px">' + (rec ? "Edit " : "New ") + c.t.toLowerCase() + '</h4><div class="fgrid">' + c.f.map(function (f) {
+        var id = "rf-" + kind + "-" + f[0], v = fv(rec, f[0]);
+        if (f[2] === "area") return '<div style="grid-column:1/-1">' + f[1] + '<textarea class="ta" id="' + id + '" rows="2" maxlength="600">' + esc(v) + "</textarea></div>";
+        if (f[2].indexOf("sel:") === 0) return "<div>" + f[1] + '<select class="fi" id="' + id + '">' + f[2].slice(4).split(",").map(function (o) { return "<option" + (o === v ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select></div>";
+        return "<div>" + f[1] + '<input class="fi" id="' + id + '" type="' + f[2] + '" maxlength="200" value="' + esc(v) + '"></div>';
+      }).join("") + (c.st ? '<div>Status<select class="fi" id="rf-' + kind + '-status">' + c.st.map(function (o) { return "<option" + ((rec ? rec.status : c.st[0]) === o ? " selected" : "") + ">" + o + "</option>"; }).join("") + "</select></div>" : "") +
+        '</div><button class="vb" data-act="recsave" data-kind="' + kind + '" data-id="' + (rec ? rec.id : "") + '">Save</button><button class="vb grey" data-act="reccancel" data-kind="' + kind + '">Cancel</button></div>';
+    } else h += '<button class="vb" data-act="recnew" data-kind="' + kind + '"><i class="fas fa-plus"></i> Add ' + c.t.toLowerCase() + "</button>";
+    if (!list.length) return h + '<p class="note-small">Nothing here yet.</p>';
+    return h + tbl(c.cols.map(function (k) { return lab(c, k); }).concat(["Status"], c.ro ? [] : ["Action"]), list.map(function (r) {
+      return c.cols.map(function (k) { return cell(kind, k, r); }).concat([spill(r.status)], c.ro ? [] : ['<button class="vb grey" data-act="recedit" data-kind="' + kind + '" data-id="' + r.id + '">Edit</button><button class="vb grey" data-act="recdel" data-kind="' + kind + '" data-id="' + r.id + '">Delete</button>']);
+    }));
+  }
+  function kxRun(p, ok, kind) {
+    if (busy) return; busy = true;
+    p.then(function () { busy = false; if (kind) RF[kind] = null; toast(ok); klog(ok); return loadKx(); }).then(function () { show(cur); }).catch(function (e) { busy = false; toast(e.message || "Something went wrong."); });
+  }
+  function csvOf(name) {
+    if (name === "orders") return [["Order", "Date", "Customer", "Items", "Your amount", "Payment", "Status"], ORDERS.map(function (o) { return [o.order_number, (o.created_at || "").slice(0, 10), o.recipient, (o.items || []).map(function (it) { return it.name + " x" + it.qty; }).join("; "), o.subtotal, o.payment_status, ostat(o)]; })];
+    if (name === "products") return [["Product", "Category", "Price", "Stock", "Status"], PRODS.map(function (p) { return [p.title, p.category ? p.category.name : "", p.price, p.stock, p.status]; })];
+    if (name === "stock") return [["Time", "Product", "Change", "Reason"], MOVES.map(function (m) { return [m.created_at, m.title, m.change, m.reason]; })];
+    return [["Date", "Amount", "Status", "Reference"], PAYOUTS.map(function (x) { return [x.created_at, x.amount, x.status, x.reference || ""]; })];
+  }
+  function downloadCsv(name) {
+    var d = csvOf(name), rows = [d[0]].concat(d[1]);
+    var txt = rows.map(function (r) { return r.map(function (c) { var s = String(c == null ? "" : c); if (/^[=+\-@]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; }).join(","); }).join("\r\n");
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + txt], { type: "text/csv" })); a.download = "kisakali-" + name + "-" + new Date().toISOString().slice(0, 10) + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function invoice(o) {
+    var w = window.open("", "_blank"); if (!w) { toast("Allow pop-ups to print the invoice."); return; }
+    var rows = (o.items || []).map(function (it) { return "<tr><td>" + esc(it.name) + "</td><td>" + it.qty + "</td><td>" + money(it.unit_price) + "</td><td>" + money(it.unit_price * it.qty) + "</td></tr>"; }).join("");
+    w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Invoice ' + esc(o.order_number) + '</title><style>body{font-family:sans-serif;padding:24px}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #ccc;padding:8px;text-align:left}</style></head><body><h2>' + esc(SHOP.shop_name) + "</h2><p>Invoice for order <b>" + esc(o.order_number) + "</b><br>Customer: " + esc(o.recipient) + "<br>Payment: " + esc(o.payment_status) + "</p><table><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>" + rows + "</table><h3>Your amount: " + money(o.subtotal) + "</h3></body></html>");
+    w.document.close(); w.focus(); w.print();
+  }
+  function ordersList() {
+    var q = OQ.toLowerCase(), list = ORDERS.map(function (o, i) { return [o, i]; }).filter(function (x) {
+      var o = x[0]; if (OF !== "all" && ostat(o) !== OF) return false; if (!q) return true;
+      return (String(o.order_number) + " " + (o.recipient || "") + " " + (o.items || []).map(function (it) { return it.name; }).join(" ")).toLowerCase().indexOf(q) > -1;
+    });
+    return list.length ? list.map(function (x) { return orderCard(x[0], x[1]); }).join("") : '<div class="box" style="margin-top:14px"><p class="note-small" style="margin:0">' + (ORDERS.length ? "No orders match." : "No orders yet.") + "</p></div>";
+  }
+  function brandUpload(kind, file) {
+    if (busy) return; busy = true; toast("Uploading...");
+    shrink(file).then(function (blob) {
+      var path = SHOP.id + "/" + kind + "-" + Date.now() + ".jpg";
+      return sb.storage.from("product-images").upload(path, blob, { contentType: "image/jpeg", upsert: false }).then(function (u) {
+        if (u.error) throw new Error("Upload failed. Check your connection and try again.");
+        var p = {}; p[kind] = sb.storage.from("product-images").getPublicUrl(path).data.publicUrl; return rpc("kx_ext_save", { p: p });
+      });
+    }).then(function () { busy = false; toast("Saved"); return loadKx(); }).then(function () { show(cur); }).catch(function (e) { busy = false; toast(e.message || "Could not save."); });
+  }
+  function kxAct(act, a) {
+    var kind = a.getAttribute("data-kind"), id = a.getAttribute("data-id");
+    if (act === "recnew") { RF[kind] = "new"; show(cur); return true; }
+    if (act === "recedit") { RF[kind] = id; show(cur); return true; }
+    if (act === "reccancel") { RF[kind] = null; show(cur); return true; }
+    if (act === "recsave") {
+      var c = CFG[kind], d = {}, miss = false;
+      c.f.forEach(function (f) { var v = $("rf-" + kind + "-" + f[0]).value.trim(); if (f[2] === "number" && v !== "") v = Number(v); d[f[0]] = v; if (c.req.indexOf(f[0]) > -1 && v === "") miss = true; });
+      if (miss) { toast("Fill in the required fields."); return true; }
+      var rec = id ? (REC[kind] || []).filter(function (x) { return String(x.id) === String(id); })[0] : null;
+      if (rec) Object.keys(rec).forEach(function (k) { if (["id", "status", "created_at"].indexOf(k) < 0 && !(k in d)) d[k] = rec[k]; });
+      var stt = c.st ? $("rf-" + kind + "-status").value : (rec ? rec.status : "Open");
+      kxRun(rpc("kx_rec_save", { p_kind: kind, p_id: id ? Number(id) : null, p_status: stt, p_data: d }), c.t + " saved", kind);
+      return true;
+    }
+    if (act === "recdel") { if (confirm("Delete this " + CFG[kind].t.toLowerCase() + "?")) kxRun(rpc("kx_rec_delete", { p_kind: kind, p_id: Number(id) }), CFG[kind].t + " deleted", kind); return true; }
+    if (act === "revreply") { kxRun(rpc("kx_rec_save", { p_kind: "review", p_id: Number(id), p_status: null, p_data: { reply: $("rv-" + id).value } }), "Reply saved"); return true; }
+    if (act === "planreq") { if (confirm("Request the " + a.getAttribute("data-plan") + " plan? KISAKALI will review it.")) kxRun(rpc("kx_rec_save", { p_kind: "plan", p_id: null, p_status: "Requested", p_data: { plan: a.getAttribute("data-plan") } }), "Plan requested"); return true; }
+    if (act === "extsave") {
+      var p = {}; ["location", "facebook", "instagram", "whatsapp", "tiktok", "policies", "featured"].forEach(function (k) { p[k] = $("ext-" + k).value.trim(); });
+      kxRun(rpc("kx_ext_save", { p: p }), "Shop details saved"); return true;
+    }
+    if (act === "ofilt") { OF = a.getAttribute("data-i"); show(cur); return true; }
+    if (act === "invoice") { var o = ORDERS[+a.getAttribute("data-i")]; if (o) invoice(o); return true; }
+    if (act === "csv") { downloadCsv(a.getAttribute("data-i")); return true; }
+    if (act === "print") { window.print(); return true; }
+    if (act === "signothers") { sb.auth.signOut({ scope: "others" }).then(function (r) { toast(r.error ? r.error.message : "Signed out of your other devices"); }); return true; }
+    return false;
+  }
+  document.addEventListener("input", function (e) { if (e.target.id === "oq") { OQ = e.target.value; var l = $("ordList"); if (l) l.innerHTML = ordersList(); } });
+  document.addEventListener("change", function (e) { var b = e.target.getAttribute && e.target.getAttribute("data-brand"); if (b && e.target.files[0]) brandUpload(b, e.target.files[0]); });
+
+  var V = {
+    dashboard: function () {
+      var ver = ORDERS.filter(function (o) { return o.payment_status === "Verified"; }), w = WALLET || {};
+      function cnt(f) { return ORDERS.filter(f).length; }
+      var low = PRODS.filter(function (p) { return p.status === "published" && p.stock < 5; });
+      var st = [["Total orders", ORDERS.length], ["Awaiting payment", cnt(function (o) { return o.payment_status === "Pending"; })], ["Preparing", cnt(function (o) { return o.payment_status === "Verified" && o.vendor_status === "Preparing"; })], ["Ready for pickup", cnt(function (o) { return o.vendor_status === "Ready" && !isDelivered(o); })], ["Completed", cnt(isDelivered)], ["Published products", PRODS.filter(function (p) { return p.status === "published"; }).length], ["Awaiting approval", PRODS.filter(function (p) { return p.status === "submitted"; }).length], ["Low-stock products", low.length], ["Verified sales", money(ver.reduce(function (a, o) { return a + Number(o.subtotal || 0); }, 0))], ["Available earnings", money(w.available)], ["Pending settlements", money(w.pending)]];
+      var vals = [], labs = [], names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      for (var d = 6; d >= 0; d--) {
+        var dt = new Date(); dt.setHours(0, 0, 0, 0); dt.setDate(dt.getDate() - d); var key = dt.toDateString();
+        vals.push(ver.filter(function (o) { return o.created_at && new Date(o.created_at).toDateString() === key; }).reduce(function (a, o) { return a + Number(o.subtotal || 0); }, 0)); labs.push(names[dt.getDay()]);
+      }
+      var mx = Math.max.apply(null, vals.concat([1])), pct = vals.map(function (v) { return Math.round(v / mx * 100); });
+      var sold = {}; ver.forEach(function (o) { (o.items || []).forEach(function (it) { sold[it.name] = (sold[it.name] || 0) + it.qty; }); });
+      var top = Object.keys(sold).sort(function (a, b) { return sold[b] - sold[a]; }).slice(0, 4), tm = top.length ? sold[top[0]] : 1;
+      var net = +w.net || 0, com = +w.commission || 0, wd = +w.withdrawn || 0, fm = Math.max(net, com, wd, 1);
+      return '<h3 class="sub-title"><i class="fas fa-chart-pie"></i> Business overview</h3><div class="stat-grid">' + st.map(function (s) { return '<div class="stat-card"><h5>' + s[0] + '</h5><div class="num">' + s[1] + "</div></div>"; }).join("") + "</div>" +
+        '<div class="chart-grid"><div class="chart-box"><h4>Verified sales (last 7 days)</h4>' + bars(pct, labs) + '</div><div class="chart-box"><h4>Sales by product</h4>' + (top.length ? top.map(function (n) { return hb(esc(n), sold[n] + " sold", Math.round(sold[n] / tm * 100)); }).join("") : '<p class="note-small">No sales yet.</p>') + "</div></div>" +
+        '<div class="chart-grid"><div class="chart-box"><h4>Recent orders</h4>' + (ORDERS.length ? ORDERS.slice(0, 5).map(function (o) { return '<div class="alert-item"><span>' + esc(o.order_number) + "</span>" + ostatPill(o) + "</div>"; }).join("") : '<p class="note-small">No orders yet.</p>') + "</div>" +
+        '<div class="chart-box"><h4>Inventory alerts</h4>' + (low.length ? low.map(function (p) { return '<div class="alert-item danger"><span>' + esc(p.title) + '</span><span class="count">' + p.stock + " left</span></div>"; }).join("") : '<p class="note-small">All stock levels are fine.</p>') + '</div><div class="chart-box"><h4>Financial summary</h4>' + hb("Net earnings", money(net), Math.round(net / fm * 100)) + hb("Commission", money(com), Math.round(com / fm * 100)) + hb("Requested withdrawals", money(wd), Math.round(wd / fm * 100)) + "</div></div>" +
+        '<div class="box"><h3 class="sub-title"><i class="fas fa-tasks"></i> Preparation pipeline board</h3>' + pipeline() + '</div><div class="box"><h3 class="sub-title"><i class="fas fa-bell"></i> Notifications</h3>' + notifications() + "</div>";
+    },
+    orders: function () {
+      var open = ORDERS.filter(function (o) { return o.vendor_status === "Preparing" && o.payment_status !== "Failed" && o.payment_status !== "Refunded"; });
+      var toConfirm = ORDERS.filter(function (o) { return isDelivered(o) && !riderFeePaid(o); }).length;
+      var noInfo = ORDERS.length && !ORDERS.some(hasDeliveryInfo);
+      return '<div class="stat-grid"><div class="stat-card"><h5>To prepare</h5><div class="num">' + open.length + '</div></div><div class="stat-card"><h5>All orders</h5><div class="num">' + ORDERS.length + '</div></div>' +
+        '<div class="stat-card"><h5>Rider fee to confirm</h5><div class="num">' + toConfirm + "</div></div></div>" +
+        (noInfo ? '<div class="warn">The server is not sending the delivery status of orders yet, so the "Confirm rider took the delivery fee" button cannot appear. It needs the database update (SQL) that goes with this page.</div>' : "") +
+        '<div class="box"><h3 class="sub-title"><i class="fas fa-route"></i> Order workflow</h3><p class="line">Order received &rsaquo; Payment verified by platform &rsaquo; Preparation &rsaquo; Ready for dispatch &rsaquo; Delivery &rsaquo; Completion and settlement</p></div>' +
+        '<h3 class="sub-title"><i class="fas fa-shopping-bag"></i> Your orders (only your own products)</h3>' +
+        '<input class="fi" id="oq" placeholder="Search by order number, customer or product" value="' + esc(OQ) + '">' +
+        ["all", "Awaiting payment", "Preparing", "Ready for pickup", "Completed"].map(function (f) { return '<button class="vb ' + (OF === f ? "" : "grey") + '" data-act="ofilt" data-i="' + f + '">' + (f === "all" ? "All" : f) + "</button>"; }).join("") +
+        '<button class="vb grey" data-act="refresh"><i class="fas fa-sync"></i> Refresh</button><div id="ordList">' + ordersList() + "</div>";
+    },
+    products: function () {
+      return (editing ? prodForm(editing) : addForm()) + '<h3 class="sub-title"><i class="fas fa-boxes"></i> Product Center</h3>' +
+        (PRODS.length ? PRODS.map(prodCard).join("") + '<p class="note-small">Only KISAKALI can approve products. After approval, press Publish to put the product on the marketplace.</p>' : '<div class="box"><p class="note-small" style="margin:0">No products yet. Add your first product with the form above.</p></div>');
+    },
+    stock: function () {
+      if (!PRODS.length) return '<div class="box"><p class="note-small" style="margin:0">Add a product first.</p></div>';
+      return '<div class="box"><h3 class="sub-title"><i class="fas fa-warehouse"></i> Stock adjustment</h3><div class="fgrid"><div>Product<select class="fi" id="iv-p">' + PRODS.map(function (p) { return '<option value="' + p.id + '">' + esc(p.title) + " (" + p.stock + ")</option>"; }).join("") + '</select></div><div>Change (+ or -)<input class="fi" id="iv-q" type="number" inputmode="numeric" placeholder="e.g. 10 or -2"></div><div>Reason (required)<input class="fi" id="iv-r" placeholder="e.g. New stock, damaged"></div></div><button class="vb" data-act="ivok">Apply adjustment</button></div>' +
+        '<h3 class="sub-title"><i class="fas fa-history"></i> Stock movement history</h3>' +
+        (MOVES.length ? tbl(["Time", "Product", "Change", "Reason"], MOVES.map(function (m) { return [new Date(m.created_at).toLocaleString(), esc(m.title), (m.change > 0 ? "+" : "") + m.change, esc(m.reason)]; })) : '<p class="note-small">No stock movements yet. Every change records when and why.</p>');
+    },
+    media: function () {
+      if (!PRODS.length) return '<div class="box"><p class="note-small" style="margin:0">Add a product first, then manage its photos and videos here.</p></div>';
+      function sec(t, i, body) { return '<div class="box"><h3 class="sub-title"><i class="fas ' + i + '"></i> ' + t + "</h3>" + body + "</div>"; }
+      return '<div class="warn">The MAIN photo of each product is saved online and shown to customers. Extra photos and all videos are saved on this device only for now.</div>' +
+        sec("Upload photos and videos", "fa-cloud-upload-alt", mediaUpload()) + sec("Product media gallery", "fa-images", mediaGallery()) + sec("My media library", "fa-folder-open", mediaLibrary()) + sec("Customer view preview", "fa-eye", mediaPreview()) + sec("Upload rules and ownership", "fa-gavel", mediaRules());
+    },
+    wallet: function () {
+      var w = WALLET || {};
+      var c = function (h, v, k) { return '<div class="stat-card"><h5>' + h + '</h5><div class="num ' + (k || "") + '">' + money(v) + "</div></div>"; };
+      return '<div class="stat-grid">' + c("Delivered sales (gross)", w.gross) + c("Platform commission (" + esc(w.rate) + "%)", w.commission, "red") + c("Net earnings", w.net, "green") + c("Pending (not delivered yet)", w.pending) + c("Already requested", w.withdrawn) + c("Available to withdraw", w.available) + "</div>" +
+        '<p class="note-small">Money counts once the order is paid and delivered. The commission rate is set by KISAKALI. You cannot edit your balance or approve your own payouts.</p>' +
+        '<div class="box"><h3 class="sub-title"><i class="fas fa-wallet"></i> Request a withdrawal</h3><input class="fi" id="wd-amt" type="number" min="0" inputmode="numeric" placeholder="Amount in TSh"><button class="vb" data-act="payout">Request</button>' +
+        '<p class="line" style="margin-top:12px">Workflow: you submit the request &rsaquo; the system checks your balance &rsaquo; KISAKALI Finance reviews it &rsaquo; payment is processed &rsaquo; the reference is recorded &rsaquo; your history updates.</p></div>' +
+        '<h3 class="sub-title">Withdrawal history</h3>' + (PAYOUTS.length ? tbl(["Date", "Amount", "Status", "Reference"], PAYOUTS.map(function (x) { return [new Date(x.created_at).toLocaleDateString("en-GB"), money(x.amount), pill(x.status, x.status === "Paid" ? "ok" : x.status === "Rejected" ? "bad" : "wait"), esc(x.reference || "-")]; })) + '<button class="vb grey" data-act="csv" data-i="payouts"><i class="fas fa-download"></i> Download statement (CSV)</button>' : '<p class="note-small">No withdrawals yet.</p>');
+    },
+    gifts: function () {
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      var pers = ORDERS.filter(function (o) { return o.note || (o.items || []).some(function (it) { return customText(it.custom); }); });
+      var sched = ORDERS.filter(function (o) { return o.delivery_date && !isDelivered(o) && o.payment_status !== "Failed" && new Date(o.delivery_date + "T00:00:00") >= today; }).sort(function (a, b) { return a.delivery_date < b.delivery_date ? -1 : 1; });
+      return kxWarn() + kbox("Gift package builder", "fa-gift", recSection("gift")) +
+        kbox("Personalization manager", "fa-pen-fancy", pers.length ? tbl(["Order", "Recipient", "Customisation", "Card message"], pers.map(function (o) { return [esc(o.order_number), esc(o.recipient), esc((o.items || []).map(function (it) { return customText(it.custom); }).filter(Boolean).join("; ")) || "-", esc(o.note || "-")]; })) : '<p class="note-small">No personalised orders yet. Recipient names, greeting messages and cake inscriptions from your orders appear here.</p>') +
+        kbox("Scheduled gifting", "fa-calendar-check", sched.length ? tbl(["Delivery", "Order", "Recipient", "Days left", "Status"], sched.map(function (o) { var dl = Math.round((new Date(o.delivery_date + "T00:00:00") - today) / 864e5); return [fmtDate(o.delivery_date) + " " + esc(o.delivery_time || ""), esc(o.order_number), esc(o.recipient), dl === 0 ? "Today" : dl, ostatPill(o)]; })) : '<p class="note-small">No scheduled deliveries. Orders with a future delivery date appear here.</p>') +
+        kbox("Surprise bookings", "fa-surprise", recSection("surprise"));
+    },
+    customers: function () {
+      var rv = REC.review || [], avg = rv.length ? (rv.reduce(function (a, r) { return a + Number(r.rating || 0); }, 0) / rv.length).toFixed(1) : "-";
+      var revHtml = rv.length ? '<div class="stat-grid"><div class="stat-card"><h5>Average rating</h5><div class="num">' + avg + '</div></div><div class="stat-card"><h5>Reviews</h5><div class="num">' + rv.length + "</div></div></div>" + rv.map(function (r) {
+        var n = Math.max(0, Math.min(5, Number(r.rating) || 0));
+        return '<div class="box"><b style="color:#FE980F">' + "&#9733;".repeat(n) + "&#9734;".repeat(5 - n) + "</b> " + esc(r.customer || "Customer") + (r.product ? " &middot; " + esc(r.product) : "") + '<p class="line">' + esc(r.comment || "") + '</p><textarea class="ta" id="rv-' + r.id + '" rows="2" maxlength="500" placeholder="Write a public reply">' + esc(r.reply || "") + '</textarea><button class="vb" data-act="revreply" data-id="' + r.id + '">Save reply</button></div>';
+      }).join("") : '<p class="note-small">No reviews yet. Customer reviews will appear here and you can reply to them.</p>';
+      return kxWarn() + kbox("Customer inquiries and messages", "fa-comments", recSection("inquiry") + '<p class="note-small">Record each customer question (call, WhatsApp, in person), write your reply and set the status.</p>') + kbox("Reviews and ratings", "fa-star", revHtml);
+    },
+    marketing: function () {
+      var cp = REC.coupon || [];
+      return kxWarn() + kbox("Coupons and discounts", "fa-ticket-alt", recSection("coupon") + '<p class="note-small">' + cp.filter(function (x) { return x.status === "Active"; }).length + ' active coupon(s). Coupons are saved to your account; applying them at customer checkout is switched on separately by KISAKALI.</p>') +
+        kbox("Promotions and announcements", "fa-bullhorn", recSection("promo") + '<p class="note-small">Set a promotion to "Submitted" to send it to KISAKALI. KISAKALI approves marketplace promotion and controls featured positions and platform-wide advertisements.</p>');
+    },
+    staff: function () {
+      return kxWarn() + kbox("Employee accounts", "fa-users", recSection("staff")) +
+        kbox("Roles", "fa-id-badge", '<div class="chips" style="display:flex;flex-wrap:wrap;gap:8px">' + ROLES.map(function (r) { return pill(r); }).join(" ") + '</div><p class="note-small">Staff records list who works in your shop and their role. They do not have their own login yet, and vendor staff never receive KISAKALI Super Admin privileges.</p>');
+    },
+    reports: function () {
+      var ver = ORDERS.filter(function (o) { return o.payment_status === "Verified"; }), w = WALLET || {};
+      var total = ver.reduce(function (a, o) { return a + Number(o.subtotal || 0); }, 0), avg = ver.length ? Math.round(total / ver.length) : 0;
+      var done = ver.filter(isDelivered).length, rate = ver.length ? Math.round(done / ver.length * 100) : 0;
+      var byP = {}; ver.forEach(function (o) { (o.items || []).forEach(function (it) { var r = byP[it.name] || (byP[it.name] = { q: 0, m: 0 }); r.q += it.qty; r.m += it.unit_price * it.qty; }); });
+      var names = Object.keys(byP).sort(function (a, b) { return byP[b].m - byP[a].m; });
+      var day = [0, 0, 0, 0, 0, 0, 0], dn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]; ver.forEach(function (o) { if (o.created_at) day[new Date(o.created_at).getDay()]++; });
+      var dm = Math.max.apply(null, day.concat([1]));
+      var cards = [["Verified sales", money(total)], ["Paid orders", ver.length], ["Average order", money(avg)], ["Delivery completion", rate + "%"], ["Net earnings", money(w.net)], ["Commission", money(w.commission)], ["Published products", PRODS.filter(function (p) { return p.status === "published"; }).length], ["Low-stock products", PRODS.filter(function (p) { return p.stock < 5; }).length]];
+      return '<div class="stat-grid">' + cards.map(function (s) { return '<div class="stat-card"><h5>' + s[0] + '</h5><div class="num">' + s[1] + "</div></div>"; }).join("") + "</div>" +
+        '<div class="chart-grid"><div class="chart-box"><h4>Customer buying trends (paid orders by weekday)</h4>' + bars(day.map(function (v) { return Math.round(v / dm * 100); }), dn) + '</div><div class="chart-box"><h4>Order status</h4>' +
+        ["Awaiting payment", "Preparing", "Ready for pickup", "Completed"].map(function (s) { var n = ORDERS.filter(function (o) { return ostat(o) === s; }).length; return hb(s, n, ORDERS.length ? Math.round(n / ORDERS.length * 100) : 0); }).join("") + "</div></div>" +
+        kbox("Product report", "fa-box-open", names.length ? tbl(["Product", "Units sold", "Sales"], names.map(function (n) { return [esc(n), byP[n].q, money(byP[n].m)]; })) : '<p class="note-small">No paid sales yet.</p>') +
+        kbox("Export", "fa-file-export", '<button class="vb" data-act="csv" data-i="orders">Orders (Excel / CSV)</button><button class="vb" data-act="csv" data-i="products">Products and inventory (Excel / CSV)</button><button class="vb" data-act="csv" data-i="stock">Stock history (Excel / CSV)</button><button class="vb" data-act="csv" data-i="payouts">Withdrawals (Excel / CSV)</button><button class="vb grey" data-act="print">Print / save as PDF</button>');
+    },
+    settings: function () {
+      var cur0 = (REC.plan || [])[0];
+      return kbox("Notifications", "fa-bell", notifications()) +
+        kbox("Subscription plan", "fa-crown", (cur0 ? '<p class="line">Latest request: <b style="color:#FE980F">' + esc(cur0.plan) + "</b> " + spill(cur0.status) + "</p>" : "") + '<div class="stat-grid">' + PLANS.map(function (p) { return '<div class="stat-card"><h5 style="color:#FE980F;font-size:14px">' + p[0] + '</h5><div style="font-size:13px;margin:6px 0">' + p[1].split(";").join("<br>") + '</div><button class="vb" data-act="planreq" data-plan="' + esc(p[0]) + '">Request</button></div>'; }).join("") + '</div><p class="note-small">Fees and limits are set by KISAKALI, who approves plan requests.</p>') +
+        kbox("Who controls what", "fa-balance-scale", tbl(["Action", "Vendor", "KISAKALI"], GOV)) +
+        kbox("Activity log", "fa-history", (REC.log || []).length ? tbl(["Time", "Module", "Action"], REC.log.slice(0, 40).map(function (e) { return [new Date(e.created_at).toLocaleString(), esc(e.module), esc(e.action)]; })) : '<p class="note-small">No activity recorded yet.</p>') +
+        kbox("Security", "fa-shield-alt", '<input class="fi" id="pw-new" type="password" autocomplete="new-password" placeholder="New password (at least 8 characters)"><button class="vb" data-act="savePw">Update password</button><button class="vb grey" data-act="signothers">Sign out my other devices</button>') +
+        kbox("My account", "fa-id-card", '<div class="fgrid"><div>Email<input class="fi" value="' + esc(ME.email) + '" disabled></div><div>Full name<input class="fi" id="pf-name" maxlength="100" value="' + esc(ME.name) + '"></div><div>Phone<input class="fi" id="pf-phone" inputmode="tel" value="' + esc(ME.phone) + '"></div></div><button class="vb" data-act="saveProfile">Save</button>') +
+        kbox("Support", "fa-life-ring", kxWarn() + recSection("ticket"));
+    },
+    shop: function () {
+      var s = SHOP || {}, e = EXT || {}, ap = s.approval_status, steps = ["Submitted", "Under review", "Approved", "Shop live"], upto = ap === "approved" ? 3 : 1;
+      function img(u, ic) { return u ? '<img src="' + esc(u) + '" alt="" style="width:100%;max-height:140px;object-fit:cover;border-radius:6px;margin:6px 0">' : '<div class="noimg" style="width:100%;height:80px;margin:6px 0"><i class="fas ' + ic + '"></i></div>'; }
+      return '<div class="box"><h3 class="sub-title"><i class="fas fa-store"></i> Shop controls</h3><div class="fgrid">' +
+        '<div>Shop name<input class="fi" id="sh-name" maxlength="100" value="' + esc(s.shop_name) + '"></div>' +
+        '<div>Shop phone<input class="fi" id="sh-phone" inputmode="tel" value="' + esc(s.phone) + '"></div>' +
+        '<div>Opening hours<input class="fi" id="sh-hours" maxlength="50" placeholder="e.g. 8am - 8pm" value="' + esc(s.hours) + '"></div>' +
+        '<div>Delivery coverage<input class="fi" id="sh-cov" maxlength="200" value="' + esc(s.coverage) + '"></div></div>' +
+        'Shop description<textarea class="ta" id="sh-about" rows="3" maxlength="500">' + esc(s.about) + "</textarea>" +
+        '<label style="display:block;margin:8px 0"><input type="checkbox" id="sh-paused"' + (s.paused ? " checked" : "") + '> Pause shop (customers cannot order)</label>' +
+        '<label style="display:block;margin:8px 0"><input type="checkbox" id="sh-hol"' + (s.holiday ? " checked" : "") + '> Holiday mode</label>' +
+        '<button class="vb" data-act="saveShop">Save</button></div>' +
+        payBox() + kxWarn() + kbox("Shop customization", "fa-paint-brush", '<div class="fgrid"><div>Shop logo' + img(e.logo, "fa-store") + '<label class="vb grey">Choose logo<input type="file" accept="image/jpeg,image/png,image/webp" data-brand="logo" style="display:none"></label></div><div>Cover photograph' + img(e.cover, "fa-image") + '<label class="vb grey">Choose cover<input type="file" accept="image/jpeg,image/png,image/webp" data-brand="cover" style="display:none"></label></div></div>' +
+          '<div class="fgrid"><div>Business location<input class="fi" id="ext-location" maxlength="200" value="' + esc(e.location) + '"></div><div>WhatsApp<input class="fi" id="ext-whatsapp" maxlength="60" value="' + esc(e.whatsapp) + '"></div><div>Facebook<input class="fi" id="ext-facebook" maxlength="200" value="' + esc(e.facebook) + '"></div><div>Instagram<input class="fi" id="ext-instagram" maxlength="200" value="' + esc(e.instagram) + '"></div><div>TikTok<input class="fi" id="ext-tiktok" maxlength="200" value="' + esc(e.tiktok) + '"></div></div>' +
+          'Shop policies (returns, cancellations, delivery)<textarea class="ta" id="ext-policies" rows="3" maxlength="900">' + esc(e.policies) + '</textarea>Featured collections<input class="fi" id="ext-featured" maxlength="300" placeholder="e.g. Birthday cakes, Wedding hampers" value="' + esc(e.featured) + '"><button class="vb" data-act="extsave">Save customization</button>') +
+        kbox("Onboarding status", "fa-clipboard-check", '<p class="line">' + steps.map(function (t, i) { return '<span style="' + (i <= upto ? "color:#FE980F;font-weight:bold" : "color:#777") + '">' + t + "</span>"; }).join(" &rsaquo; ") + '</p><p class="note-small">Current status: <b>' + esc(ap) + "</b>. Only KISAKALI can approve, restrict or suspend your shop and change your verification status.</p>");
+    }
+  };
+  var _pc = V.products; V.products = function () { return _pc() + V.stock(); };
+  var PCH = ["Vodacom M-Pesa", "Tigo Pesa", "Airtel Money", "HaloPesa", "CRDB / NMB Bank Transfer"];
+  function payBox() {
+    if (!PAYOK) return kbox("How customers pay", "fa-wallet", '<p class="note-small">Payment settings are not switched on yet. KISAKALI needs to finish the database update first.</p>');
+    var m = PAYSET.mode === "direct" ? "direct" : "platform", have = {};
+    (PAYSET.channels || []).forEach(function (c) { have[c.channel] = c; });
+    var rows = PCH.map(function (n, i) {
+      var c = have[n] || {};
+      return '<div class="fgrid" style="margin:6px 0"><div>' + esc(n) + ' number<input class="fi" data-pn="' + i + '" inputmode="tel" maxlength="20" placeholder="e.g. 0712345678" value="' + esc(c.number) + '"></div>' +
+        '<div>Account name<input class="fi" data-pa="' + i + '" maxlength="60" placeholder="Name shown to the customer" value="' + esc(c.name) + '"></div></div>';
+    }).join("");
+    return kbox("How customers pay", "fa-wallet",
+      '<label style="display:block;margin:8px 0"><input type="radio" name="pay-mode" value="direct"' + (m === "direct" ? " checked" : "") + '> <b>Customer pays me directly.</b> I receive the money myself and KISAKALI takes its 10% commission from me afterwards.</label>' +
+      '<label style="display:block;margin:8px 0"><input type="radio" name="pay-mode" value="platform"' + (m === "platform" ? " checked" : "") + '> <b>Customer pays KISAKALI.</b> KISAKALI collects the payment, pays me, and keeps its 10% commission.</label>' +
+      '<div id="pay-direct" style="display:' + (m === "direct" ? "block" : "none") + '"><p class="note-small">Fill in at least one. Customers will see these numbers when they order from your shop.</p>' + rows + '</div>' +
+      '<p class="note-small">In both cases the rider takes the delivery fee from the cash the customer pays on delivery.</p>' +
+      '<button class="vb" data-act="savePay">Save payment settings</button>');
+  }
+  var T = [["dashboard", "fa-home", "Dashboard"], ["shop", "fa-store", "My Shop"], ["products", "fa-box-open", "Product Center"], ["media", "fa-photo-video", "Media Center"], ["orders", "fa-shopping-bag", "Order Center"], ["gifts", "fa-gift", "Gift & Surprise"], ["customers", "fa-comments", "Customer Relations"], ["wallet", "fa-wallet", "Finance & Wallet"], ["marketing", "fa-bullhorn", "Marketing Center"], ["staff", "fa-users", "Staff Management"], ["reports", "fa-chart-bar", "Reports"], ["settings", "fa-cog", "Settings & Support"]];
+  function defaults() {
+    var ids = PRODS.map(function (p) { return String(p.id); });
+    [["MP"], ["MG"], ["MV"]].forEach(function (x) { });
+    if (ids.indexOf(String(MP)) < 0) MP = ids[0] || "";
+    if (ids.indexOf(String(MG)) < 0) MG = ids[0] || "";
+    if (ids.indexOf(String(MV)) < 0) MV = ids[0] || "";
+  }
+  function show(k) {
+    cur = k; defaults();
+    $("tabs").innerHTML = T.map(function (t) { return '<button class="tab-btn' + (cur === t[0] ? " on" : "") + '" data-k="' + t[0] + '"><i class="fas ' + t[1] + '"></i>' + t[2] + "</button>"; }).join("");
+    var warn = SHOP && SHOP.approval_status !== "approved" ? '<div class="warn">Your shop is <b>' + esc(SHOP.approval_status) + "</b>. Customers cannot see it until the admin approves it.</div>" : "";
+    $("view").innerHTML = warn + V[k]();
+    if (k === "products") pfDraw("");
+  }
+
+  /* ---------- actions ---------- */
+  function run(p, ok, keepEdit) {
+    if (busy) return; busy = true;
+    p.then(function () { busy = false; if (ok) { toast(ok); klog(ok); } return refresh(keepEdit); }).catch(function (e) { busy = false; toast(e.message || "Something went wrong."); });
+  }
+  function shrink(file) {
+    return new Promise(function (resolve, reject) {
+      if (!/^image\//.test(file.type)) { reject(new Error("Choose a photo (JPG, PNG or WEBP).")); return; }
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function () {
+        var s = Math.min(1, 1200 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+        c.toBlob(function (b) { b ? resolve(b) : reject(new Error("Could not read the photo.")); }, "image/jpeg", 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("Could not read the photo.")); };
+      img.src = url;
+    });
+  }
+  function uploadPhoto(id, file) {
+    if (busy) return; busy = true; toast("Uploading photo...");
+    shrink(file).then(function (blob) {
+      var path = SHOP.id + "/" + id + "-" + Date.now() + ".jpg";
+      return sb.storage.from("product-images").upload(path, blob, { contentType: "image/jpeg", upsert: false }).then(function (u) {
+        if (u.error) throw new Error("Photo upload failed. Check your connection and try again.");
+        return rpc("vendor_set_product_image", { p_id: Number(id), p_url: sb.storage.from("product-images").getPublicUrl(path).data.publicUrl });
+      });
+    }).then(function () { busy = false; toast("Photo saved"); refresh(); }).catch(function (e) { busy = false; toast(e.message); });
+  }
+  function updateProd(id, body) {
+    return rpc("vendor_update_product", { p_id: Number(id), p: { title: body.title, price: body.price, description: body.description } }).catch(function () { var b = Object.assign({ id: id }, body); return rpc("vendor_save_product", { p: b }); });
+  }
+
+  document.addEventListener("change", function (e) {
+    var t = e.target, id = t.id, ph = t.getAttribute && t.getAttribute("data-photo");
+    if (t.name === "pay-mode") { var pd = $("pay-direct"); if (pd) pd.style.display = t.value === "direct" ? "block" : "none"; return; }
+    if (ph && t.files[0]) { uploadPhoto(ph, t.files[0]); return; }
+    if (t.getAttribute && t.getAttribute("data-rep")) { replaceMedia(t.getAttribute("data-rep"), t.files[0]); return; }
+    if (id === "mu-p") { MP = t.value; show(cur); } else if (id === "mg-p") { MG = t.value; show(cur); } else if (id === "mv-p") { MV = t.value; PVI = 0; show(cur); }
+    else if (id === "f-img" || id === "f-cam") stage(t.files, "image"); else if (id === "f-vid" || id === "f-vcam") stage(t.files, "video");
+    else if (id === "pf-img" || id === "pf-cam") { pfAdd(t.files, "image"); t.value = ""; }
+    else if (id === "pf-vid" || id === "pf-vcam") { pfAdd(t.files, "video"); t.value = ""; }
+  });
+  document.addEventListener("input", function (e) { if (e.target.id === "ml-q") { MQ = e.target.value; $("mlBody").innerHTML = libRows(); } });
+  $("lbx").addEventListener("click", function () { $("lb").style.display = "none"; });
+  function lbShow() { if (!LBL.length) return; LBI = (LBI + LBL.length) % LBL.length; $("lbi").src = LBL[LBI]; }
+  $("lbp").addEventListener("click", function () { LBI--; lbShow(); });
+  $("lbn").addEventListener("click", function () { LBI++; lbShow(); });
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest(".tab-btn"); if (t) { show(t.getAttribute("data-k")); return; }
+    var mt = e.target.closest("[data-m]"); if (mt && ME && SHOP) { mact(mt.getAttribute("data-m"), mt.getAttribute("data-i")); return; }
+    var pf = e.target.closest("[data-pf]");
+    if (pf) { var q = pf.getAttribute("data-pf").split(":"), list = q[0] === "img" ? PF.imgs : PF.vids, s = list.splice(+q[1], 1)[0]; if (s) URL.revokeObjectURL(s.url); pfDraw(""); return; }
+    var a = e.target.closest("[data-act]"); if (!a || !ME || !SHOP) return;
+    var act = a.getAttribute("data-act"), id = a.getAttribute("data-id");
+    if (kxAct(act, a)) return;
+    if (act === "refresh") refresh();
+    else if (act === "pfsubmit") pfSave(true);
+    else if (act === "pfdraft") pfSave(false);
+    else if (act === "ready") { var o = ORDERS[+a.getAttribute("data-i")]; if (o && confirm("Mark " + o.order_number + " as ready for the rider to collect?")) run(rpc("vendor_mark_ready", { p_number: o.order_number }), "Marked ready"); }
+    else if (act === "riderpaid") {
+      var ro = ORDERS[+a.getAttribute("data-i")];
+      if (ro && confirm("Confirm that the rider has taken his delivery fee from the cash collected for " + ro.order_number + "?")) run(rpc("vendor_confirm_rider_paid", { p_number: ro.order_number }), "Rider payment confirmed");
+    }
+    else if (act === "editProd") { editing = prodById(id); show("products"); window.scrollTo(0, 0); }
+    else if (act === "cancelProd") { editing = null; show("products"); }
+    else if (act === "saveProd" || act === "saveResub") {
+      var title = $("pr-title").value.trim(), price = $("pr-price").value;
+      if (!title) { toast("Enter the product name."); return; }
+      if (price === "" || Number(price) < 0) { toast("Enter a valid price."); return; }
+      var body = { title: title, price: Number(price), category: $("pr-cat").value, description: $("pr-desc").value }, eid = editing.id;
+      run(updateProd(eid, body).then(function () { if (act === "saveResub") return rpc("vendor_submit_product", { p_id: Number(eid) }); }), act === "saveResub" ? "Updated and resubmitted" : "Changes saved");
+    }
+    else if (act === "submit") run(rpc("vendor_submit_product", { p_id: Number(id) }), "Sent to the admin for review");
+    else if (act === "publish") run(rpc("vendor_publish_product", { p_id: Number(id) }), "Product is live");
+    else if (act === "archive") { if (confirm("Archive this product? It leaves your shop.")) run(rpc("vendor_archive_product", { p_id: Number(id) }), "Product archived"); }
+    else if (act === "delProd") {
+      if (!confirm("Delete " + pname(id) + " permanently?")) return;
+      var dk = String(id);
+      run(rpc("vendor_delete_product", { p_id: Number(id) }).catch(function () { return rpc("vendor_archive_product", { p_id: Number(id) }); }).then(function () {
+        var gone = MEDIA.filter(function (m) { return m.pid === dk; });
+        return Promise.all(gone.map(function (m) { if (m.url) URL.revokeObjectURL(m.url); return dbDel(m.id); })).then(function () { MEDIA = MEDIA.filter(function (m) { return m.pid !== dk; }); });
+      }), "Product removed");
+    }
+    else if (act === "stock") {
+      var ch = parseInt(prompt("Stock change: use + to add and - to remove (example 10 or -3)"), 10);
+      if (!ch) return; var why2 = (prompt("Reason (example: new batch, damaged)") || "").trim(); if (!why2) { toast("A reason is required."); return; }
+      run(rpc("vendor_adjust_stock", { p_id: Number(id), p_change: ch, p_reason: why2 }), "Stock updated");
+    }
+    else if (act === "ivok") {
+      var q2 = parseInt($("iv-q").value, 10), r2 = $("iv-r").value.trim();
+      if (!q2 || !r2) { toast("Enter a change and a reason"); return; }
+      run(rpc("vendor_adjust_stock", { p_id: Number($("iv-p").value), p_change: q2, p_reason: r2 }), "Stock updated");
+    }
+    else if (act === "payout") {
+      var amt = Number($("wd-amt").value); if (!amt || amt <= 0) { toast("Enter an amount."); return; }
+      run(rpc("vendor_request_payout", { p_amount: amt }), "Withdrawal requested");
+    }
+    else if (act === "savePay") {
+      var pm = (document.querySelector('input[name="pay-mode"]:checked') || {}).value || "platform", chs = [], bad = "";
+      PCH.forEach(function (n, i) {
+        var nu = document.querySelector('[data-pn="' + i + '"]').value.trim(), na = document.querySelector('[data-pa="' + i + '"]').value.trim();
+        if (!nu && !na) return;
+        if (!nu || !na) { bad = "For " + n + ", fill in both the number and the account name."; return; }
+        chs.push({ channel: n, number: nu, name: na });
+      });
+      if (bad) { toast(bad); return; }
+      if (pm === "direct" && !chs.length) { toast("Add at least one payment number."); return; }
+      run(rpc("vendor_save_payment_settings", { p: { mode: pm, channels: chs } }), "Payment settings saved");
+    }
+    else if (act === "saveShop") {
+      var ph = $("sh-phone").value.trim(); if (ph && !validPhone(ph)) { toast("Enter a valid shop phone, e.g. 0712345678."); return; }
+      run(rpc("vendor_update_shop", { p: { shop_name: $("sh-name").value, phone: ph, hours: $("sh-hours").value, coverage: $("sh-cov").value, about: $("sh-about").value, paused: $("sh-paused").checked, holiday: $("sh-hol").checked } }).then(function () { return rpc("vendor_my_shop").then(function (s) { SHOP = s; }); }), "Shop saved");
+    }
+    else if (act === "saveProfile") {
+      var name = $("pf-name").value.trim(), phone = $("pf-phone").value.replace(/[\s-]/g, "");
+      if (name.length < 2) { toast("Enter your name."); return; }
+      if (phone && !validPhone(phone)) { toast("Enter a valid phone number, e.g. 0712345678."); return; }
+      sb.from("profiles").update({ full_name: name, phone: phone || null }).eq("id", ME.id).then(function (r) {
+        if (r.error) { toast(/duplicate|unique/i.test(r.error.message) ? "That phone number is already used by another account." : "Could not save. Try again."); return; }
+        ME.name = name; ME.phone = phone; $("who").textContent = SHOP.shop_name; toast("Saved");
+      });
+    }
+    else if (act === "savePw") {
+      var pw = $("pw-new").value; if (pw.length < 8) { toast("Use at least 8 characters."); return; }
+      sb.auth.updateUser({ password: pw }).then(function (r) { if (r.error) toast(r.error.message); else { $("pw-new").value = ""; toast("Password updated"); } });
+    }
+  });
+
+  /* ---------- login ---------- */
+  $("lgGo").onclick = function () {
+    var email = $("lgEmail").value.trim(), pass = $("lgPass").value;
+    if (!/^\S+@\S+\.\S+$/.test(email) || !pass) { msg("Enter your email and password."); return; }
+    var btn = $("lgGo"); btn.disabled = true; msg("");
+    sb.auth.signInWithPassword({ email: email, password: pass }).then(function (r) {
+      btn.disabled = false;
+      if (r.error) { msg(/invalid login/i.test(r.error.message) ? "Wrong email or password." : r.error.message); return; }
+      start(r.data.user);
+    });
+  };
+  [$("lgEmail"), $("lgPass")].forEach(function (i) { i.addEventListener("keydown", function (e) { if (e.key === "Enter") $("lgGo").click(); }); });
+  function reset() { REC = {}; EXT = {}; PAYSET = null; PAYOK = false; KXOK = false; ME = null; SHOP = null; MEDIA = []; STG = []; VENDOR = ""; $("login").style.display = "flex"; }
+  $("logoutBtn").onclick = function () { sb.auth.signOut().then(function () { reset(); $("lgPass").value = ""; }); };
+  function deny(text) { sb.auth.signOut().then(function () { reset(); msg(text); }); }
+
+  function start(user) {
+    loadMe(user).then(function () {
+      if (!ME || ME.role !== "vendor") { deny("This account is not a vendor account."); return; }
+      if (!SHOP) { deny("Your account is not linked to a shop yet. Contact the admin."); return; }
+      $("login").style.display = "none";
+      VENDOR = String(SHOP.id);
+      $("who").textContent = SHOP.shop_name;
+      $("shopTag").innerHTML = SHOP.approval_status === "approved" ? pill("Approved", "ok") : pill(SHOP.approval_status, "wait");
+      return loadAll().catch(function (e) { toast("Could not load: " + e.message); console.error(e); }).then(function () { show("dashboard"); loadMedia().then(function () { if (cur === "media") show(cur); }); loadKx().then(function () { if (["dashboard", "shop", "gifts", "customers", "marketing", "staff", "settings"].indexOf(cur) > -1) show(cur); }); });
+    });
+  }
+
+  /* ---------- boot ---------- */
+  if (!sb) { msg("The vendor panel is not connected yet."); $("lgGo").disabled = true; return; }
+  sb.auth.getSession().then(function (r) { if (r.data && r.data.session) start(r.data.session.user); });
+})();
+</script>
+<script src="kx-extras.js"></script>
+</body>
+</html>

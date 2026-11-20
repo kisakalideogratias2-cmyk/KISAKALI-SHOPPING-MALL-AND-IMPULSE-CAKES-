@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FE980F">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <title>Surprise Customizer & Product Details - Kisakali Shopping Mall</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0D0D0D;
+            color: #FFFFFF;
+        }
+        header {
+            background-color: #363432 !important;
+            border-bottom: 1px solid #444;
+        }
+        .logo h1 { color: #FFFFFF; }
+        .logo h1 span { color: #FE980F; }
+        nav ul li a { color: #FFFFFF !important; }
+        nav ul li a.active, nav ul li a:hover { color: #FE980F !important; }
+        
+        /* Clean Light Background Panel for Option Selectors as specified in blueprint */
+        .customizer-panel {
+            background: #FFFFFF;
+            color: #363432;
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-top: 20px;
+        }
+        .customizer-panel label {
+            color: #363432;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .customizer-panel select, .customizer-panel textarea, .customizer-panel input {
+            background: #fcfcfc;
+            border: 1px solid #ccc;
+            color: #363432;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <h1>KISAKALI<span>SHOPPING MALL</span></h1>
+                <p class="location-tag" style="color: #b3b1ae;"><i class="fas fa-map-marker-alt" style="color: #FE980F;"></i> Ifakara, Morogoro, Tanzania</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Marketplace</a></li>
+                    <li><a href="checkout.html">Checkout</a></li>
+                    <li><a href="track.html">Track Order</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="container" id="pd-root" style="padding: 40px 0;">
+        <p style="color:#b3b1ae;text-align:center;padding:40px;">Loading product...</p>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>window.supabase || document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>');</script>
+    <script src="supabase-config.js"></script>
+    <script src="api.js"></script>
+<script>
+/* built-in copy: used only when api.js is not found next to this page */
+if (!window.KAPI) {
+// KISAKALI backend client: the single place where the website talks to Supabase.
+// Loaded after supabase-js and supabase-config.js. Defines window.KAPI.
+// If the config is empty, KAPI.live is false and every page shows a "not connected" message.
+(function () {
+  var C = window.KISAKALI_CONFIG || {};
+  var live = !!(C.SUPABASE_URL && C.SUPABASE_ANON_KEY && window.supabase && window.supabase.createClient);
+  var sb = live ? window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  }) : null;
+
+  // Calls a database function and turns {error} into a thrown Error with a readable message.
+  function rpc(name, args) {
+    if (!sb) return Promise.reject(new Error('The shop is not connected yet.'));
+    return sb.rpc(name, args || {}).then(function (r) {
+      if (r.error) throw new Error(r.error.message || 'Request failed');
+      return r.data;
+    });
+  }
+
+
+  /* If the connection cannot start, say exactly why (red bar at the top of the page) so it can be fixed fast. */
+  if (!live) {
+    var why = !window.KISAKALI_CONFIG ? "supabase-config.js did not load. It must be in the SAME folder as this page (check the file name and spelling)."
+      : (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY) ? "supabase-config.js is empty. Fill in SUPABASE_URL and SUPABASE_ANON_KEY."
+      : !window.supabase ? "The Supabase library could not be downloaded (both cdn.jsdelivr.net and unpkg.com failed). Check the internet connection, data saver or ad-blocker, then refresh."
+      : "The Supabase client could not start.";
+    window.KAPI_WHY = why;
+    var bar = function () {
+      if (!document.body || document.getElementById("kapi-why")) return;
+      var d = document.createElement("div"); d.id = "kapi-why";
+      d.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#b00020;color:#fff;padding:10px 14px;font:13px/1.4 sans-serif;text-align:center";
+      d.textContent = "Not connected: " + why + (location.protocol === "file:" ? " (You opened this as a file from your device. Open it from your website address instead.)" : "");
+      document.body.appendChild(d);
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bar); else bar();
+  }
+
+  window.KAPI = {
+    live: live,
+    sb: sb,
+    rpc: rpc,
+    placeOrder: function (payload) { return rpc('place_order', { p: payload }); },
+    track: function (number, phone) { return rpc('track_order', { p_number: number, p_phone: phone }); },
+    applyVendor: function (payload) { return rpc('submit_vendor_application', { p: payload }); },
+    // delivery photos live in the public "delivery-proofs" bucket
+    photoUrl: function (path) {
+      if (!sb || !path) return '';
+      return sb.storage.from('delivery-proofs').getPublicUrl(path).data.publicUrl;
+    }
+  };
+})();
+
+}
+</script>
+    <script>
+    (function () {
+      var root = document.getElementById("pd-root");
+      var P = null, OPT = { variant: [], flavor: [], addon: [] };
+
+      function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+      function money(n) { return Number(n || 0).toLocaleString("en-US"); }
+      function $(i) { return document.getElementById(i); }
+      function toast(m) {
+        var t = document.createElement("div"); t.className = "ks-toast"; t.textContent = m;
+        document.body.appendChild(t); setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 1800);
+      }
+      function message(text, withLink) {
+        root.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#b3b1ae;"><p style="margin-bottom:20px;">' + esc(text) + '</p>' +
+          (withLink ? '<a href="shop.html" class="btn" style="background:#FE980F;color:#0D0D0D;font-weight:bold;padding:10px 24px;display:inline-block;">Back to Marketplace</a>' : '') + '</div>';
+      }
+      function plus(n) { return n > 0 ? " (+ " + money(n) + " TSh)" : ""; }
+
+      function selectBlock(id, label, list) {
+        if (!list.length) return "";
+        return '<div><label>' + label + '</label><select id="' + id + '" onchange="recalculatePrice()">' +
+          list.map(function (o, i) { return '<option value="' + i + '">' + esc(o.name) + plus(o.price_modifier) + '</option>'; }).join("") +
+          '</select></div>';
+      }
+
+      function render() {
+        var out = P.stock <= 0;
+        var addons = OPT.addon.length ? '<div><label>Add-On Surprise Extras:</label><div style="display:flex;gap:15px;margin-top:5px;font-size:13px;flex-wrap:wrap;">' +
+          OPT.addon.map(function (o, i) {
+            return '<label style="font-weight:normal;cursor:pointer;"><input type="checkbox" class="pd-addon" value="' + i + '" onchange="recalculatePrice()"> ' + esc(o.name) + plus(o.price_modifier) + '</label>';
+          }).join("") + '</div></div>' : "";
+        var hasOpts = OPT.variant.length || OPT.flavor.length || OPT.addon.length;
+
+        root.style.display = "flex"; root.style.gap = "40px"; root.style.flexWrap = "wrap";
+        root.innerHTML =
+          '<div style="flex:1;min-width:300px;">' +
+            (P.image ? '<img src="' + esc(P.image) + '" alt="' + esc(P.title) + '" style="width:100%;border-radius:6px;border:1px solid #444;">'
+                     : '<div style="width:100%;height:320px;border-radius:6px;border:1px solid #444;background:#2b2927;display:flex;align-items:center;justify-content:center;color:#FE980F;font-size:48px;"><i class="fas fa-gift"></i></div>') +
+          '</div>' +
+          '<div style="flex:1.2;min-width:300px;">' +
+            '<span style="background:#FE980F;color:#0D0D0D;padding:4px 10px;font-size:11px;font-weight:bold;border-radius:4px;">' + (hasOpts ? 'SURPRISE CUSTOMIZER WIZARD' : 'PRODUCT DETAILS') + '</span>' +
+            '<h2 id="pd-title" style="font-size:28px;margin:10px 0 5px;color:#fff;">' + esc(P.title) + '</h2>' +
+            '<p style="color:#b3b1ae;margin-bottom:15px;"><i class="fas fa-store" style="color:#FE980F;"></i> Vendor: <span id="pd-vendor">' + esc(P.vendor.shop_name) + '</span></p>' +
+            (P.description ? '<p style="color:#b3b1ae;margin-bottom:15px;">' + esc(P.description) + '</p>' : '') +
+            '<div style="font-size:22px;color:#FE980F;font-weight:bold;margin-bottom:20px;">Base Price: <span>' + money(P.price) + '</span> TSh</div>' +
+            '<div class="customizer-panel">' +
+              '<h4 style="margin-bottom:15px;color:#363432;border-bottom:2px solid #FE980F;padding-bottom:5px;"><i class="fas fa-sliders-h"></i> ' + (hasOpts ? 'Customize Your Surprise' : 'Add a Message') + '</h4>' +
+              selectBlock("variant-picker", "Select Size / Weight Variant:", OPT.variant) +
+              selectBlock("flavor-picker", "Flavor / Floral Accent Color:", OPT.flavor) +
+              '<div><label>Inscription Card Text Note (Optional):</label><textarea id="card-inscription" maxlength="300" placeholder="e.g., Happy Birthday dearest! Wishing you endless joy. - From John" rows="2" style="resize:none;"></textarea></div>' +
+              addons +
+            '</div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:25px;background:#363432;padding:20px;border-radius:6px;border:1px solid #444;">' +
+              '<div><span style="font-size:14px;color:#b3b1ae;display:block;">Calculated Total Price:</span>' +
+              '<span style="font-size:24px;color:#FE980F;font-weight:bold;"><span id="dynamic-price">' + money(P.price) + '</span> TSh</span></div>' +
+              (out ? '<button class="btn" disabled style="background:#555;color:#ccc;font-weight:bold;padding:12px 30px;">Out of stock</button>'
+                   : '<button class="btn" style="background:#FE980F;color:#0D0D0D;font-weight:bold;padding:12px 30px;" onclick="lockConfiguration()">Lock &amp; Add to Cart</button>') +
+            '</div>' +
+          '</div>';
+        document.title = P.title + " - Kisakali Shopping Mall";
+        recalculatePrice();
+      }
+
+      function chosen() {
+        var v = $("variant-picker") ? OPT.variant[+$("variant-picker").value] : null;
+        var f = $("flavor-picker") ? OPT.flavor[+$("flavor-picker").value] : null;
+        var a = [].filter.call(document.querySelectorAll(".pd-addon"), function (c) { return c.checked; }).map(function (c) { return OPT.addon[+c.value]; });
+        return { variant: v, flavor: f, addons: a };
+      }
+      function total() {
+        var c = chosen(), t = Number(P.price);
+        if (c.variant) t += Number(c.variant.price_modifier);
+        if (c.flavor) t += Number(c.flavor.price_modifier);
+        c.addons.forEach(function (a) { t += Number(a.price_modifier); });
+        return t;
+      }
+      // Display only. The database recalculates the real price when the order is placed.
+      window.recalculatePrice = function () { if (P && $("dynamic-price")) $("dynamic-price").textContent = money(total()); };
+
+      window.lockConfiguration = function () {
+        if (!P || P.stock <= 0) return;
+        var c = chosen();
+        var item = {
+          id: P.id, productId: P.id, key: "custom-" + P.id + "-" + Date.now(),
+          name: P.title, price: total(), vendor: P.vendor.shop_name, img: P.image || "", qty: 1,
+          custom: { variant: c.variant ? c.variant.name : "", flavor: c.flavor ? c.flavor.name : "",
+                    inscription: $("card-inscription").value, addons: c.addons.map(function (a) { return a.name; }) }
+        };
+        var cart = []; try { cart = JSON.parse(localStorage.getItem("kisakali_cart")) || []; } catch (e) { }
+        cart.push(item);
+        localStorage.setItem("kisakali_cart", JSON.stringify(cart));
+        toast("Added to your cart");
+        setTimeout(function () { location.href = "shop.html"; }, 1200);
+      };
+
+      var id = parseInt(new URLSearchParams(location.search).get("id"), 10);
+      if (!id) { message("No product selected.", true); return; }
+      if (!(window.KAPI && KAPI.live)) { message("The shop is not connected yet. Please check back soon.", true); return; }
+
+      var sb = KAPI.sb;
+      Promise.all([
+        sb.from("products").select("id,title,description,price,image,stock,vendor:vendors(shop_name,paused,holiday)")
+          .eq("id", id).eq("is_active", true).eq("status", "published").maybeSingle(),
+        sb.from("product_options").select("kind,name,price_modifier").eq("product_id", id).order("id")
+      ]).then(function (r) {
+        if (r[0].error) throw new Error(r[0].error.message);
+        if (r[1].error) throw new Error(r[1].error.message);
+        var p = r[0].data;
+        if (!p || !p.vendor) { message("This product is not available.", true); return; }
+        if (p.vendor.paused || p.vendor.holiday) { message("This shop is not taking orders right now.", true); return; }
+        P = p;
+        (r[1].data || []).forEach(function (o) { if (OPT[o.kind]) OPT[o.kind].push(o); });
+        render();
+      }).catch(function (e) {
+        console.error(e);
+        message("Could not load this product. Check your connection and refresh the page.", false);
+      });
+    })();
+    </script>
+    <script src="brand.js"></script>
+<script src="kx-extras.js"></script>
+</body>
+</html>

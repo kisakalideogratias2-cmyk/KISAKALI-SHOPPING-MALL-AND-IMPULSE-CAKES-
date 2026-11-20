@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FE980F">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <title>Secure Checkout & Dispatch Lifecycle - Kisakali Shopping Mall</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0D0D0D;
+            color: #FFFFFF;
+        }
+        header {
+            background-color: #363432 !important;
+            border-bottom: 1px solid #444;
+        }
+        .logo h1 { color: #FFFFFF; }
+        .logo h1 span { color: #FE980F; }
+        nav ul li a { color: #FFFFFF !important; }
+        nav ul li a.active, nav ul li a:hover { color: #FE980F !important; }
+        
+        /* Clean Light Background Panel for Form as specified in blueprint */
+        .checkout-form-box {
+            background: #FFFFFF;
+            color: #363432;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .checkout-form-box label {
+            color: #363432;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .checkout-form-box input, .checkout-form-box textarea, .checkout-form-box select {
+            background: #fcfcfc;
+            border: 1px solid #ccc;
+            color: #363432;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <h1>KISAKALI<span>SHOPPING MALL</span></h1>
+                <p class="location-tag" style="color: #b3b1ae;"><i class="fas fa-map-marker-alt" style="color: #FE980F;"></i> Ifakara, Morogoro, Tanzania</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Marketplace</a></li>
+                    <li><a href="checkout.html" class="active">Checkout</a></li>
+                    <li><a href="track.html">Track Order</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="container" style="padding: 40px 0; max-width: 650px;">
+        <h2 style="margin-bottom: 10px; text-align: center; color: #fff;">Secure Checkout & Dispatch Lifecycle</h2>
+        <p style="text-align: center; color: #b3b1ae; font-size: 13px; margin-bottom: 25px;">Multi-vendor order routing with Tanzania mobile money verifications.</p>
+        
+        <div class="checkout-form-box">
+            <form onsubmit="handleCheckout(event)">
+                <div style="margin-bottom: 15px;">
+                    <label>Recipient / Customer Full Name</label>
+                    <input type="text" id="cust-name" placeholder="e.g. Baraka Juma" required>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label>Phone Number (Tanzania Mobile Money Contact)</label>
+                    <input type="text" id="cust-phone" placeholder="e.g. 0634172673" required>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label>Delivery Address within Ifakara / Morogoro</label>
+                    <textarea id="cust-address" placeholder="e.g. Kibaoni, Ifakara Town near CRDB Bank" required style="height: 70px; resize: none;"></textarea>
+                </div>
+
+                <div style="margin-bottom: 15px; background: #f1f1f1; padding: 12px; border-radius: 4px; border-left: 4px solid #FE980F;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold;">
+                        <input type="checkbox" id="anonymous-toggle" style="width: 18px; height: 18px;"> 
+                        Mark as Anonymous Surprise Delivery
+                    </label>
+                    <small style="color: #666; display: block; margin-top: 3px;">Our rider will keep your identity hidden and deliver the surprise package discreetly!</small>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label>Choose Tanzania Payment Channel</label>
+                    <select id="payment-channel">
+                        <option>Vodacom M-Pesa</option>
+                        <option>Tigo Pesa</option>
+                        <option>Airtel Money</option>
+                        <option>HaloPesa</option>
+                        <option>CRDB / NMB Bank Transfer</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn" style="width:100%; background: #FE980F; color: #0D0D0D; font-weight: bold; padding: 12px; font-size: 15px;">Place Secure Multi-Vendor Order</button>
+            </form>
+        </div>
+    </section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>window.supabase || document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>');</script>
+<script src="supabase-config.js"></script>
+<script src="api.js"></script>
+<script>
+/* built-in copy: used only when api.js is not found next to this page */
+if (!window.KAPI) {
+// KISAKALI backend client: the single place where the website talks to Supabase.
+// Loaded after supabase-js and supabase-config.js. Defines window.KAPI.
+// If the config is empty, KAPI.live is false and every page shows a "not connected" message.
+(function () {
+  var C = window.KISAKALI_CONFIG || {};
+  var live = !!(C.SUPABASE_URL && C.SUPABASE_ANON_KEY && window.supabase && window.supabase.createClient);
+  var sb = live ? window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  }) : null;
+
+  // Calls a database function and turns {error} into a thrown Error with a readable message.
+  function rpc(name, args) {
+    if (!sb) return Promise.reject(new Error('The shop is not connected yet.'));
+    return sb.rpc(name, args || {}).then(function (r) {
+      if (r.error) throw new Error(r.error.message || 'Request failed');
+      return r.data;
+    });
+  }
+
+
+  /* If the connection cannot start, say exactly why (red bar at the top of the page) so it can be fixed fast. */
+  if (!live) {
+    var why = !window.KISAKALI_CONFIG ? "supabase-config.js did not load. It must be in the SAME folder as this page (check the file name and spelling)."
+      : (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY) ? "supabase-config.js is empty. Fill in SUPABASE_URL and SUPABASE_ANON_KEY."
+      : !window.supabase ? "The Supabase library could not be downloaded (both cdn.jsdelivr.net and unpkg.com failed). Check the internet connection, data saver or ad-blocker, then refresh."
+      : "The Supabase client could not start.";
+    window.KAPI_WHY = why;
+    var bar = function () {
+      if (!document.body || document.getElementById("kapi-why")) return;
+      var d = document.createElement("div"); d.id = "kapi-why";
+      d.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#b00020;color:#fff;padding:10px 14px;font:13px/1.4 sans-serif;text-align:center";
+      d.textContent = "Not connected: " + why + (location.protocol === "file:" ? " (You opened this as a file from your device. Open it from your website address instead.)" : "");
+      document.body.appendChild(d);
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bar); else bar();
+  }
+
+  window.KAPI = {
+    live: live,
+    sb: sb,
+    rpc: rpc,
+    placeOrder: function (payload) { return rpc('place_order', { p: payload }); },
+    track: function (number, phone) { return rpc('track_order', { p_number: number, p_phone: phone }); },
+    applyVendor: function (payload) { return rpc('submit_vendor_application', { p: payload }); },
+    // delivery photos live in the public "delivery-proofs" bucket
+    photoUrl: function (path) {
+      if (!sb || !path) return '';
+      return sb.storage.from('delivery-proofs').getPublicUrl(path).data.publicUrl;
+    }
+  };
+})();
+
+}
+</script>
+<script>
+(function () {
+  var FEE = 3000; // shown until the real fee is read from the database
+  function $(i) { return document.getElementById(i); }
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function money(n) { return Number(n || 0).toLocaleString("en-US") + " TSh"; }
+  function valid(p) { return /^(0|\+?255)[67]\d{8}$/.test(String(p || "").replace(/[\s-]/g, "")); }
+  function readCart() { try { return JSON.parse(localStorage.getItem("kisakali_cart")) || []; } catch (e) { return []; } }
+
+  var items = readCart(), vendors = [], sub = 0;
+  items.forEach(function (it) {
+    var v = it.vendor || "Other"; if (vendors.indexOf(v) < 0) vendors.push(v);
+    sub += it.price * (it.qty || 1);
+  });
+  var fee = vendors.length * FEE, total = sub + fee;
+
+  var box = document.querySelector(".checkout-form-box");
+  if (!box) return;
+  var form = box.querySelector("form"), btn = form.querySelector("button[type=submit]");
+
+  var sum = document.createElement("div");
+  sum.className = "ks-box";
+  sum.innerHTML = "<h3>Your Order</h3>" + (items.length ? items.map(function (it) {
+    return '<div class="ks-line"><span>' + esc(it.name) + " x" + (it.qty || 1) + '<br><small style="color:#b3b1ae">' + esc(it.vendor || "") + '</small></span><span>' + money(it.price * (it.qty || 1)) + "</span></div>";
+  }).join("") +
+    '<div class="ks-line"><span>Subtotal</span><span>' + money(sub) + "</span></div>" +
+    '<div class="ks-line"><span>Delivery (' + vendors.length + " vendor" + (vendors.length > 1 ? "s" : "") + ")</span><span>" + money(fee) + "</span></div>" +
+    '<div class="ks-line total"><span>Total</span><span>' + money(total) + "</span></div>" +
+    (window.KAPI && KAPI.live ? '<small style="color:#b3b1ae">Final prices are confirmed by our system when you place the order.</small>' : "")
+    : '<p style="color:#b3b1ae">Your cart is empty. <a href="shop.html" style="color:#FE980F">Go to the marketplace</a></p>');
+  box.parentNode.insertBefore(sum, box);
+
+  var today = new Date().toISOString().slice(0, 10);
+  var hasCake = items.some(function (it) { return /cake|keki/i.test((it.title || it.name || "") + ""); });
+  if (hasCake) { var t = new Date(); t.setDate(t.getDate() + 1); today = t.toISOString().slice(0, 10); }
+  var extra = document.createElement("div");
+  extra.innerHTML =
+    '<label>Recipient Name (if different from you)</label><input type="text" id="r-name" placeholder="e.g. Amina Said">' +
+    '<label>Recipient Phone (for the rider)</label><input type="text" id="r-phone" placeholder="e.g. 0754000000">' +
+    (hasCake ? '<div class="ks-err" style="background:#2a1a22;border-color:#E8508A;color:#fff">Cake order: please choose a delivery date at least 1 day ahead.</div><label>Message on the cake (optional)</label><input type="text" id="d-cake" maxlength="60" placeholder="e.g. Happy Birthday Amina">' : '') +
+    '<label>Delivery Date</label><input type="date" id="d-date" min="' + today + '">' +
+    '<label>Delivery Time</label><select id="d-time"><option>Morning (8am-12pm)</option><option>Afternoon (12pm-4pm)</option><option>Evening (4pm-8pm)</option></select>' +
+    '<label>Card Message (optional)</label><textarea id="d-note" maxlength="200" style="height:60px;resize:none" placeholder="Message to print on the card"></textarea>' +
+    '<div id="ks-err-slot"></div>';
+  form.insertBefore(extra, btn);
+
+  function showErr(m) { $("ks-err-slot").innerHTML = '<div class="ks-err">' + esc(m) + "</div>"; }
+
+  function finish(num, tot, otp, channel, anonymous) {
+    sum.style.display = "none";
+    box.innerHTML = '<div style="text-align:center">' +
+      '<h2 style="color:#363432">Order received!</h2>' +
+      '<p style="margin:10px 0">Your order number is</p>' +
+      '<p style="font-size:26px;font-weight:bold;color:#FE980F">' + esc(num) + "</p>" +
+      '<p style="margin:12px 0;color:#363432">Total: <b>' + money(tot) + "</b><br>Payment channel: " + esc(channel) + "</p>" +
+      (anonymous || !otp ? "" : '<p style="color:#363432">Delivery code: <b style="font-size:20px">' + esc(otp) + '</b><br><small>Give this code to the rider when your gift arrives.</small></p>') +
+      '<p style="color:#666;font-size:13px">Status: payment pending. Our team will confirm your payment before the vendors start preparing.</p>' +
+      '<a class="btn" href="track.html?o=' + encodeURIComponent(num) + '" style="display:inline-block;margin-top:15px;background:#FE980F;color:#0D0D0D;font-weight:bold;padding:12px 24px;text-decoration:none;border-radius:4px">Track my order</a></div>';
+  }
+
+  window.handleCheckout = function (ev) {
+    ev.preventDefault();
+    if (!items.length) { showErr("Your cart is empty."); return; }
+    var phone = $("cust-phone").value, rphone = $("r-phone").value;
+    if (!valid(phone)) { showErr("Enter a valid Tanzanian phone number, e.g. 0634172673."); return; }
+    if (hasCake && !$("d-date").value) { showErr("Please choose a delivery date for your cake."); return; }
+    if (rphone && !valid(rphone)) { showErr("The recipient phone number is not valid."); return; }
+    var anon = $("anonymous-toggle").checked, channel = $("payment-channel").value;
+
+    if (window.KAPI && KAPI.live) {
+      btn.disabled = true;
+      KAPI.placeOrder({
+        customer_name: $("cust-name").value, customer_phone: phone, address: $("cust-address").value,
+        recipient_name: $("r-name").value, recipient_phone: rphone, delivery_date: $("d-date").value,
+        delivery_time: $("d-time").value, note: ($("d-cake") && $("d-cake").value ? "[CAKE: " + $("d-cake").value + "] " : "") + $("d-note").value, is_anonymous: anon, payment_channel: channel,
+        items: items.map(function (it) { return { product_id: it.productId || it.id, qty: it.qty || 1, custom: it.custom || null }; })
+      }).then(function (r) {
+        localStorage.removeItem("kisakali_cart");
+        finish(r.order_number, r.total, r.otp, channel, anon);
+      }).catch(function (e) { btn.disabled = false; showErr(e.message || "Could not place your order. Please try again."); });
+      return;
+    }
+
+    showErr("The shop is not connected yet. Please try again later.");
+  };
+})();
+</script>
+<script>
+/* Delivery or Pickup (choice saved from the homepage "Where to deliver?") */
+(function () {
+  var addr = document.getElementById("cust-address"); if (!addr) return;
+  var wrap = addr.parentNode, saved = {};
+  try { saved = JSON.parse(localStorage.getItem("kx_loc")) || {}; } catch (e) {}
+  var mode = saved.mode === "pickup" ? "pickup" : "delivery";
+  var seg = document.createElement("div");
+  seg.style.cssText = "margin-bottom:15px";
+  seg.innerHTML = '<label>How do you want to receive your order?</label><div style="display:flex;gap:8px"><button type="button" data-m="delivery" style="flex:1;padding:12px;border-radius:6px;border:1px solid #FE980F;font-weight:bold;cursor:pointer">Delivery</button><button type="button" data-m="pickup" style="flex:1;padding:12px;border-radius:6px;border:1px solid #FE980F;font-weight:bold;cursor:pointer">Pickup</button></div><small id="pk-note" style="display:none;color:#666;margin-top:6px">You collect your order from the vendor. The pickup point is confirmed after you order.</small>';
+  wrap.parentNode.insertBefore(seg, wrap);
+  var typed = "";
+  if (mode === "delivery" && (saved.area || saved.addr)) addr.value = ((saved.area || "") + (saved.addr ? ", " + saved.addr : "")).replace(/^, /, "");
+  function paint() {
+    [].forEach.call(seg.querySelectorAll("[data-m]"), function (b) { var on = b.getAttribute("data-m") === mode; b.style.background = on ? "#FE980F" : "#fff"; b.style.color = "#0D0D0D"; });
+    document.getElementById("pk-note").style.display = mode === "pickup" ? "block" : "none";
+    if (mode === "pickup") { if (addr.value && addr.value.indexOf("PICKUP") !== 0) typed = addr.value; addr.value = "PICKUP - customer collects from the vendor"; wrap.style.display = "none"; }
+    else { if (addr.value.indexOf("PICKUP") === 0) addr.value = typed; wrap.style.display = ""; }
+    var n = document.getElementById("d-note");
+    if (n && mode === "delivery" && n.value.indexOf("[PICKUP] ") === 0) n.value = n.value.slice(9);
+  }
+  seg.addEventListener("click", function (e) { var b = e.target.closest("[data-m]"); if (b) { mode = b.getAttribute("data-m"); paint(); } });
+  paint();
+  var orig = window.handleCheckout;
+  window.handleCheckout = function (ev) {
+    var n = document.getElementById("d-note");
+    if (mode === "pickup" && n && n.value.indexOf("[PICKUP]") !== 0) n.value = "[PICKUP] " + n.value;
+    return orig(ev);
+  };
+})();
+</script>
+    <script src="brand.js"></script>
+<script src="kx-extras.js"></script>
+</body>
+</html>

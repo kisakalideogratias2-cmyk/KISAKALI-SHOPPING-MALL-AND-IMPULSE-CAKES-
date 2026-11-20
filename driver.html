@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FE980F">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+<title>Rider Portal - Kisakali Shopping Mall</title>
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+body{background:#0D0D0D;color:#fff}
+header{background:#363432!important;border-bottom:1px solid #444}
+.logo h1{color:#fff}.logo h1 span{color:#FE980F}
+nav ul li a{color:#fff!important}nav ul li a.active,nav ul li a:hover{color:#FE980F!important}
+.job-card{background:#363432;border:1px solid #444;padding:20px;border-radius:6px;margin-bottom:20px}
+.job-card.sur{border-left:4px solid #ff3333}
+.warning-label{background:#ff3333;color:#fff;padding:4px 10px;font-size:11px;font-weight:bold;border-radius:4px;display:inline-block;margin-bottom:10px}
+.sub-title{color:#fff;font-size:18px;margin-bottom:15px}.sub-title i{color:#FE980F}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;margin-bottom:20px;border-bottom:1px solid #444;-webkit-overflow-scrolling:touch}
+.tab-btn{flex:0 0 auto;background:#363432;color:#fff;border:1px solid #444;border-radius:20px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap}
+.tab-btn i{color:#FE980F;margin-right:6px}.tab-btn.on{background:#FE980F;color:#0D0D0D;border-color:#FE980F}.tab-btn.on i{color:#0D0D0D}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;font-size:13px;color:#b3b1ae}
+.topbar button{background:#363432;color:#fff;border:1px solid #555;border-radius:6px;padding:8px 14px;cursor:pointer}
+.badge{padding:4px 8px;border-radius:4px;font-size:11px;font-weight:bold;white-space:nowrap}
+.badge-pending{background:#ff9900;color:#000}.badge-verified{background:#00cc66;color:#000}.badge-bad{background:#ff4d4d;color:#fff}
+.stat-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:20px}
+@media (min-width:480px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:#262423;border:1px solid #444;border-radius:6px;padding:14px}
+.stat-card h5{font-size:12px;color:#b3b1ae;font-weight:normal;margin-bottom:6px}.stat-card .num{font-size:18px;font-weight:bold;color:#FE980F}
+.alert-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin-bottom:8px;background:#262423;border-radius:6px;border-left:4px solid #FE980F;font-size:14px}
+.note-small{font-size:12px;color:#b3b1ae;margin-top:10px}
+.line{font-size:13px;color:#b3b1ae;margin:6px 0}
+.vb{background:#FE980F;color:#0D0D0D;border:0;border-radius:4px;padding:9px 14px;font-size:13px;font-weight:bold;cursor:pointer;margin:2px 4px 2px 0}
+.vb:disabled{opacity:.5;cursor:not-allowed}.vb.grey{background:#666;color:#fff}.vb.red{background:#ff4d4d;color:#fff}
+.fi{width:100%;box-sizing:border-box;padding:10px;background:#0D0D0D;border:1px solid #555;color:#fff;border-radius:4px;margin:4px 0}
+.fgrid{display:grid;grid-template-columns:1fr;gap:12px;margin:12px 0;font-size:13px;color:#b3b1ae}
+@media (min-width:480px){.fgrid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}}
+.box{background:#363432;border:1px solid #444;padding:20px;border-radius:6px;margin-bottom:20px}
+.pane{display:none}.pane.active{display:block}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#FE980F;color:#0D0D0D;padding:10px 18px;border-radius:6px;font-weight:bold;display:none;z-index:1200;max-width:90%;text-align:center}
+#login{position:fixed;inset:0;background:#0D0D0D;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.lbox{background:#363432;border:1px solid #444;border-top:4px solid #FE980F;border-radius:8px;padding:28px;width:100%;max-width:360px;text-align:center}
+.lbox h2 span{color:#FE980F}
+.lbox input{width:100%;box-sizing:border-box;margin:8px 0;padding:12px;background:#262423;color:#fff;border:1px solid #555;border-radius:4px}
+.lbox button{width:100%;margin-top:8px;padding:12px;background:#FE980F;color:#0D0D0D;border:0;border-radius:4px;font-weight:bold;cursor:pointer}
+.lbox button:disabled{opacity:.5}
+#lgMsg{color:#ff4d4d;font-size:13px;min-height:18px}
+#map{height:320px;border-radius:6px;margin:12px 0;background:#262423}
+.exp-ok{color:#00cc66}.exp-soon{color:#ff9900}.exp-bad{color:#ff4d4d}
+html,body{max-width:100%;overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+img{max-width:100%}
+.container{min-width:0;width:100%;padding-left:12px;padding-right:12px}
+header .header-container{flex-wrap:wrap;justify-content:center}
+.logo{text-align:center}
+header nav ul{flex-wrap:wrap;justify-content:center;row-gap:8px}
+.topbar{flex-direction:column;align-items:flex-start}
+.item-wrap{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<div id="login"><div class="lbox">
+  <h2>KISAKALI<span>SHOPPING MALL</span></h2>
+  <p style="color:#b3b1ae;margin-bottom:10px">Rider Login</p>
+  <input id="lgEmail" type="email" placeholder="Email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <input id="lgPass" type="password" placeholder="Password" autocomplete="current-password">
+  <button id="lgGo" type="button">Sign in</button>
+  <p id="lgMsg"></p>
+  <p class="note-small">Rider accounts are created by the KISAKALI / IMPULSE CAKES admin. If you cannot sign in, contact dispatch.</p>
+</div></div>
+
+<header>
+  <div class="container header-container">
+    <div class="logo">
+      <h1>KISAKALI<span>SHOPPING MALL</span></h1>
+      <p class="location-tag" style="color:#b3b1ae"><i class="fas fa-motorcycle" style="color:#FE980F"></i> Morogoro / Ifakara Delivery Courier Portal</p>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Marketplace</a></li>
+        <li><a href="vendor.html">Vendor Panel</a></li>
+        <li><a href="driver.html" class="active">Rider Portal</a></li>
+        <li><a href="admin.html">Super Admin</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="container" style="padding:40px 0;max-width:700px">
+  <div class="topbar"><span><i class="fas fa-id-badge" style="color:#FE980F"></i> <b id="who"></b> &middot; <span id="verTag"></span></span><button id="logoutBtn" type="button">Logout</button></div>
+  <div class="tabs" id="tabs"></div>
+  <div id="pane-deliveries" class="pane active"></div>
+  <div id="pane-live" class="pane"></div>
+  <div id="pane-earnings" class="pane"></div>
+  <div id="pane-documents" class="pane"></div>
+  <div id="pane-ratings" class="pane"></div>
+  <div id="pane-incidents" class="pane"></div>
+  <div id="pane-profile" class="pane"></div>
+  <div id="pane-messages" class="pane"></div>
+</section>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>window.supabase || document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>');</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="supabase-config.js"></script>
+<script src="api.js"></script>
+<script>
+/* built-in copy: used only when api.js is not found next to this page */
+if (!window.KAPI) {
+(function () {
+  var C = window.KISAKALI_CONFIG || {};
+  var live = !!(C.SUPABASE_URL && C.SUPABASE_ANON_KEY && window.supabase && window.supabase.createClient);
+  var sb = live ? window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  }) : null;
+
+  function rpc(name, args) {
+    if (!sb) return Promise.reject(new Error('The shop is not connected yet.'));
+    return sb.rpc(name, args || {}).then(function (r) {
+      if (r.error) throw new Error(r.error.message || 'Request failed');
+      return r.data;
+    });
+  }
+
+  if (!live) {
+    var why = !window.KISAKALI_CONFIG ? "supabase-config.js did not load. It must be in the SAME folder as this page (check the file name and spelling)."
+      : (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY) ? "supabase-config.js is empty. Fill in SUPABASE_URL and SUPABASE_ANON_KEY."
+      : !window.supabase ? "The Supabase library could not be downloaded (both cdn.jsdelivr.net and unpkg.com failed). Check the internet connection, data saver or ad-blocker, then refresh."
+      : "The Supabase client could not start.";
+    window.KAPI_WHY = why;
+    var bar = function () {
+      if (!document.body || document.getElementById("kapi-why")) return;
+      var d = document.createElement("div"); d.id = "kapi-why";
+      d.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#b00020;color:#fff;padding:10px 14px;font:13px/1.4 sans-serif;text-align:center";
+      d.textContent = "Not connected: " + why;
+      document.body.appendChild(d);
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bar); else bar();
+  }
+
+  window.KAPI = {
+    live: live,
+    sb: sb,
+    rpc: rpc,
+    placeOrder: function (payload) { return rpc('place_order', { p: payload }); },
+    track: function (number, phone) { return rpc('track_order', { p_number: number, p_phone: phone }); },
+    applyVendor: function (payload) { return rpc('submit_vendor_application', { p: payload }); },
+    photoUrl: function (path) {
+      if (!sb || !path) return '';
+      return sb.storage.from('delivery-proofs').getPublicUrl(path).data.publicUrl;
+    }
+  };
+})();
+}
+</script>
+<script>
+(function () {
+  var sb = window.KAPI && KAPI.live ? KAPI.sb : null;
+  var ME = null, DRV = null, JOBS = [], OFFERS = [], EARN = null, DOCS = [], RATINGS = [], INCIDENTS = [];
+  var cur = "deliveries", busy = false;
+  var map = null, marker = null, watchId = null, lastSent = 0;
+
+  function $(i) { return document.getElementById(i); }
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function money(n) { return Number(n || 0).toLocaleString("en-US") + " TSh"; }
+  function toast(m) { var t = $("toast"); t.textContent = m; t.style.display = "block"; clearTimeout(toast.h); toast.h = setTimeout(function () { t.style.display = "none"; }, 3000); }
+  function msg(t) { $("lgMsg").textContent = t || ""; }
+  function validPhone(p) { return /^(0|\+?255)[67]\d{8}$/.test(String(p || "").replace(/[\s-]/g, "")); }
+  function fmtDate(d) { try { return new Date(d + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }); } catch (e) { return d || ""; } }
+  function fmtDateTime(d) { try { return new Date(d).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } }
+  function badge(t, cls) { return '<span class="badge ' + cls + '">' + esc(t) + '</span>'; }
+  function check(r) { if (r.error) throw new Error(r.error.message); return r.data; }
+
+  /* A rider fee counts as paid once admin or vendor has confirmed it (any spelling/case of "paid", or a paid-at time). */
+  function isRiderPaid(o) {
+    if (!o) return false;
+    if (String(o.rider_payment_status || "").trim().toLowerCase() === "paid") return true;
+    return !!(o.rider_fee_paid || o.rider_paid || o.rider_paid_at || o.rider_fee_paid_at);
+  }
+
+  var DOC_LABELS = { license: "Driving licence", insurance: "Insurance", vehicle_registration: "Vehicle registration", id_card: "National ID" };
+  var INC_LABELS = { accident: "Accident", customer_unreachable: "Customer unreachable", wrong_address: "Wrong address", damaged_item: "Damaged item", other: "Other" };
+
+  /* ---------- data ---------- */
+  function loadMe(user) {
+    return Promise.all([
+      sb.from("profiles").select("full_name,phone,role").eq("id", user.id).maybeSingle(),
+      sb.from("drivers").select("id,vehicle_info,verification_status").eq("user_id", user.id).maybeSingle()
+    ]).then(function (r) {
+      var p = r[0].data || {};
+      ME = { id: user.id, email: user.email || "", name: p.full_name || "", phone: p.phone || "", role: p.role || "" };
+      DRV = r[1].data || null;
+    });
+  }
+  function loadJobs() {
+    return Promise.all([sb.rpc("driver_orders"), sb.rpc("driver_offers")]).then(function (rs) {
+      if (rs[0].error) throw new Error(rs[0].error.message);
+      JOBS = rs[0].data || [];
+      OFFERS = rs[1].error ? [] : (rs[1].data || []);
+      syncTracking();
+    });
+  }
+  function loadEarnings() {
+    return sb.rpc("driver_earnings").then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      EARN = r.data || { total: 0, paid: 0, unpaid: 0, orders: [] };
+      var list = EARN.orders || [];
+      var nums = list.map(function (o) { return o.order_number; }).filter(Boolean);
+      if (!nums.length) return;
+      /* Get the latest rider payment status straight from the orders, so confirmed payments show as Paid. */
+      return sb.from("orders").select("order_number,rider_payment_status,rider_paid_at").in("order_number", nums).then(function (x) {
+        if (x.error || !x.data) return;
+        var m = {};
+        x.data.forEach(function (row) { m[row.order_number] = row; });
+        list.forEach(function (o) {
+          var f = m[o.order_number];
+          if (!f) return;
+          if (f.rider_payment_status != null) o.rider_payment_status = f.rider_payment_status;
+          if (f.rider_paid_at) o.rider_paid_at = f.rider_paid_at;
+        });
+      }, function () { /* ignore: keep what driver_earnings returned */ });
+    });
+  }
+  function loadDocs() {
+    return sb.from("driver_documents").select("*").eq("driver_id", DRV.id).order("expires_on", { ascending: true, nullsFirst: false })
+      .then(function (r) { DOCS = check(r) || []; });
+  }
+  function loadRatings() {
+    return sb.from("driver_ratings").select("rating,comment,created_at").eq("driver_id", DRV.id).order("created_at", { ascending: false }).limit(50)
+      .then(function (r) { RATINGS = check(r) || []; });
+  }
+  function loadIncidents() {
+    return sb.from("driver_incidents").select("*").eq("driver_id", DRV.id).order("created_at", { ascending: false }).limit(50)
+      .then(function (r) { INCIDENTS = check(r) || []; });
+  }
+
+  /* ---------- live location ---------- */
+  function hasActiveJobs() { return JOBS.length > 0; }
+  function syncTracking() {
+    if (hasActiveJobs()) startTracking(); else stopTracking();
+  }
+  function startTracking() {
+    if (watchId !== null || !navigator.geolocation || !DRV) return;
+    watchId = navigator.geolocation.watchPosition(function (p) {
+      var lat = p.coords.latitude, lng = p.coords.longitude;
+      drawMap(lat, lng);
+      var now = Date.now();
+      if (now - lastSent < 10000) return;
+      lastSent = now;
+      sb.from("driver_locations").upsert({ driver_id: DRV.id, lat: lat, lng: lng, updated_at: new Date().toISOString() })
+        .then(function (r) { if (r.error) console.error("Location save failed:", r.error.message); });
+      setLocStatus("Sharing your location. Last update: " + new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }));
+    }, function (err) {
+      setLocStatus("Location unavailable: " + err.message + ". Allow location access in your browser.");
+    }, { enableHighAccuracy: true, maximumAge: 5000 });
+  }
+  function stopTracking() {
+    if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    setLocStatus("Location sharing is off. It starts again when you have a delivery.");
+  }
+  function setLocStatus(t) { var el = $("locStatus"); if (el) el.textContent = t; }
+  function drawMap(lat, lng) {
+    if (!window.L || !$("map")) return;
+    if (!map) {
+      map = L.map("map").setView([lat, lng], 15);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap" }).addTo(map);
+      marker = L.marker([lat, lng]).addTo(map);
+    } else {
+      marker.setLatLng([lat, lng]);
+    }
+  }
+
+  /* ---------- deliveries view ---------- */
+  function jobCard(j, i) {
+    var out = j.status === "Out for Delivery";
+    var h = '<div class="job-card' + (j.is_anonymous ? " sur" : "") + '">' +
+      (j.is_anonymous ? '<span class="warning-label"><i class="fas fa-mask"></i> SURPRISE DELIVERY - sender concealed</span><br>' : "") +
+      '<b>' + esc(j.order_number) + '</b> ' + (out ? badge("Out for delivery", "badge-verified") : badge("Ready for pickup", "badge-pending")) +
+      '<p class="line"><i class="fas fa-user"></i> ' + esc(j.recipient) + '</p>' +
+      '<p class="line"><i class="fas fa-map-marker-alt"></i> ' + esc(j.address) + ' <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(j.address) + '" target="_blank" rel="noopener" style="color:#FE980F">Open in Maps</a></p>' +
+      ((j.delivery_date || j.delivery_time) ? '<p class="line"><i class="fas fa-clock"></i> ' + (j.delivery_date ? fmtDate(j.delivery_date) : "") + ' ' + esc(j.delivery_time || "") + '</p>' : "");
+    if (j.is_anonymous) h += '<p class="line" style="color:#FE980F">Do not call the recipient. Contact dispatch if there is a problem. No delivery code is needed, but the photo is required.</p>';
+    else if (j.phone) h += '<p class="line"><i class="fas fa-phone"></i> <a href="tel:' + esc(j.phone) + '" style="color:#FE980F">' + esc(j.phone) + '</a></p>';
+    if (!out) {
+      h += '<button class="vb" data-act="pickup" data-i="' + i + '">Confirm pickup</button></div>';
+    } else {
+      h += '<div class="fgrid">' +
+        (j.needs_code ? '<div>Delivery code from the recipient<input class="fi" id="code-' + i + '" inputmode="numeric" maxlength="4" placeholder="4 digits" autocomplete="off"></div>' : "") +
+        '<div>Proof of delivery photo (required)<input class="fi" id="photo-' + i + '" type="file" accept="image/*" capture="environment"></div></div>' +
+        '<button class="vb" data-act="deliver" data-i="' + i + '">Confirm delivery</button></div>';
+    }
+    return h;
+  }
+  function offersHtml() {
+    if (!OFFERS.length) return "";
+    return '<h3 class="sub-title" style="margin-top:18px"><i class="fas fa-bell"></i> New Offers (' + OFFERS.length + ')</h3>' + OFFERS.map(function (o, i) {
+      return '<div class="job-card' + (o.is_anonymous ? " sur" : "") + '"><b>' + esc(o.order_number) + '</b> ' + badge(o.for_me ? "Offered to you" : "Open to all riders", o.for_me ? "badge-verified" : "badge-pending") +
+        (o.is_anonymous ? '<br><span class="warning-label"><i class="fas fa-mask"></i> SURPRISE DELIVERY</span>' : "") +
+        ((o.shops || []).length ? '<p class="line"><i class="fas fa-store"></i> Pickup: ' + esc(o.shops.join(", ")) + '</p>' : "") +
+        '<p class="line"><i class="fas fa-map-marker-alt"></i> ' + esc(o.address) + '</p>' +
+        ((o.delivery_date || o.delivery_time) ? '<p class="line"><i class="fas fa-clock"></i> ' + (o.delivery_date ? fmtDate(o.delivery_date) : "") + ' ' + esc(o.delivery_time || "") + '</p>' : "") +
+        '<button class="vb" data-act="accept" data-i="' + i + '">Accept</button>' + (o.for_me ? '<button class="vb grey" data-act="decline" data-i="' + i + '">Decline</button>' : "") + '</div>';
+    }).join("");
+  }
+
+  /* ---------- views ---------- */
+  var V = {};
+  V.deliveries = function () {
+    var out = JOBS.filter(function (j) { return j.status === "Out for Delivery"; }).length;
+    return '<h2 style="margin-bottom:16px;border-left:4px solid #FE980F;padding-left:10px">My Deliveries</h2>' +
+      '<div class="stat-grid"><div class="stat-card"><h5>Assigned to me</h5><div class="num">' + JOBS.length + '</div></div><div class="stat-card"><h5>Out for delivery</h5><div class="num">' + out + '</div></div></div>' +
+      '<button class="vb grey" data-act="refresh" type="button"><i class="fas fa-sync"></i> Refresh</button>' + offersHtml() +
+      (JOBS.length ? JOBS.map(jobCard).join("") : '<div class="box" style="margin-top:14px"><p class="note-small" style="margin:0">No deliveries assigned to you right now. New orders appear above under New Offers. Tap Refresh to check again.</p></div>');
+  };
+
+  V.live = function () {
+    return '<h2 style="margin-bottom:16px;border-left:4px solid #FE980F;padding-left:10px">Live map</h2>' +
+      '<p class="note-small" id="locStatus" style="margin:0 0 6px">' + (hasActiveJobs() ? "Starting location..." : "Location sharing is off. It starts again when you have a delivery.") + '</p>' +
+      '<div id="map"></div>' +
+      '<p class="note-small">Customers see your last location while their order is on the way. Sharing stops after you confirm delivery.</p>';
+  };
+
+  V.earnings = function () {
+    if (!EARN) return '<div class="box"><p class="note-small" style="margin:0">Loading...</p></div>';
+    var list = EARN.orders || [];
+    var total = EARN.total, paidSum = EARN.paid, unpaidSum = EARN.unpaid;
+    if (list.length) {
+      /* Totals are worked out from the orders below, so they always match the Paid / Unpaid labels. */
+      total = 0; paidSum = 0; unpaidSum = 0;
+      list.forEach(function (o) {
+        var fee = Number(o.delivery_fee) || 0;
+        total += fee;
+        if (isRiderPaid(o)) paidSum += fee; else unpaidSum += fee;
+      });
+    }
+    var rows = list.map(function (o) {
+      var paid = isRiderPaid(o);
+      return '<div class="alert-item"><span><b>' + esc(o.order_number) + '</b><br><small style="color:#b3b1ae">' + (o.delivered_at ? fmtDateTime(o.delivered_at) : "") + '</small></span>' +
+        '<span>' + money(o.delivery_fee) + ' ' + badge(paid ? "Paid" : "Unpaid", paid ? "badge-verified" : "badge-pending") + '</span></div>';
+    }).join("");
+    return '<h2 style="margin-bottom:16px;border-left:4px solid #FE980F;padding-left:10px">My Earnings</h2>' +
+      '<div class="stat-grid">' +
+      '<div class="stat-card"><h5>Total earned</h5><div class="num">' + money(total) + '</div></div>' +
+      '<div class="stat-card"><h5>Paid to me</h5><div class="num">' + money(paidSum) + '</div></div>' +
+      '<div class="stat-card"><h5>Still unpaid</h5><div class="num">' + money(unpaidSum) + '</div></div></div>' +
+      '<p class="note-small" style="margin:0 0 12px">Payments are collected in cash by the vendor or customer and confirmed by admin.</p>' +
+      (rows || '<div class="box"><p class="note-small" style="margin:0">No completed deliveries yet.</p></div>') +
+      '<button class="vb grey" data-act="refreshEarn" type="button"><i class="fas fa-sync"></i> Refresh</button>';
+  };
+
+  V.documents = function () {
+    var now = new Date();
+    var rows = DOCS.length ? DOCS.map(function (d) {
+      var cls = "", note = "No expiry date";
+      if (d.expires_on) {
+        var days = Math.floor((new Date(d.expires_on + "T00:00:00") - now) / 86400000);
+        if (days < 0) { cls = "exp-bad"; note = "Expired " + fmtDate(d.expires_on); }
+        else if (days <= 30) { cls = "exp-soon"; note = "Expires in " + days + " day(s): " + fmtDate(d.expires_on); }
+        else { cls = "exp-ok"; note = "Valid until " + fmtDate(d.expires_on); }
+      }
+      return '<div class="alert-item"><span><b>' + esc(DOC_LABELS[d.doc_type] || d.doc_type) + '</b>' +
+        (d.doc_number ? ' <small style="color:#b3b1ae">' + esc(d.doc_number) + '</small>' : "") +
+        '<br><small class="' + cls + '">' + esc(note) + '</small></span>' +
+        '<button class="vb red" data-act="deldoc" data-id="' + esc(d.id) + '">Delete</button></div>';
+    }).join("") : '<div class="box"><p class="note-small" style="margin:0">No documents added yet. Add your licence and insurance below, with their expiry dates.</p></div>';
+
+    var typeOpts = Object.keys(DOC_LABELS).map(function (k) { return '<option value="' + k + '">' + DOC_LABELS[k] + '</option>'; }).join("");
+    return '<h2 style="margin-bottom:16px;border-left:4px solid #FE980F;padding-left:10px">My Documents</h2>' + rows +
+      '<div class="box" style="margin-top:14px"><h3 class="sub-title">Add a document</h3>' +
+      '<form id="doc-form"><div class="fgrid">' +
+      '<div>Type<select class="fi" name="doc_type">' + typeOpts + '</select></div>' +
+      '<div>Number<input class="fi" name="doc_number" maxlength="60"></div>' +
+      '<div>Expiry date<input class="fi" name="expires_on" type="date"></div>' +
+      '</div><button class="vb" type="submit">Save document</button></form></div>';
+  };
+
+  V.ratings = function () {
+    var count = RATINGS.length;
+    var avg = count ? (RATINGS.reduce(function (s, r) { return s + (r.rating || 0); }, 0) / count) : 0;
+    var rows = count ? RATINGS.map(function (r) {
+      return '<div class="alert-item"><span><b>' + "★".repeat(r.rating || 0) + "☆".repeat(5 - (r.rating || 0)) + '</b>' +
+        (r.comment ? '<br><small style="color:#b3b1ae">' + esc(r.comment) + '</small>' : "") +
+        '<br><small style="color:#b3b1ae">' + fmtDateTime(r.created_at) + '</small></span></div>';
+    }).join("") : '<div class="box"><p class="note-small" style="margin:0">No ratings yet. Customers rate you after a delivery.</p></div>';
+    return '<h2 style="margin-bottom:16px;border-left:4px solid #FE980F;padding-left:10px">My Ratings</h2>' +
+      '<div class="stat-grid"><div class="stat-card"><h5>Average rating</h5><div class="num">' + (count ? avg.toFixed(1) + " / 5" : "-") + '</div></div>' +
+      '<div class="stat-card"><h5>Total ratings</h5><div class="num">' + count + '</div></div></div>' + rows +
+      '<button class="vb grey" data-act="refreshRatings" type="button"><i class="fas fa-sync"></i> Refresh</button>';
+  };
+
+  V.incidents = function () {
+    var kindOpts = Object.keys(INC_LABELS).map(function (k) { return '<option value="' + k + '">' + INC_LABELS[k] + '</option>'; }).join("");
+    var rows = INCIDENTS.length ? INCIDENTS.map(function (x) {
+      return '<div class="alert-item"><span><b>' + esc(INC_LABELS[x.kind] || x.kind) + '</b>' +
+        (x.order_number ? ' <small style="color:#b3b1ae">' + esc(x.order_number) + '</small>' : "") +
+        (x.description ? '<br><small style="color:#b3b1ae">' + esc(x.description) + '</small>' : "") +
+        '<br><small style="color:#b3b1ae">' + fmtDateTime(x.created_at) + '</small></span>' +
+        badge(x.status === "resolved" ? "Resolved" : "Open", x.status === "resolved" ? "badge-verified" : "badge-pending") + '</div>';
+    }).join("") : '<div class="box"><p class="note-small" style="margin:0">No incidents reported.</p></div>';
+    return '<h2 style="margin-bottom:16px;border-left:4px solid #FE980F;padding-left:10px">Report an incident</h2>' +
+      '<div class="box"><form id="inc-form"><div class="fgrid">' +
+      '<div>What happened<select class="fi" name="kind">' + kindOpts + '</select></div>' +
+      '<div>Order number (optional)<input class="fi" name="order_number" maxlength="30" placeholder="e.g. ORD-1234"></div>' +
+      '<div style="grid-column:1/-1">Details<input class="fi" name="description" maxlength="500"></div>' +
+      '</div><button class="vb" type="submit">Send report</button></form></div>' +
+      '<h3 class="sub-title">My reports</h3>' + rows;
+  };
+
+  V.profile = function () {
+    return '<div class="box"><h3 class="sub-title"><i class="fas fa-id-card"></i> Profile</h3>' +
+      '<div class="fgrid"><div>Email<input class="fi" value="' + esc(ME.email) + '" disabled></div>' +
+      '<div>Full name<input class="fi" id="pf-name" value="' + esc(ME.name) + '" maxlength="100"></div>' +
+      '<div>Phone<input class="fi" id="pf-phone" value="' + esc(ME.phone) + '" inputmode="tel" placeholder="07XXXXXXXX"></div>' +
+      '<div>Vehicle<input class="fi" value="' + esc(DRV && DRV.vehicle_info || "Not set") + '" disabled></div></div>' +
+      '<p class="note-small">Vehicle details and verification are managed by the KISAKALI / IMPULSE CAKES admin.</p>' +
+      '<button class="vb" data-act="saveProfile">Save</button></div>' +
+      '<div class="box"><h3 class="sub-title"><i class="fas fa-lock"></i> Change password</h3>' +
+      '<input class="fi" id="pw-new" type="password" autocomplete="new-password" placeholder="New password (at least 8 characters)">' +
+      '<button class="vb" data-act="savePw">Update password</button></div>';
+  };
+
+  V.messages = function () {
+    return '<div class="box"><h3 class="sub-title"><i class="fas fa-comments"></i> Messages</h3>' +
+      '<p class="note-small" style="margin:0 0 12px">Chat with customers of your orders and with dispatch.</p>' +
+      '<button class="vb" data-act="openchat"><i class="fas fa-comments"></i> Open chat</button></div>';
+  };
+
+  /* ---------- tabs ---------- */
+  var T = [
+    ["deliveries", "fa-motorcycle", "Deliveries"],
+    ["live", "fa-map-marked-alt", "Live map"],
+    ["earnings", "fa-wallet", "Earnings"],
+    ["documents", "fa-file-alt", "Documents"],
+    ["ratings", "fa-star", "Ratings"],
+    ["incidents", "fa-life-ring", "Incidents"],
+    ["profile", "fa-user-cog", "Profile"],
+    ["messages", "fa-comments", "Messages"]
+  ];
+  var KEYS = T.map(function (t) { return t[0]; });
+
+  function show(k) {
+    cur = k;
+    $("tabs").innerHTML = T.map(function (t) { return '<button class="tab-btn' + (cur === t[0] ? " on" : "") + '" data-k="' + t[0] + '"><i class="fas ' + t[1] + '"></i>' + t[2] + '</button>'; }).join("");
+    KEYS.forEach(function (p) { $("pane-" + p).className = "pane" + (p === k ? " active" : ""); });
+    if (k === "live") { map = null; marker = null; }
+    $("pane-" + k).innerHTML = V[k]();
+    if (k === "live" && hasActiveJobs()) { /* map redraws on next GPS fix */ }
+    if (k === "earnings") loadEarnings().then(function () { if (cur === "earnings") show("earnings"); }).catch(function (e) { toast("Could not load earnings."); console.error(e); });
+    if (k === "documents") loadDocs().then(function () { if (cur === "documents") show("documents"); }).catch(function (e) { toast("Could not load documents."); console.error(e); });
+    if (k === "ratings") loadRatings().then(function () { if (cur === "ratings") show("ratings"); }).catch(function (e) { toast("Could not load ratings."); console.error(e); });
+    if (k === "incidents") loadIncidents().then(function () { if (cur === "incidents") show("incidents"); }).catch(function (e) { toast("Could not load incidents."); console.error(e); });
+  }
+  function refresh() {
+    return loadJobs().then(function () { if (cur === "deliveries") show("deliveries"); }).catch(function (e) { toast("Could not load deliveries."); console.error(e); });
+  }
+
+  /* ---------- proof photo: shrink before upload ---------- */
+  function shrink(file) {
+    return new Promise(function (resolve, reject) {
+      if (!/^image\//.test(file.type)) { reject(new Error("Choose a photo (image file).")); return; }
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function () {
+        var max = 1280, s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement("canvas");
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+        c.toBlob(function (b) { b ? resolve(b) : reject(new Error("Could not read the photo.")); }, "image/jpeg", 0.8);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("Could not read the photo.")); };
+      img.src = url;
+    });
+  }
+
+  function pickup(i) {
+    var j = JOBS[i]; if (!j || busy) return;
+    if (!confirm("Confirm that you have collected " + j.order_number + " from the shop(s)?")) return;
+    busy = true;
+    sb.rpc("driver_pickup", { p_number: j.order_number }).then(function (r) {
+      busy = false;
+      if (r.error) { toast(r.error.message); return; }
+      toast("Pickup confirmed"); refresh();
+    }).catch(function (e) { busy = false; toast((e && e.message) || "Network problem. Please try again."); });
+  }
+  function deliver(i, btn) {
+    var j = JOBS[i]; if (!j || busy) return;
+    var code = j.needs_code ? ($("code-" + i).value || "").trim() : "";
+    var file = $("photo-" + i).files[0];
+    if (j.needs_code && !/^\d{4}$/.test(code)) { toast("Enter the 4-digit delivery code."); return; }
+    if (!file) { toast("Take a proof of delivery photo first."); return; }
+    busy = true; btn.disabled = true; btn.textContent = "Uploading...";
+    shrink(file).then(function (blob) {
+      var path = j.order_number + "/" + Date.now() + ".jpg";
+      return sb.storage.from("delivery-proofs").upload(path, blob, { contentType: "image/jpeg", upsert: false }).then(function (u) {
+        if (u.error) throw new Error("Photo upload failed. Check your connection and try again.");
+        return sb.rpc("driver_deliver", { p_number: j.order_number, p_code: code || null, p_photo_path: path });
+      });
+    }).then(function (r) {
+      busy = false;
+      if (r.error) throw new Error(r.error.message);
+      if (!r.data || !r.data.ok) { btn.disabled = false; btn.textContent = "Confirm delivery"; toast((r.data && r.data.error) || "Could not confirm delivery."); return; }
+      toast("Delivered. Thank you!"); refresh();
+    }).catch(function (e) { busy = false; btn.disabled = false; btn.textContent = "Confirm delivery"; toast(e.message || "Something went wrong."); });
+  }
+
+  function offerAct(fn, i, okMsg) {
+    var o = OFFERS[i]; if (!o || busy) return; busy = true;
+    sb.rpc(fn, { p_number: o.order_number }).then(function (r) {
+      busy = false;
+      if (r.error) { toast(r.error.message); refresh(); return; }
+      toast(okMsg); refresh();
+    });
+  }
+
+  setInterval(function () {
+    if (ME && cur === "deliveries" && !busy && document.visibilityState === "visible" && !JOBS.some(function (j) { return j.status === "Out for Delivery"; })) refresh();
+  }, 30000);
+
+  function saveDoc(form) {
+    var d = {};
+    new FormData(form).forEach(function (v, k) { d[k] = String(v).trim() === "" ? null : String(v).trim(); });
+    if (!d.doc_type) { toast("Choose a document type."); return; }
+    sb.from("driver_documents").insert({ driver_id: DRV.id, doc_type: d.doc_type, doc_number: d.doc_number, expires_on: d.expires_on })
+      .then(function (r) {
+        if (r.error) { toast(r.error.message); return; }
+        toast("Document saved"); show("documents");
+      });
+  }
+  function sendIncident(form) {
+    var d = {};
+    new FormData(form).forEach(function (v, k) { d[k] = String(v).trim() === "" ? null : String(v).trim(); });
+    sb.from("driver_incidents").insert({ driver_id: DRV.id, kind: d.kind, order_number: d.order_number, description: d.description })
+      .then(function (r) {
+        if (r.error) { toast(r.error.message); return; }
+        toast("Report sent to dispatch"); show("incidents");
+      });
+  }
+
+  document.addEventListener("submit", function (e) {
+    if (!ME) return;
+    if (e.target.id === "doc-form") { e.preventDefault(); saveDoc(e.target); }
+    if (e.target.id === "inc-form") { e.preventDefault(); sendIncident(e.target); }
+  });
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest(".tab-btn"); if (t) { show(t.getAttribute("data-k")); return; }
+    var a = e.target.closest("[data-act]"); if (!a || !ME) return;
+    var act = a.getAttribute("data-act"), i = +a.getAttribute("data-i");
+    if (act === "refresh") refresh();
+    else if (act === "refreshEarn") show("earnings");
+    else if (act === "refreshRatings") show("ratings");
+    else if (act === "pickup") pickup(i);
+    else if (act === "accept") offerAct("driver_accept", i, "Order accepted. Collect it from the shop.");
+    else if (act === "decline") offerAct("driver_decline", i, "Offer declined. It goes to other riders.");
+    else if (act === "deliver") deliver(i, a);
+    else if (act === "deldoc") {
+      if (!confirm("Delete this document?")) return;
+      sb.from("driver_documents").delete().eq("id", a.getAttribute("data-id")).eq("driver_id", DRV.id).then(function (r) {
+        if (r.error) { toast(r.error.message); return; }
+        toast("Document deleted"); show("documents");
+      });
+    }
+    else if (act === "openchat") {
+      var c = document.querySelector(".kx-cb");
+      if (c) c.click(); else toast("Chat is not available right now.");
+    }
+    else if (act === "saveProfile") {
+      var name = $("pf-name").value.trim(), phone = $("pf-phone").value.replace(/[\s-]/g, "");
+      if (name.length < 2) { toast("Enter your name."); return; }
+      if (phone && !validPhone(phone)) { toast("Enter a valid phone number, e.g. 0712345678."); return; }
+      sb.from("profiles").update({ full_name: name, phone: phone || null }).eq("id", ME.id).then(function (r) {
+        if (r.error) { toast(/duplicate|unique/i.test(r.error.message) ? "That phone number is already used by another account." : "Could not save. Try again."); return; }
+        ME.name = name; ME.phone = phone; $("who").textContent = name; toast("Profile saved");
+      });
+    } else if (act === "savePw") {
+      var pw = $("pw-new").value;
+      if (pw.length < 8) { toast("Use at least 8 characters."); return; }
+      sb.auth.updateUser({ password: pw }).then(function (r) { if (r.error) toast(r.error.message); else { $("pw-new").value = ""; toast("Password updated"); } });
+    }
+  });
+
+  /* ---------- login ---------- */
+  $("lgGo").onclick = function () {
+    var email = $("lgEmail").value.trim(), pass = $("lgPass").value;
+    if (!/^\S+@\S+\.\S+$/.test(email) || !pass) { msg("Enter your email and password."); return; }
+    var btn = $("lgGo"); btn.disabled = true; msg("");
+    sb.auth.signInWithPassword({ email: email, password: pass }).then(function (r) {
+      btn.disabled = false;
+      if (r.error) { msg(/invalid login/i.test(r.error.message) ? "Wrong email or password." : r.error.message); return; }
+      start(r.data.user);
+    });
+  };
+  [$("lgEmail"), $("lgPass")].forEach(function (i) { i.addEventListener("keydown", function (e) { if (e.key === "Enter") $("lgGo").click(); }); });
+
+  $("logoutBtn").onclick = function () {
+    sb.auth.signOut().then(function () {
+      stopTracking();
+      ME = null; DRV = null; JOBS = []; EARN = null; DOCS = []; RATINGS = []; INCIDENTS = [];
+      map = null; marker = null;
+      $("login").style.display = "flex"; $("lgPass").value = "";
+    });
+  };
+
+  function deny(text) { sb.auth.signOut().then(function () { ME = null; $("login").style.display = "flex"; msg(text); }); }
+  function start(user) {
+    loadMe(user).then(function () {
+      if (!ME || ME.role !== "driver") { deny("This account is not a rider account."); return; }
+      if (!DRV) { deny("Your rider profile is not set up yet. Contact dispatch."); return; }
+      if (DRV.verification_status === "suspended") { deny("Your rider account is suspended. Contact dispatch."); return; }
+      $("login").style.display = "none";
+      $("who").textContent = ME.name || ME.email;
+      $("verTag").innerHTML = DRV.verification_status === "verified" ? badge("Verified", "badge-verified") : badge("Pending verification", "badge-pending");
+      return loadJobs().catch(function (e) { toast("Could not load deliveries."); console.error(e); }).then(function () { show("deliveries"); });
+    });
+  }
+
+  /* ---------- boot ---------- */
+  if (!sb) { msg("The rider portal is not connected yet."); $("lgGo").disabled = true; return; }
+  sb.auth.getSession().then(function (r) { if (r.data && r.data.session) start(r.data.session.user); });
+})();
+</script>
+<script src="kx-extras.js"></script>
+</body>
+</html>

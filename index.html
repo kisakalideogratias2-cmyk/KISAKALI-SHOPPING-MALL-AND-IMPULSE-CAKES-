@@ -720,14 +720,39 @@
         var counts = {}, names = [];
         list.forEach(function (p) { var vendor = p.vendor || "KISAKALI Seller"; if (!counts[vendor]) { counts[vendor] = 0; names.push(vendor); } counts[vendor]++; });
         fill("kx-vendors", "kx-vendors-grid", names.slice(0, 8).map(function (v) {
-          return '<div class="kx-vcard"><div class="kx-cover"></div><div class="kx-logo"><i class="fas fa-store"></i></div><div class="kx-vbody"><h4>' + esc(v) + '</h4>' +
+          return '<div class="kx-vcard" data-shop="' + esc(v) + '"><div class="kx-cover"></div><div class="kx-logo"><i class="fas fa-store"></i></div><div class="kx-vbody"><h4>' + esc(v) + '</h4>' +
             '<div class="kx-ver"><i class="fas fa-check-circle"></i> Verified by KISAKALI</div>' +
             '<div class="kx-vendor">' + counts[v] + ' product' + (counts[v] > 1 ? 's' : '') + '</div>' +
             '<a class="kx-btn" style="margin-top:8px;padding:8px 14px;font-size:13px" href="shop.html?q=' + encodeURIComponent(v) + '">Visit Shop</a></div></div>';
         }).join(""));
       }
-      window.addEventListener("kisakali:catalog", function (e) { var d = e.detail || {}; build(d.products, d.state); });
-      if (window.KCATALOG && Array.isArray(window.KCATALOG.products)) build(window.KCATALOG.products, window.KCATALOG.state);
+      /* Shop logo and cover: read from the public function public_shop_branding() (see kisakali_shop_branding.sql).
+         If that function does not exist yet, the cards simply keep the default store icon. */
+      var BRANDING = null;
+      function loadBranding() {
+        if (BRANDING) return BRANDING;
+        var K = window.KAPI;
+        if (!K || !K.live || !K.rpc) return Promise.resolve(null);
+        BRANDING = K.rpc("public_shop_branding").then(function (rows) {
+          var m = {}; (Array.isArray(rows) ? rows : []).forEach(function (r) { if (r && r.shop_name) m[String(r.shop_name)] = r; }); return m;
+        }).catch(function () { return {}; });
+        return BRANDING;
+      }
+      function applyBranding() {
+        loadBranding().then(function (m) {
+          if (!m) return;
+          [].forEach.call(document.querySelectorAll(".kx-vcard[data-shop]"), function (c) {
+            var r = m[c.getAttribute("data-shop")]; if (!r) return;
+            if (typeof r.cover === "string" && /^https:\/\//.test(r.cover)) c.querySelector(".kx-cover").style.backgroundImage = "url(" + JSON.stringify(r.cover) + ")";
+            if (typeof r.logo === "string" && /^https:\/\//.test(r.logo)) {
+              var l = c.querySelector(".kx-logo"), im = document.createElement("img");
+              im.alt = ""; im.loading = "lazy"; im.src = r.logo; l.textContent = ""; l.appendChild(im);
+            }
+          });
+        });
+      }
+      window.addEventListener("kisakali:catalog", function (e) { var d = e.detail || {}; build(d.products, d.state); applyBranding(); });
+      if (window.KCATALOG && Array.isArray(window.KCATALOG.products)) { build(window.KCATALOG.products, window.KCATALOG.state); applyBranding(); }
 
       /* modal: quick view + info */
       function openModal(html) { $("kx-mc").innerHTML = html; $("kx-modal").classList.add("open"); }

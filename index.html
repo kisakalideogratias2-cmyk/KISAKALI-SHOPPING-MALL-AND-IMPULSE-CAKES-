@@ -146,7 +146,10 @@
         .kx-news input[type=email] { width: 100%; box-sizing: border-box; padding: 12px; background: #0D0D0D; border: 1px solid #555; color: #fff; border-radius: 4px; margin: 10px 0; font-size: 16px; }
         .kx-news label { display: inline-block; margin: 4px 14px 4px 0; font-size: 13px; color: #ddd; }
         /* floating support */
-        .kx-fab { position: fixed; right: 16px; bottom: 16px; z-index: 250; }
+        /* Floating buttons: left column (bottom to top) = EN/SW, WhatsApp group, back-to-top.
+           Right column = chat, then support. --kx-lift raises everything above the mobile bottom bar. */
+        .kx-fab { position: fixed; right: 16px; bottom: calc(var(--kx-lift, 0px) + env(safe-area-inset-bottom, 0px) + 16px); z-index: 250; }
+        body:has(.kx-cb) .kx-fab { bottom: calc(var(--kx-lift, 0px) + env(safe-area-inset-bottom, 0px) + 82px); }
         .kx-fab > button { width: 56px; height: 56px; border-radius: 50%; border: 0; background: #25D366; color: #fff; font-size: 26px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.5); }
         .kx-fabp { display: none; position: absolute; right: 0; bottom: 66px; width: 230px; background: #363432; border: 1px solid #444; border-radius: 10px; padding: 8px; box-shadow: 0 8px 20px rgba(0,0,0,.6); }
         .kx-fabp.open { display: block; }
@@ -244,7 +247,7 @@
         #kx-bnav button { flex: 1; background: none; border: 0; color: #b3b1ae; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; position: relative; padding: 4px 0; }
         #kx-bnav button i { font-size: 20px; } #kx-bnav button.on { color: #FE980F; }
         #kx-bnav .bd { position: absolute; top: 0; left: 55%; background: #ff3333; color: #fff; border-radius: 9px; font-size: 10px; min-width: 16px; height: 16px; line-height: 16px; text-align: center; }
-        #kx-top { position: fixed; left: 14px; bottom: 16px; z-index: 240; width: 46px; height: 46px; border-radius: 50%; border: 0; background: #FE980F; color: #0D0D0D; font-size: 18px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.5); display: none; }
+        #kx-top { position: fixed; left: 12px; bottom: calc(var(--kx-lift, 0px) + env(safe-area-inset-bottom, 0px) + 108px); z-index: 240; width: 46px; height: 46px; border-radius: 50%; border: 0; background: #FE980F; color: #0D0D0D; font-size: 18px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.5); display: none; }
         #kx-top.on { display: block; }
         #kx-drawer { position: fixed; inset: 0; z-index: 700; display: none; }
         #kx-drawer.open { display: block; }
@@ -260,8 +263,7 @@
             header nav { display: none !important; }
             #kx-bnav { display: flex; }
             body { padding-bottom: 72px; }
-            .kx-fab { bottom: 84px; }
-            #kx-top { bottom: 84px; }
+            :root { --kx-lift: 68px; }
             #auth-node { font-size: 0 !important; padding: 10px 11px !important; }
             #auth-node i { font-size: 16px; }
             .header-container { gap: 8px; }

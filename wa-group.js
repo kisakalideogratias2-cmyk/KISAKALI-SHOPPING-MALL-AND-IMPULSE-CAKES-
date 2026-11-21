@@ -25,7 +25,7 @@
         var s = document.createElement("style");
         s.id = "kx-wa-group-css";
         s.textContent =
-          "#kx-wa-group{position:fixed;left:14px;bottom:14px;z-index:9990;display:flex;align-items:center;gap:8px;" +
+          "#kx-wa-group{position:fixed;left:12px;bottom:calc(var(--kx-lift,0px) + env(safe-area-inset-bottom,0px) + 56px);z-index:9990;display:flex;align-items:center;gap:8px;" +
           "background:#25D366;color:#0D0D0D;font:600 13px/1.2 sans-serif;text-decoration:none;padding:10px 14px;" +
           "border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.35)}" +
           "#kx-wa-group:hover{filter:brightness(1.08)}" +

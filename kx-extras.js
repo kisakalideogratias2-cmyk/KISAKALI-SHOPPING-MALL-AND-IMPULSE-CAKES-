@@ -2,12 +2,18 @@
 (function () {
   "use strict";
 
+  /* If this file is ever included twice, run only once (no duplicate listeners or popups). */
+  if (window.__kxExtrasLoaded) return;
+  window.__kxExtrasLoaded = true;
+
   /* Capture PWA events immediately. Do not wait for DOMContentLoaded. */
   var kxDeferredInstallPrompt = null;
   var kxInstallUiReady = null;
+  var kxPromptFired = false;   /* true once the browser has offered "beforeinstallprompt" on this page */
 
   window.addEventListener("beforeinstallprompt", function (event) {
     event.preventDefault();
+    kxPromptFired = true;
     kxDeferredInstallPrompt = event;
     if (typeof kxInstallUiReady === "function") kxInstallUiReady();
   });
@@ -509,6 +515,106 @@
     }, 30000);
   }
 
+  /* ================= 4a. INSTALLABILITY CHECK (explains WHY install is not offered) ================= */
+
+  /* Runs the same checks Chrome runs, against the live site, and returns a plain report.
+     Use it from the install popup, or open any page with ?pwadebug=1 to see the full report. */
+  function kxPwaDiagnose() {
+    var lines = [];
+    var problems = [];
+
+    function add(ok, label, detail) {
+      lines.push((ok ? "OK    " : "FAIL  ") + label + (detail ? ": " + detail : ""));
+      if (!ok) problems.push(label + (detail ? " (" + detail + ")" : ""));
+    }
+
+    function info(label, detail) {
+      lines.push("INFO  " + label + (detail ? ": " + detail : ""));
+    }
+
+    var secure = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    add(secure, "Secure connection (HTTPS)", secure ? "" : location.protocol);
+    add("serviceWorker" in navigator, "Browser supports service workers");
+
+    var standalone =
+      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+      window.navigator.standalone === true;
+    info("Already running as an installed app", standalone ? "yes" : "no");
+    info("Browser fired beforeinstallprompt", kxPromptFired ? "yes" : "no");
+
+    var link = document.querySelector('link[rel="manifest"]');
+    add(!!link, "Page links a manifest");
+
+    var manifestStep = Promise.resolve();
+
+    if (link) {
+      var href = link.href;
+
+      manifestStep = fetch(href, { cache: "no-store", credentials: "same-origin" }).then(function (res) {
+        var type = res.headers.get("content-type") || "unknown type";
+        add(res.ok, "Manifest loads", res.status + ", " + type);
+        if (!res.ok) return null;
+        return res.text().then(function (txt) {
+          var m = null;
+          try { m = JSON.parse(txt); } catch (e) {}
+          add(!!m, "Manifest is valid JSON", m ? "" : "the server returned something that is not JSON (often the home page)");
+          return m;
+        });
+      }).then(function (m) {
+        if (!m) return;
+
+        add(!!(m.name || m.short_name), "Manifest has a name");
+        add(!!m.start_url, "Manifest has start_url", m.start_url || "");
+        add(/^(standalone|fullscreen|minimal-ui)$/.test(m.display || ""), "Manifest display mode", m.display || "missing");
+
+        var icons = Array.isArray(m.icons) ? m.icons : [];
+        function has(px) {
+          return icons.some(function (i) {
+            return String(i.sizes || "").split(/\s+/).indexOf(px + "x" + px) > -1 && /png|webp|svg/i.test(i.type || i.src || "");
+          });
+        }
+        add(has(192), "Manifest has a 192x192 icon");
+        add(has(512), "Manifest has a 512x512 icon");
+
+        return Promise.all(icons.map(function (i) {
+          var u = new URL(i.src, href).href;
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            var t = r.headers.get("content-type") || "";
+            add(r.ok && /^image\//i.test(t), "Icon loads " + i.src, r.status + (t ? ", " + t : ""));
+          }).catch(function () { add(false, "Icon loads " + i.src, "network error"); });
+        }));
+      }).catch(function (e) {
+        add(false, "Manifest loads", (e && e.message) || "network error");
+      });
+    }
+
+    var swStep = function () { return Promise.resolve(); };
+
+    if ("serviceWorker" in navigator) {
+      swStep = function () { return new Promise(function (resolve) {
+        /* the worker registers after the page finishes loading: give it a few seconds */
+        var t = setTimeout(function () { resolve(); }, 5000);
+        navigator.serviceWorker.ready.then(function () { clearTimeout(t); resolve(); }, function () { clearTimeout(t); resolve(); });
+      }).then(function () { return navigator.serviceWorker.getRegistration("/"); }).then(function (reg) {
+        add(!!reg, "Service worker registered for scope /", reg ? reg.scope : "no registration found; the worker script was blocked or failed to install");
+        if (!reg) return;
+        var w = reg.active || reg.waiting || reg.installing;
+        add(!!(reg.active), "Service worker is active", w ? w.state : "none");
+        info("Page controlled by the service worker", navigator.serviceWorker.controller ? "yes" : "no (it will be after one reload)");
+      }).catch(function (e) {
+        add(false, "Service worker check", (e && e.message) || "error");
+      }); };
+    }
+
+    return manifestStep.then(swStep).then(function () {
+      var ua = navigator.userAgent || "";
+      info("Browser", ua);
+      return { lines: lines, problems: problems, fired: kxPromptFired, standalone: standalone };
+    });
+  }
+
+  window.kxPwaDiagnose = kxPwaDiagnose;
+
   /* ================= 4. PWA INSTALL + SERVICE WORKER ================= */
 
   function pwa() {
@@ -625,13 +731,23 @@
 
     if (standalone || page === "admin.html") return;
 
+    var forceInstallTest = false;
+    var debugPwa = false;
+
+    try {
+      var qs = new URLSearchParams(location.search);
+      debugPwa = qs.get("pwadebug") === "1";
+      forceInstallTest = qs.get("showInstall") === "1" || debugPwa;
+    } catch (e) {}
+
     var snoozed = false;
 
     try {
       snoozed = Number(store("kx_inst_snooze")) > Date.now();
     } catch (e) {}
 
-    if (snoozed) return;
+    /* "Maybe Later" hides the popup for 7 days, but never when testing with ?showInstall=1 or ?pwadebug=1 */
+    if (snoozed && !forceInstallTest) return;
 
     var modal = null;
     var installCompleted = false;
@@ -773,16 +889,34 @@
           return;
         }
 
-        /* No native browser prompt is available: give useful instructions. */
-        if (isAndroid && isChrome && !isWebView) {
-          hint.textContent = "Chrome has not made its installation prompt available yet. Open Chrome menu (⋮) at the top-right and look for “Install app” or “Add to Home screen”.";
-        } else if (isAndroid) {
-          hint.textContent = "Open this website directly in Google Chrome. Then tap the three dots (⋮) and choose “Install app” or “Add to Home screen”.";
-        } else {
-          hint.textContent = "Open your browser menu and look for “Install app” or “Add to Home Screen”.";
-        }
+        /* No native browser prompt is available: check why, then explain honestly. */
+        primary.disabled = true;
+        primary.textContent = "Checking...";
+        hint.textContent = "Checking whether this browser can install the app...";
 
-        primary.textContent = "Try Again";
+        kxPwaDiagnose().then(function (r) {
+          try { console.info("[Kisakali PWA]\n" + r.lines.join("\n")); } catch (e) {}
+
+          var msg;
+
+          if (r.standalone) {
+            msg = "The app is already open as an installed app.";
+          } else if (r.problems.length) {
+            msg = "This website is not installable yet: " + r.problems[0] + ". Please tell the Kisakali team (open this page with ?pwadebug=1 for details).";
+          } else if (!isIOS && !isAndroid) {
+            msg = "Your browser has not offered installation. Use a browser that supports installing web apps, such as Chrome or Edge, and open the browser menu for “Install app”.";
+          } else if (isAndroid && isChrome && !isWebView) {
+            msg = "This website is ready to install, but Chrome has not offered the prompt on this visit. This happens in Incognito mode, if the app is already installed, or if the prompt was dismissed recently. Open Chrome menu (⋮) and choose “Install app” or “Add to Home screen”, or reload the page and try again.";
+          } else if (isAndroid) {
+            msg = "This browser cannot install the app. Open this website in Google Chrome, then use menu (⋮) › “Install app” or “Add to Home screen”.";
+          } else {
+            msg = "Open your browser menu and look for “Install app” or “Add to Home Screen”.";
+          }
+
+          hint.textContent = msg;
+          primary.disabled = false;
+          primary.textContent = "Check Again";
+        });
       };
 
       later.onclick = function () {
@@ -798,6 +932,14 @@
       });
 
       document.body.appendChild(modal);
+
+      if (debugPwa) {
+        var pre = document.createElement("pre");
+        pre.style.cssText = "text-align:left;white-space:pre-wrap;word-break:break-word;font:11px/1.4 monospace;color:#ccc;max-height:180px;overflow:auto;margin:12px 0 0";
+        pre.textContent = "Checking...";
+        modal.querySelector(".kx-install-card").appendChild(pre);
+        kxPwaDiagnose().then(function (r) { pre.textContent = r.lines.join("\n"); });
+      }
     }
 
     /* Allow the early event listener to update the visible install UI. */
@@ -810,9 +952,11 @@
 
       if (modal) {
         var hint = modal.querySelector(".kx-install-hint");
+        var btnInstall = modal.querySelector(".kx-install-primary");
         if (hint) {
           hint.textContent = "Your app is ready to install. Tap “Install App” to continue.";
         }
+        if (btnInstall && !btnInstall.disabled) btnInstall.textContent = "Install App";
       } else {
         showInstallPrompt();
       }
@@ -834,12 +978,6 @@
     var isWebView =
       (isAndroid && /; wv\)/i.test(userAgent)) ||
       (isAndroid && /Version\/[\d.]+ Chrome/i.test(userAgent));
-
-    var forceInstallTest = false;
-
-    try {
-      forceInstallTest = new URLSearchParams(location.search).get("showInstall") === "1";
-    } catch (e) {}
 
     if (forceInstallTest) {
       showInstallPrompt();

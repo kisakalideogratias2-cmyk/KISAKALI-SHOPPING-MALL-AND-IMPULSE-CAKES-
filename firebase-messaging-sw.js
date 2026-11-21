@@ -1,4 +1,7 @@
 /* Kisakali background push service worker. Must live at the site ROOT: /firebase-messaging-sw.js */
+/* HARDENING: if the Firebase scripts cannot be loaded (blocked network, CDN problem), do not let the whole
+   worker fail. Without this the browser throws the worker away, and the site loses install + offline support. */
+try {
 importScripts("https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js");
 
@@ -25,6 +28,10 @@ messaging.onBackgroundMessage((payload) => {
     tag: d.tag || undefined
   });
 });
+
+} catch (err) {
+  console.warn("Firebase push not available in the service worker:", err && err.message);
+}
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();

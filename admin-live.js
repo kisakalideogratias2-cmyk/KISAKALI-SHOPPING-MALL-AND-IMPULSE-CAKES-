@@ -471,7 +471,11 @@
       ? sb.rpc("admin_get_platform_payment").then(function (x) { return x.error ? null : (x.data || []); }, function () { return null; })
       : Promise.resolve(null);
 
-    return Promise.all([settingsRequest, auditRequest, platRequest]).then(function (r) {
+    var waRequest = can("settings")
+      ? sb.rpc("admin_get_whatsapp_group_link").then(function (x) { return x.error ? null : (x.data || ""); }, function () { return null; })
+      : Promise.resolve(null);
+
+    return Promise.all([settingsRequest, auditRequest, platRequest, waRequest]).then(function (r) {
       var html = "";
 
       if (can("settings")) {
@@ -490,6 +494,21 @@
           'they are placed. Delivery fee per vendor: <b>' +
           money(settings.delivery_fee_per_vendor) +
           "</b> (change it in Supabase &gt; Table Editor &gt; settings).</p>");
+      }
+
+      if (can("settings")) {
+        if (r[3] === null) {
+          html += box("WhatsApp group link",
+            empty("Not available yet. Run kisakali_whatsapp_group.sql in Supabase first."));
+        } else {
+          html += box("WhatsApp group link",
+            '<p class="note-small" style="margin-top:0">Shows a "Join our WhatsApp group" button on every page and portal. ' +
+            "In WhatsApp open the group &gt; Group info &gt; Invite via link, copy it and paste it here. " +
+            "Leave it empty and save to hide the button.</p>" +
+            '<input class="ta" id="wa-group-link" placeholder="https://chat.whatsapp.com/XXXXXXXXXX" ' +
+            'style="width:100%;max-width:420px;display:block" value="' + esc(r[3]) + '"> ' +
+            btn("wa-group-save", "", "Save link"));
+        }
       }
 
       if (can("settings")) {
@@ -1078,6 +1097,20 @@
       call("admin_set_commission",
         { p_percent: c },
         "Commission saved");
+
+    } else if (a === "wa-group-save") {
+      if (!can("settings")) {
+        toast("You do not have settings permission.");
+        return;
+      }
+      var wl = val("wa-group-link");
+      if (wl && !/^https:\/\/(chat\.whatsapp\.com|(www\.)?whatsapp\.com\/channel)\/[A-Za-z0-9_-]{10,60}(\?.*)?$/.test(wl)) {
+        toast("Paste the full link, like https://chat.whatsapp.com/XXXXXXXXXX");
+        return;
+      }
+      call("admin_set_whatsapp_group_link",
+        { p_link: wl },
+        wl ? "WhatsApp group link saved" : "WhatsApp group link removed");
 
     } else if (a === "comm-paid") {
       var cr = val("cref-" + k);

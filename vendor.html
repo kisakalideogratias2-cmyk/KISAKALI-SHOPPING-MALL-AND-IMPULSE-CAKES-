@@ -208,6 +208,9 @@ if (!window.KAPI) {
   function riderFeePaid(o) { return !!(o.rider_fee_paid || o.rider_paid || o.rider_fee_paid_at || /^paid$/i.test(String(o.rider_payment_status || "").trim())); }
   function riderFeeAmount(o) { var f = o.delivery_fee != null ? o.delivery_fee : o.rider_fee; return f != null && f !== "" ? Number(f) : null; }
   function riderBlock(o, i) {
+    if (o.is_pickup) {
+      return isDelivered(o) ? '<div class="rider-box"><i class="fas fa-store" style="color:#FE980F"></i> ' + pill("Collected by customer", "ok") + "</div>" : "";
+    }
     if (!isDelivered(o)) return "";
     if (riderFeePaid(o)) {
       var when = o.rider_fee_paid_at ? " &middot; " + new Date(o.rider_fee_paid_at).toLocaleDateString("en-GB") : "";
@@ -235,10 +238,18 @@ if (!window.KAPI) {
       sb.from("categories").select("name,slug").order("id"),
       rpc("vendor_stock_moves").catch(function () { return []; }),
       rpc("vendor_product_details").catch(function () { return []; }),
-      rpc("vendor_commission_dues").catch(function () { return null; })
+      rpc("vendor_commission_dues").catch(function () { return null; }),
+      rpc("vendor_pickup_orders").catch(function () { return []; })
     ]).then(function (r) {
       DUES = r[7];
       ORDERS = r[0] || [];
+      (r[8] || []).forEach(function (p) {
+        ORDERS.forEach(function (o) {
+          if (o.order_number !== p.pick_order) return;
+          o.is_pickup = true; o.pickup_anon = !!p.pick_anon;
+          if (p.pick_delivered_at) o.delivered_at = p.pick_delivered_at;
+        });
+      });
       if (r[1].error) throw new Error(r[1].error.message);
       PRODS = r[1].data || []; WALLET = r[2] || {}; PAYOUTS = r[3] || []; CATS = (r[4].data || []); MOVES = r[5] || [];
       DET = {}; (r[6] || []).forEach(function (d) { DET[String(d.id)] = d; });
@@ -526,7 +537,8 @@ if (!window.KAPI) {
       ((o.delivery_date || o.delivery_time) ? '<p class="line"><i class="fas fa-clock"></i> ' + (o.delivery_date ? fmtDate(o.delivery_date) : "") + " " + esc(o.delivery_time || "") + "</p>" : "") +
       items + (o.note ? '<p class="line"><i class="fas fa-envelope-open-text"></i> Card message: ' + esc(o.note) + "</p>" : "") +
       '<p class="line">Your part: <b style="color:#FE980F">' + money(o.subtotal) + "</b> (commission " + esc(o.commission_percent) + "%)</p>" + dpay +
-      (!ready && paid ? '<button class="vb" data-act="ready" data-i="' + i + '">Mark ready for pickup</button>' :
+      (o.is_pickup && ready && paid && !isDelivered(o) ? '<p class="note-small" style="margin:6px 0">Customer pickup order. ' + (o.pickup_anon ? "Surprise gift: no code needed." : "Ask the customer for their 4-digit code before you hand it over.") + '</p>' + (o.pickup_anon ? "" : '<input id="hc-' + esc(o.order_number) + '" inputmode="numeric" maxlength="4" placeholder="4-digit code" style="width:120px;padding:8px;margin-right:6px;border-radius:4px;border:1px solid #444;background:#1a1918;color:#fff">') + '<button class="vb" data-act="handover" data-i="' + i + '">Handed over to customer</button>' : "") +
+      (!ready && paid ? '<button class="vb" data-act="ready" data-i="' + i + '">' + (o.is_pickup ? "Mark ready for customer pickup" : "Mark ready for pickup") + "</button>" :
         !paid && o.payment_status === "Pending" ? '<p class="note-small" style="margin:0">' + (direct && !due ? "Confirm the customer's payment above to start." : "Waiting for the admin to verify payment. Do not start yet.") + "</p>" : "") +
       riderBlock(o, i) + '<button class="vb grey" data-act="invoice" data-i="' + i + '">Print invoice</button></div>';
   }
@@ -584,7 +596,7 @@ if (!window.KAPI) {
     return list.map(function (x) {
       var o = x.o, its = (o.items || []).map(function (it) { return esc(it.name) + " x" + it.qty; }).join("<br>");
       return '<div style="background:#262423;padding:15px;border-radius:4px;margin-bottom:15px;border-left:3px solid #FE980F"><div style="display:flex;justify-content:space-between;font-weight:bold"><span>Order ' + esc(o.order_number) + '</span><span style="color:#FE980F">' + ostat(o) + '</span></div><p style="font-size:13px;color:#b3b1ae;margin:8px 0">' + its + "</p>" +
-        (o.payment_status === "Verified" ? '<button class="vb" data-act="ready" data-i="' + x.i + '">Mark ready for rider pickup</button>' : "<small>Waiting for KISAKALI to verify payment.</small>") + "</div>";
+        (o.payment_status === "Verified" ? '<button class="vb" data-act="ready" data-i="' + x.i + '">' + (o.is_pickup ? "Mark ready for customer pickup" : "Mark ready for rider pickup") + "</button>" : "<small>Waiting for KISAKALI to verify payment.</small>") + "</div>";
     }).join("");
   }
   /* ================= NEW: database-backed modules (need kx-vendor-modules.sql, run once) ================= */
@@ -945,6 +957,18 @@ if (!window.KAPI) {
     else if (act === "pfsubmit") pfSave(true);
     else if (act === "pfdraft") pfSave(false);
     else if (act === "ready") { var o = ORDERS[+a.getAttribute("data-i")]; if (o && confirm("Mark " + o.order_number + " as ready for the rider to collect?")) run(rpc("vendor_mark_ready", { p_number: o.order_number }), "Marked ready"); }
+    else if (act === "handover") {
+      var ho = ORDERS[+a.getAttribute("data-i")];
+      if (!ho) return;
+      var hcEl = $("hc-" + ho.order_number), hcode = hcEl ? hcEl.value.trim() : "";
+      if (!ho.pickup_anon && !/^\d{4}$/.test(hcode)) { toast("Enter the customer's 4-digit code."); return; }
+      if (confirm("Hand " + ho.order_number + " over to the customer? This completes the order.")) {
+        run(rpc("vendor_handover_pickup", { p_number: ho.order_number, p_code: hcode }).then(function (res) {
+          if (res && res.ok === false) throw new Error(res.error || "Could not complete the handover");
+          return res;
+        }), "Order completed. Handed over to the customer.");
+      }
+    }
     else if (act === "directpaid") {
       var dop = ORDERS[+a.getAttribute("data-i")];
       if (dop && confirm("Confirm that the customer has paid you for " + dop.order_number + "? KISAKALI's commission will be recorded as a debt you owe. If the whole order is paid directly to shops, the order is verified automatically.")) run(rpc("vendor_confirm_direct_payment", { p_number: dop.order_number }), "Payment confirmed. Commission recorded.");

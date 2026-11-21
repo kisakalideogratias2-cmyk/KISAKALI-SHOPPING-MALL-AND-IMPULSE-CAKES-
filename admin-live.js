@@ -125,8 +125,13 @@
       .trim().toLowerCase() === "paid";
   }
 
+  function isPickup(o) {
+    return String(o.address || "")
+      .indexOf("PICKUP - customer collects") === 0;
+  }
+
   function riderDue(o) {
-    return isDelivered(o) && !riderPaid(o);
+    return !isPickup(o) && isDelivered(o) && !riderPaid(o);
   }
 
   /* ---------- Orders ---------- */
@@ -169,7 +174,7 @@
       var needs = function (o) {
         return o.payment_status === "Pending" ||
           (o.payment_status === "Verified" &&
-            o.status === "Arranging") ||
+            o.status === "Arranging" && !isPickup(o)) ||
           riderDue(o);
       };
 
@@ -251,6 +256,15 @@
 
         } else if (
           o.payment_status === "Verified" &&
+          o.status === "Arranging" &&
+          isPickup(o)
+        ) {
+          h += '<p class="note-small"><i class="fas fa-store"></i> ' +
+            'Pickup order. Ready for the customer to collect ' +
+            'from the vendor. No rider needed.</p>';
+
+        } else if (
+          o.payment_status === "Verified" &&
           o.status === "Arranging"
         ) {
           h += '<select class="ta" id="rider-' +
@@ -277,7 +291,12 @@
             'to mark their part as ready.</p>';
         }
 
-        if (isDelivered(o)) {
+        if (isDelivered(o) && isPickup(o)) {
+          h += '<p class="note-small" style="color:#ddd">' +
+            '<i class="fas fa-store"></i> ' +
+            'Collected by the customer from the vendor.</p>';
+
+        } else if (isDelivered(o)) {
           if (riderPaid(o)) {
             h += '<p class="note-small" style="color:#ddd">' +
               '<i class="fas fa-motorcycle" ' +

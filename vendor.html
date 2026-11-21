@@ -183,7 +183,7 @@ if (!window.KAPI) {
 (function () {
   var sb = window.KAPI && KAPI.live ? KAPI.sb : null;
   var REC = {}, EXT = {}, PAYSET = null, PAYOK = false, KXOK = false, RF = {}, OQ = "", OF = "all";
-  var ME = null, SHOP = null, ORDERS = [], PRODS = [], CATS = [], WALLET = null, PAYOUTS = [], MOVES = [], DET = {}, cur = "dashboard", editing = null, busy = false;
+  var ME = null, SHOP = null, ORDERS = [], PRODS = [], CATS = [], WALLET = null, DUES = null, PAYOUTS = [], MOVES = [], DET = {}, cur = "dashboard", editing = null, busy = false;
 
   function $(i) { return document.getElementById(i); }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
@@ -214,9 +214,9 @@ if (!window.KAPI) {
       return '<div class="rider-box"><i class="fas fa-motorcycle" style="color:#FE980F"></i> ' + pill("Rider fee paid", "ok") + '<span class="line">' + when + "</span></div>";
     }
     var fee = riderFeeAmount(o);
-    return '<div class="rider-box"><p class="line" style="margin-top:0"><i class="fas fa-motorcycle" style="color:#FE980F"></i> Delivered. The customer paid cash to the rider' +
-      (fee != null ? ", and the rider keeps the delivery fee of <b style=\"color:#FE980F\">" + money(fee) + "</b> from that cash" : ", and the rider keeps the delivery fee from that cash") + ".</p>" +
-      '<button class="vb" data-act="riderpaid" data-i="' + i + '">Confirm rider took the delivery fee</button></div>';
+    return '<div class="rider-box"><p class="line" style="margin-top:0"><i class="fas fa-motorcycle" style="color:#FE980F"></i> Delivered. The delivery fee' +
+      (fee != null ? " of <b style=\"color:#FE980F\">" + money(fee) + "</b>" : "") + " is yours. Pay the rider, then confirm below.</p>" +
+      '<button class="vb" data-act="riderpaid" data-i="' + i + '">Confirm I paid the rider</button></div>';
   }
 
   /* ---------- data ---------- */
@@ -234,8 +234,10 @@ if (!window.KAPI) {
       rpc("vendor_wallet"), rpc("vendor_payouts"),
       sb.from("categories").select("name,slug").order("id"),
       rpc("vendor_stock_moves").catch(function () { return []; }),
-      rpc("vendor_product_details").catch(function () { return []; })
+      rpc("vendor_product_details").catch(function () { return []; }),
+      rpc("vendor_commission_dues").catch(function () { return null; })
     ]).then(function (r) {
+      DUES = r[7];
       ORDERS = r[0] || [];
       if (r[1].error) throw new Error(r[1].error.message);
       PRODS = r[1].data || []; WALLET = r[2] || {}; PAYOUTS = r[3] || []; CATS = (r[4].data || []); MOVES = r[5] || [];
@@ -513,11 +515,17 @@ if (!window.KAPI) {
       return '<div class="line"><b style="color:#fff">' + esc(it.name) + " x" + it.qty + "</b> &middot; " + money(it.unit_price * it.qty) + (ct ? "<br><small>" + esc(ct) + "</small>" : "") + "</div>";
     }).join("");
     var paid = o.payment_status === "Verified", ready = o.vendor_status === "Ready";
+    var direct = PAYSET && PAYSET.mode === "direct" && o.payment_status !== "Failed" && o.payment_status !== "Refunded" && o.status !== "Cancelled";
+    var due = DUES && DUES.rows ? DUES.rows.filter(function (d) { return d.order_number === o.order_number; })[0] : null;
+    var dpay = !direct ? "" : due
+      ? '<p class="line">' + pill("Direct payment confirmed", "ok") + " Commission " + money(due.amount) + " (" + esc(due.status) + ")</p>"
+      : '<p class="note-small" style="margin:6px 0">You collect this payment yourself (items + delivery fee). When the customer has paid you, confirm it below. This records the ' + esc(o.commission_percent) + '% commission you owe KISAKALI.</p>' +
+        '<button class="vb" data-act="directpaid" data-i="' + i + '">I received the customer\'s payment</button>';
     return '<div class="box"><b>' + esc(o.order_number) + "</b> " + pill(ready ? "Ready" : o.vendor_status, ready ? "ok" : "wait") + " " + pill("Payment: " + o.payment_status, paid ? "ok" : o.payment_status === "Pending" ? "wait" : "bad") +
       '<p class="line"><i class="fas fa-user"></i> ' + esc(o.recipient) + "</p>" +
       ((o.delivery_date || o.delivery_time) ? '<p class="line"><i class="fas fa-clock"></i> ' + (o.delivery_date ? fmtDate(o.delivery_date) : "") + " " + esc(o.delivery_time || "") + "</p>" : "") +
       items + (o.note ? '<p class="line"><i class="fas fa-envelope-open-text"></i> Card message: ' + esc(o.note) + "</p>" : "") +
-      '<p class="line">Your part: <b style="color:#FE980F">' + money(o.subtotal) + "</b> (commission " + esc(o.commission_percent) + "%)</p>" +
+      '<p class="line">Your part: <b style="color:#FE980F">' + money(o.subtotal) + "</b> (commission " + esc(o.commission_percent) + "%)</p>" + dpay +
       (!ready && paid ? '<button class="vb" data-act="ready" data-i="' + i + '">Mark ready for pickup</button>' :
         !paid && o.payment_status === "Pending" ? '<p class="note-small" style="margin:0">Waiting for the admin to verify payment. Do not start yet.</p>' : "") +
       riderBlock(o, i) + '<button class="vb grey" data-act="invoice" data-i="' + i + '">Print invoice</button></div>';
@@ -758,6 +766,7 @@ if (!window.KAPI) {
       var c = function (h, v, k) { return '<div class="stat-card"><h5>' + h + '</h5><div class="num ' + (k || "") + '">' + money(v) + "</div></div>"; };
       return '<div class="stat-grid">' + c("Delivered sales (gross)", w.gross) + c("Platform commission (" + esc(w.rate) + "%)", w.commission, "red") + c("Net earnings", w.net, "green") + c("Pending (not delivered yet)", w.pending) + c("Already requested", w.withdrawn) + c("Available to withdraw", w.available) + "</div>" +
         '<p class="note-small">Money counts once the order is paid and delivered. The commission rate is set by KISAKALI. You cannot edit your balance or approve your own payouts.</p>' +
+        duesBox() +
         '<div class="box"><h3 class="sub-title"><i class="fas fa-wallet"></i> Request a withdrawal</h3><input class="fi" id="wd-amt" type="number" min="0" inputmode="numeric" placeholder="Amount in TSh"><button class="vb" data-act="payout">Request</button>' +
         '<p class="line" style="margin-top:12px">Workflow: you submit the request &rsaquo; the system checks your balance &rsaquo; KISAKALI Finance reviews it &rsaquo; payment is processed &rsaquo; the reference is recorded &rsaquo; your history updates.</p></div>' +
         '<h3 class="sub-title">Withdrawal history</h3>' + (PAYOUTS.length ? tbl(["Date", "Amount", "Status", "Reference"], PAYOUTS.map(function (x) { return [new Date(x.created_at).toLocaleDateString("en-GB"), money(x.amount), pill(x.status, x.status === "Paid" ? "ok" : x.status === "Rejected" ? "bad" : "wait"), esc(x.reference || "-")]; })) + '<button class="vb grey" data-act="csv" data-i="payouts"><i class="fas fa-download"></i> Download statement (CSV)</button>' : '<p class="note-small">No withdrawals yet.</p>');
@@ -831,6 +840,16 @@ if (!window.KAPI) {
         kbox("Onboarding status", "fa-clipboard-check", '<p class="line">' + steps.map(function (t, i) { return '<span style="' + (i <= upto ? "color:#FE980F;font-weight:bold" : "color:#777") + '">' + t + "</span>"; }).join(" &rsaquo; ") + '</p><p class="note-small">Current status: <b>' + esc(ap) + "</b>. Only KISAKALI can approve, restrict or suspend your shop and change your verification status.</p>");
     }
   };
+  function duesBox() {
+    if (!DUES) return "";
+    var rows = DUES.rows || [];
+    if (!rows.length && !Number(DUES.due) && !Number(DUES.paid)) return "";
+    return kbox("Commission you owe KISAKALI (direct payments)",
+      "fa-hand-holding-usd",
+      '<div class="stat-grid"><div class="stat-card"><h5>Still to pay</h5><div class="num red">' + money(DUES.due) + '</div></div><div class="stat-card"><h5>Already paid</h5><div class="num green">' + money(DUES.paid) + "</div></div></div>" +
+      '<p class="note-small">Orders paid straight to you. Pay KISAKALI this commission and keep the reference; KISAKALI marks it as paid.</p>' +
+      (rows.length ? tbl(["Date", "Order", "Order value", "Commission", "Status", "Reference"], rows.map(function (x) { return [new Date(x.created_at).toLocaleDateString("en-GB"), esc(x.order_number), money(x.base_amount), money(x.amount), pill(x.status, x.status === "Paid" ? "ok" : "wait"), esc(x.paid_ref || "-")]; })) : ""));
+  }
   var _pc = V.products; V.products = function () { return _pc() + V.stock(); };
   var PCH = ["Vodacom M-Pesa", "Tigo Pesa", "Airtel Money", "HaloPesa", "CRDB / NMB Bank Transfer"];
   function payBox() {
@@ -846,7 +865,7 @@ if (!window.KAPI) {
       '<label style="display:block;margin:8px 0"><input type="radio" name="pay-mode" value="direct"' + (m === "direct" ? " checked" : "") + '> <b>Customer pays me directly.</b> I receive the money myself and KISAKALI takes its 10% commission from me afterwards.</label>' +
       '<label style="display:block;margin:8px 0"><input type="radio" name="pay-mode" value="platform"' + (m === "platform" ? " checked" : "") + '> <b>Customer pays KISAKALI.</b> KISAKALI collects the payment, pays me, and keeps its 10% commission.</label>' +
       '<div id="pay-direct" style="display:' + (m === "direct" ? "block" : "none") + '"><p class="note-small">Fill in at least one. Customers will see these numbers when they order from your shop.</p>' + rows + '</div>' +
-      '<p class="note-small">In both cases the rider takes the delivery fee from the cash the customer pays on delivery.</p>' +
+      '<p class="note-small">In both cases the delivery fee belongs to you. You pay the rider yourself.</p>' +
       '<button class="vb" data-act="savePay">Save payment settings</button>');
   }
   var T = [["dashboard", "fa-home", "Dashboard"], ["shop", "fa-store", "My Shop"], ["products", "fa-box-open", "Product Center"], ["media", "fa-photo-video", "Media Center"], ["orders", "fa-shopping-bag", "Order Center"], ["gifts", "fa-gift", "Gift & Surprise"], ["customers", "fa-comments", "Customer Relations"], ["wallet", "fa-wallet", "Finance & Wallet"], ["marketing", "fa-bullhorn", "Marketing Center"], ["staff", "fa-users", "Staff Management"], ["reports", "fa-chart-bar", "Reports"], ["settings", "fa-cog", "Settings & Support"]];
@@ -926,6 +945,10 @@ if (!window.KAPI) {
     else if (act === "pfsubmit") pfSave(true);
     else if (act === "pfdraft") pfSave(false);
     else if (act === "ready") { var o = ORDERS[+a.getAttribute("data-i")]; if (o && confirm("Mark " + o.order_number + " as ready for the rider to collect?")) run(rpc("vendor_mark_ready", { p_number: o.order_number }), "Marked ready"); }
+    else if (act === "directpaid") {
+      var dop = ORDERS[+a.getAttribute("data-i")];
+      if (dop && confirm("Confirm that the customer has paid you for " + dop.order_number + "? KISAKALI's commission will be recorded as a debt you owe.")) run(rpc("vendor_confirm_direct_payment", { p_number: dop.order_number }), "Payment confirmed. Commission recorded.");
+    }
     else if (act === "riderpaid") {
       var ro = ORDERS[+a.getAttribute("data-i")];
       if (ro && confirm("Confirm that the rider has taken his delivery fee from the cash collected for " + ro.order_number + "?")) run(rpc("vendor_confirm_rider_paid", { p_number: ro.order_number }), "Rider payment confirmed");

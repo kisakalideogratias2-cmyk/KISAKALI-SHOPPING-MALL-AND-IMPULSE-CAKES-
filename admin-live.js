@@ -77,6 +77,7 @@
   }
 
   var GREY = "background:#666;color:#fff;";
+  var PCHANNELS = ["Vodacom M-Pesa", "Tigo Pesa", "Airtel Money", "HaloPesa", "CRDB / NMB Bank Transfer"];
 
   var SW = {
     "Dashboard": "Dashibodi",
@@ -84,6 +85,7 @@
     "Applications": "Maombi",
     "Products": "Bidhaa",
     "Withdrawals": "Utoaji pesa",
+    "Commission": "Kamisheni",
     "Messages": "Ujumbe",
     "Settings & audit": "Mipangilio na kumbukumbu",
     "Platform overview": "Muhtasari wa jukwaa",
@@ -419,6 +421,40 @@
       });
   }
 
+  /* ---------- Commission owed by vendors (direct payments) ---------- */
+
+  function loadCommission() {
+    return sb.rpc("admin_commission_dues", { p_status: null }).then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      var d = r.data || {}, rows = d.rows || [];
+
+      return box("Commission owed by vendors",
+        '<p style="margin:0 0 10px">Total still due: <b style="color:#FE980F">' +
+        money(d.due_total) + "</b></p>" +
+        (rows.length ? rows.map(function (x) {
+          var due = x.status === "Due";
+          return '<div class="alert-item"><span><b>' + esc(x.shop_name) +
+            "</b> &middot; order " + esc(x.order_number) + " &middot; " +
+            money(x.amount) + " " +
+            badge(x.status, due ? "badge-pending" : "badge-verified") +
+            "<br><small>" + money(x.base_amount) + " x " + esc(x.rate) + "%" +
+            (x.phone ? " &middot; " + esc(x.phone) : "") +
+            " &middot; " + when(x.created_at) +
+            (x.paid_ref ? " &middot; ref " + esc(x.paid_ref) : "") +
+            "</small></span><span>" +
+            (due
+              ? '<input class="ta" id="cref-' + esc(x.id) +
+                '" placeholder="Payment reference" style="width:170px;display:inline-block"> ' +
+                btn("comm-paid", x.id, "Mark paid")
+              : "") +
+            "</span></div>";
+        }).join("") : empty("No commission records yet.")) +
+        '<p class="note-small">These are vendors who collect payment themselves. ' +
+        "Collect the commission from the vendor first, then type the transaction " +
+        'reference and press "Mark paid".</p>');
+    });
+  }
+
   /* ---------- Settings and audit ---------- */
 
   function loadSettings() {
@@ -431,7 +467,11 @@
         .order("created_at", { ascending: false }).limit(40)
       : Promise.resolve({ data: [] });
 
-    return Promise.all([settingsRequest, auditRequest]).then(function (r) {
+    var platRequest = can("settings")
+      ? sb.rpc("admin_get_platform_payment").then(function (x) { return x.error ? null : (x.data || []); }, function () { return null; })
+      : Promise.resolve(null);
+
+    return Promise.all([settingsRequest, auditRequest, platRequest]).then(function (r) {
       var html = "";
 
       if (can("settings")) {
@@ -450,6 +490,27 @@
           'they are placed. Delivery fee per vendor: <b>' +
           money(settings.delivery_fee_per_vendor) +
           "</b> (change it in Supabase &gt; Table Editor &gt; settings).</p>");
+      }
+
+      if (can("settings")) {
+        var plat = r[2], have = {};
+        if (plat === null) {
+          html += box("Platform payment numbers",
+            empty("Not available yet. Run kisakali_payments.sql in Supabase first."));
+        } else {
+          plat.forEach(function (c) { have[c.channel] = c; });
+          html += box("Platform payment numbers",
+            '<p class="note-small" style="margin-top:0">Customers see these when they pay ' +
+            "KISAKALI (vendors who chose &quot;platform&quot;). Leave a row empty to hide it.</p>" +
+            PCHANNELS.map(function (n, i) {
+              var c = have[n] || {};
+              return '<div style="margin:6px 0">' + esc(n) + '<br>' +
+                '<input class="ta" id="pp-n-' + i + '" placeholder="Number" ' +
+                'style="width:170px;display:inline-block" value="' + esc(c.number) + '"> ' +
+                '<input class="ta" id="pp-a-' + i + '" placeholder="Account name" ' +
+                'style="width:200px;display:inline-block" value="' + esc(c.name) + '"></div>';
+            }).join("") + btn("pp-save", "", "Save payment numbers"));
+        }
       }
 
       if (can("audit")) {
@@ -757,6 +818,7 @@
     ["apps", "fa-user-check", "Applications"],
     ["products", "fa-boxes", "Products"],
     ["payouts", "fa-wallet", "Withdrawals"],
+    ["commission", "fa-percent", "Commission"],
     ["messages", "fa-comment-dots", "Messages"],
     ["settings", "fa-cog", "Settings & audit"],
     ["impulse", "fa-user-shield", "IMPULSE Admin"]
@@ -769,6 +831,7 @@
       if (tb[0] === "apps") return can("applications");
       if (tb[0] === "products") return can("products");
       if (tb[0] === "payouts") return can("withdrawals");
+      if (tb[0] === "commission") return can("orders");
       if (tb[0] === "settings") {
         return can("settings") || can("audit");
       }
@@ -788,6 +851,7 @@
     apps: loadApps,
     products: loadProducts,
     payouts: loadPayouts,
+    commission: loadCommission,
     settings: loadSettings,
     impulse: loadImpulse
   };
@@ -1014,6 +1078,30 @@
       call("admin_set_commission",
         { p_percent: c },
         "Commission saved");
+
+    } else if (a === "comm-paid") {
+      var cr = val("cref-" + k);
+      if (!cr) {
+        toast("Type the payment reference first.");
+        return;
+      }
+      call("admin_mark_commission_paid",
+        { p_id: Number(k), p_ref: cr },
+        "Commission marked as paid");
+
+    } else if (a === "pp-save") {
+      if (!can("settings")) {
+        toast("You do not have settings permission.");
+        return;
+      }
+      var chs = [];
+      PCHANNELS.forEach(function (n, i) {
+        var num = val("pp-n-" + i), nm = val("pp-a-" + i);
+        if (num || nm) chs.push({ channel: n, number: num, name: nm });
+      });
+      call("admin_set_platform_payment",
+        { p: { channels: chs } },
+        "Payment numbers saved");
 
     /* ---------- IMPULSE Admin actions ---------- */
 

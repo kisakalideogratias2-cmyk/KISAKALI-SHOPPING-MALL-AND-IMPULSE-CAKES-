@@ -256,6 +256,36 @@ window.addEventListener('click',function(e){ if(!e.target.closest('.dropdown')){
       .then(function (r) { ORDERS = check(r) || []; });
   }
 
+
+  /* How to pay: built from order_payment_info (direct vendors + platform) */
+  function payHtml(i) {
+    if (!i) return "";
+    function chans(list) {
+      return (list || []).map(function (c) {
+        return '<div style="margin:6px 0">' + esc(c.channel) + ': <b style="font-size:16px">' + esc(c.number) + '</b><br><small>Account name: ' + esc(c.name) + '</small></div>';
+      }).join("");
+    }
+    var h = "";
+    (i.direct || []).forEach(function (d) {
+      h += '<div style="margin-top:10px"><b>Pay ' + esc(d.vendor) + ' directly: ' + money(d.pay_amount) + '</b><br><small>Items ' + money(d.items_total) + ' + delivery ' + money(d.delivery_share) + '</small>' + chans(d.channels) + '</div>';
+    });
+    if (Number(i.platform_amount) > 0) {
+      h += '<div style="margin-top:10px"><b>Pay KISAKALI: ' + money(i.platform_amount) + '</b>' +
+        ((i.platform_channels || []).length ? chans(i.platform_channels) : '<p style="margin:6px 0"><small>KISAKALI payment numbers are not published yet. We will contact you on your phone.</small></p>') + '</div>';
+    }
+    if (!h) return "";
+    return '<div style="text-align:left;margin:14px 0;padding:12px;border:1px solid #FE980F;border-radius:6px;color:#fff"><b>How to pay</b>' + h +
+      '<p style="margin:10px 0 0"><small>Use order number <b>' + esc(i.order_number) + '</b> as the payment reference if the app allows it. Keep the confirmation SMS.</small></p></div>';
+  }
+  function showPay(num) {
+    var o = ORDERS.filter(function (x) { return x.order_number === num; })[0], b = $("pay-" + num);
+    if (!o || !b) return;
+    b.innerHTML = '<p class="note">Loading...</p>';
+    KAPI.rpc("order_payment_info", { p_number: num, p_phone: o.customer_phone }).then(function (i) {
+      b.innerHTML = payHtml(i) || '<p class="note">We will contact you with payment details.</p>';
+    }).catch(function (e) { b.innerHTML = '<p class="note" style="color:#ff4d4d">' + esc(e.message || "Could not load payment details.") + '</p>'; });
+  }
+
   /* ---------- order cards ---------- */
   function orderBox(o, full) {
     var items = (o.order_items || []).map(function (it) {
@@ -264,7 +294,7 @@ window.addEventListener('click',function(e){ if(!e.target.closest('.dropdown')){
     }).join("");
     var who = o.is_anonymous ? '<span class="sur"><i class="fas fa-user-secret"></i> Anonymous surprise</span>' : "Standard delivery";
     var when = (o.delivery_date ? fmtDate(o.delivery_date) : "") + (o.delivery_time ? " " + esc(o.delivery_time) : "");
-    var pay = o.payment_status === "Pending" && o.status !== "Cancelled" ? '<p class="note">Your payment (' + esc(o.payment_channel) + ') has not been verified yet. The order moves forward once we confirm it.</p>' : "";
+    var pay = o.payment_status === "Pending" && o.status !== "Cancelled" ? '<p class="note">Your payment (' + esc(o.payment_channel) + ') has not been verified yet. The order moves forward once we confirm it.</p><button class="vb" data-act="payinfo" data-i="' + esc(o.order_number) + '">How to pay</button><div id="pay-' + esc(o.order_number) + '"></div>' : "";
     var onWay = o.status === "Out for Delivery" || o.status === "Assigned to Rider";
     var rate = o.status === "Delivered" && !RATED[o.order_number]
       ? '<button class="vb" data-act="ratebox" data-i="' + esc(o.order_number) + '">' + tr("Rate delivery") + '</button><div id="rate-' + esc(o.order_number) + '"></div>' : "";
@@ -516,6 +546,7 @@ window.addEventListener('click',function(e){ if(!e.target.closest('.dropdown')){
     var act = a.getAttribute("data-act"), id = a.getAttribute("data-id"), num = a.getAttribute("data-i");
 
     if (act === "track") track(num);
+    else if (act === "payinfo") showPay(num);
     else if (act === "livetrk") showLive(num);
     else if (act === "ratebox") showRate(num);
     else if (act === "openchat") {

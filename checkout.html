@@ -220,7 +220,7 @@ if (!window.KAPI) {
 
   function showErr(m) { $("ks-err-slot").innerHTML = '<div class="ks-err">' + esc(m) + "</div>"; }
 
-  function finish(num, tot, otp, channel, anonymous) {
+  function finish(num, tot, otp, channel, anonymous, phone) {
     sum.style.display = "none";
     box.innerHTML = '<div style="text-align:center">' +
       '<h2 style="color:#363432">Order received!</h2>' +
@@ -228,8 +228,40 @@ if (!window.KAPI) {
       '<p style="font-size:26px;font-weight:bold;color:#FE980F">' + esc(num) + "</p>" +
       '<p style="margin:12px 0;color:#363432">Total: <b>' + money(tot) + "</b><br>Payment channel: " + esc(channel) + "</p>" +
       (anonymous || !otp ? "" : '<p style="color:#363432">Delivery code: <b style="font-size:20px">' + esc(otp) + '</b><br><small>Give this code to the rider when your gift arrives.</small></p>') +
+      '<div id="pay-info"><p style="color:#666;font-size:13px">Loading payment details...</p></div>' +
       '<p style="color:#666;font-size:13px">Status: payment pending. Our team will confirm your payment before the vendors start preparing.</p>' +
       '<a class="btn" href="track.html?o=' + encodeURIComponent(num) + '" style="display:inline-block;margin-top:15px;background:#FE980F;color:#0D0D0D;font-weight:bold;padding:12px 24px;text-decoration:none;border-radius:4px">Track my order</a></div>';
+  }
+
+
+  /* How to pay: built from order_payment_info (direct vendors + platform) */
+  function payHtml(i) {
+    if (!i) return "";
+    function chans(list) {
+      return (list || []).map(function (c) {
+        return '<div style="margin:6px 0">' + esc(c.channel) + ': <b style="font-size:16px">' + esc(c.number) + '</b><br><small>Account name: ' + esc(c.name) + '</small></div>';
+      }).join("");
+    }
+    var h = "";
+    (i.direct || []).forEach(function (d) {
+      h += '<div style="margin-top:10px"><b>Pay ' + esc(d.vendor) + ' directly: ' + money(d.pay_amount) + '</b><br><small>Items ' + money(d.items_total) + ' + delivery ' + money(d.delivery_share) + '</small>' + chans(d.channels) + '</div>';
+    });
+    if (Number(i.platform_amount) > 0) {
+      h += '<div style="margin-top:10px"><b>Pay KISAKALI: ' + money(i.platform_amount) + '</b>' +
+        ((i.platform_channels || []).length ? chans(i.platform_channels) : '<p style="margin:6px 0"><small>KISAKALI payment numbers are not published yet. We will contact you on your phone.</small></p>') + '</div>';
+    }
+    if (!h) return "";
+    return '<div style="text-align:left;margin:14px 0;padding:12px;border:1px solid #FE980F;border-radius:6px;color:#363432"><b>How to pay</b>' + h +
+      '<p style="margin:10px 0 0"><small>Use order number <b>' + esc(i.order_number) + '</b> as the payment reference if the app allows it. Keep the confirmation SMS.</small></p></div>';
+  }
+
+  function loadPay(num, phone) {
+    var slot = $("pay-info"); if (!slot) return;
+    KAPI.rpc("order_payment_info", { p_number: num, p_phone: phone }).then(function (i) {
+      slot.innerHTML = payHtml(i) || '<p style="color:#666;font-size:13px">We will contact you with payment details.</p>';
+    }).catch(function () {
+      slot.innerHTML = '<p style="color:#666;font-size:13px">Payment details are not available right now. Open <b>Track my order</b> below and check again in a moment.</p>';
+    });
   }
 
   window.handleCheckout = function (ev) {
@@ -250,7 +282,8 @@ if (!window.KAPI) {
         items: items.map(function (it) { return { product_id: it.productId || it.id, qty: it.qty || 1, custom: it.custom || null }; })
       }).then(function (r) {
         localStorage.removeItem("kisakali_cart");
-        finish(r.order_number, r.total, r.otp, channel, anon);
+        finish(r.order_number, r.total, r.otp, channel, anon, phone);
+        loadPay(r.order_number, phone);
       }).catch(function (e) { btn.disabled = false; showErr(e.message || "Could not place your order. Please try again."); });
       return;
     }

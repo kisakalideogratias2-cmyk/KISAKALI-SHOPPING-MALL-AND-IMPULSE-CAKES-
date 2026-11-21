@@ -101,6 +101,27 @@ if (!window.KAPI) {
   function $(i) { return document.getElementById(i); }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function money(n) { return Number(n || 0).toLocaleString("en-US") + " TSh"; }
+
+  /* How to pay: built from order_payment_info (direct vendors + platform) */
+  function payHtml(i) {
+    if (!i) return "";
+    function chans(list) {
+      return (list || []).map(function (c) {
+        return '<div style="margin:6px 0">' + esc(c.channel) + ': <b style="font-size:16px">' + esc(c.number) + '</b><br><small>Account name: ' + esc(c.name) + '</small></div>';
+      }).join("");
+    }
+    var h = "";
+    (i.direct || []).forEach(function (d) {
+      h += '<div style="margin-top:10px"><b>Pay ' + esc(d.vendor) + ' directly: ' + money(d.pay_amount) + '</b><br><small>Items ' + money(d.items_total) + ' + delivery ' + money(d.delivery_share) + '</small>' + chans(d.channels) + '</div>';
+    });
+    if (Number(i.platform_amount) > 0) {
+      h += '<div style="margin-top:10px"><b>Pay KISAKALI: ' + money(i.platform_amount) + '</b>' +
+        ((i.platform_channels || []).length ? chans(i.platform_channels) : '<p style="margin:6px 0"><small>KISAKALI payment numbers are not published yet. We will contact you on your phone.</small></p>') + '</div>';
+    }
+    if (!h) return "";
+    return '<div style="text-align:left;margin:14px 0;padding:12px;border:1px solid #FE980F;border-radius:6px;color:#fff"><b>How to pay</b>' + h +
+      '<p style="margin:10px 0 0"><small>Use order number <b>' + esc(i.order_number) + '</b> as the payment reference if the app allows it. Keep the confirmation SMS.</small></p></div>';
+  }
   function err(m) { $("o-result").innerHTML = '<div class="ks-err">' + esc(m) + "</div>"; }
   function render(o) {
     var idx = Math.max(0, STEPS.indexOf(o.status));
@@ -112,7 +133,13 @@ if (!window.KAPI) {
       (o.otp && o.status !== "Delivered" ? '<div class="ks-line"><span>Delivery code</span><span><b>' + esc(o.otp) + "</b></span></div>" : "") +
       photo +
       '<div class="ks-line"><span>Delivery</span><span>' + esc(o.date || "-") + " &middot; " + esc(o.time || "") + "</span></div>" +
-      '<div class="ks-line total"><span>Total</span><span>' + money(o.total) + "</span></div></div>";
+      '<div class="ks-line total"><span>Total</span><span>' + money(o.total) + "</span></div>" +
+      (o.payment === "Pending" ? '<div id="o-pay"></div>' : "") + "</div>";
+    if (o.payment === "Pending" && o._phone) {
+      KAPI.rpc("order_payment_info", { p_number: o.number, p_phone: o._phone }).then(function (i) {
+        var s = $("o-pay"); if (s) s.innerHTML = payHtml(i);
+      }).catch(function () {});
+    }
   }
   function show(num) {
     num = String(num || "").trim().toUpperCase();
@@ -121,7 +148,7 @@ if (!window.KAPI) {
       var phone = $("o-phone").value.trim();
       if (!phone) { err("Enter the phone number you used when ordering."); return; }
       KAPI.track(num, phone).then(function (r) {
-        render({ number: r.number, status: r.status, payment: r.payment, date: r.delivery_date, time: r.delivery_time, total: r.total,
+        render({ _phone: phone, number: r.number, status: r.status, payment: r.payment, date: r.delivery_date, time: r.delivery_time, total: r.total,
           otp: r.otp, photo: KAPI.photoUrl(r.photo_path), vendorsReady: r.vendors_ready, vendorsTotal: r.vendors_total });
       }).catch(function () { err("Order not found. Check the order number and phone number."); });
       return;

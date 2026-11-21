@@ -519,7 +519,7 @@ if (!window.KAPI) {
     var due = DUES && DUES.rows ? DUES.rows.filter(function (d) { return d.order_number === o.order_number; })[0] : null;
     var dpay = !direct ? "" : due
       ? '<p class="line">' + pill("Direct payment confirmed", "ok") + " Commission " + money(due.amount) + " (" + esc(due.status) + ")</p>"
-      : '<p class="note-small" style="margin:6px 0">You collect this payment yourself (items + delivery fee). When the customer has paid you, confirm it below. This records the ' + esc(o.commission_percent) + '% commission you owe KISAKALI.</p>' +
+      : '<p class="note-small" style="margin:6px 0">You collect this payment yourself (items + delivery fee). When the customer has paid you, confirm it below. This records the ' + esc(o.commission_percent) + '% commission you owe KISAKALI. If the whole order is paid directly to shops, it is verified automatically and no admin approval is needed.</p>' +
         '<button class="vb" data-act="directpaid" data-i="' + i + '">I received the customer\'s payment</button>';
     return '<div class="box"><b>' + esc(o.order_number) + "</b> " + pill(ready ? "Ready" : o.vendor_status, ready ? "ok" : "wait") + " " + pill("Payment: " + o.payment_status, paid ? "ok" : o.payment_status === "Pending" ? "wait" : "bad") +
       '<p class="line"><i class="fas fa-user"></i> ' + esc(o.recipient) + "</p>" +
@@ -527,7 +527,7 @@ if (!window.KAPI) {
       items + (o.note ? '<p class="line"><i class="fas fa-envelope-open-text"></i> Card message: ' + esc(o.note) + "</p>" : "") +
       '<p class="line">Your part: <b style="color:#FE980F">' + money(o.subtotal) + "</b> (commission " + esc(o.commission_percent) + "%)</p>" + dpay +
       (!ready && paid ? '<button class="vb" data-act="ready" data-i="' + i + '">Mark ready for pickup</button>' :
-        !paid && o.payment_status === "Pending" ? '<p class="note-small" style="margin:0">Waiting for the admin to verify payment. Do not start yet.</p>' : "") +
+        !paid && o.payment_status === "Pending" ? '<p class="note-small" style="margin:0">' + (direct && !due ? "Confirm the customer's payment above to start." : "Waiting for the admin to verify payment. Do not start yet.") + "</p>" : "") +
       riderBlock(o, i) + '<button class="vb grey" data-act="invoice" data-i="' + i + '">Print invoice</button></div>';
   }
   function prodForm(p) {
@@ -947,7 +947,7 @@ if (!window.KAPI) {
     else if (act === "ready") { var o = ORDERS[+a.getAttribute("data-i")]; if (o && confirm("Mark " + o.order_number + " as ready for the rider to collect?")) run(rpc("vendor_mark_ready", { p_number: o.order_number }), "Marked ready"); }
     else if (act === "directpaid") {
       var dop = ORDERS[+a.getAttribute("data-i")];
-      if (dop && confirm("Confirm that the customer has paid you for " + dop.order_number + "? KISAKALI's commission will be recorded as a debt you owe.")) run(rpc("vendor_confirm_direct_payment", { p_number: dop.order_number }), "Payment confirmed. Commission recorded.");
+      if (dop && confirm("Confirm that the customer has paid you for " + dop.order_number + "? KISAKALI's commission will be recorded as a debt you owe. If the whole order is paid directly to shops, the order is verified automatically.")) run(rpc("vendor_confirm_direct_payment", { p_number: dop.order_number }), "Payment confirmed. Commission recorded.");
     }
     else if (act === "riderpaid") {
       var ro = ORDERS[+a.getAttribute("data-i")];

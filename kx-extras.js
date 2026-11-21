@@ -125,7 +125,7 @@
       ".kx-new{padding:10px;color:#FE980F;cursor:pointer;font-weight:700;text-align:center}");
     var btn = document.createElement("button"); btn.className = "kx-cb"; btn.setAttribute("aria-label", "Chat"); btn.innerHTML = '\u{1F4AC}<em hidden></em>';
     panel = document.createElement("div"); panel.className = "kx-cp";
-    panel.innerHTML = '<div class="kx-ch"><span id="kx-t">Chats</span><span><button id="kx-back" hidden>\u2190</button><button id="kx-x">\u00D7</button></span></div><div class="kx-cl" id="kx-l"></div>' +
+    panel.innerHTML = '<div class="kx-ch"><span id="kx-t">Chats</span><span><button id="kx-back" hidden>←</button><button id="kx-x">×</button></span></div><div class="kx-cl" id="kx-l"></div>' +
       '<form class="kx-cf" id="kx-f" hidden><input id="kx-i" maxlength="1000" placeholder="Type a message..." autocomplete="off"><button>Send</button></form>';
     document.body.appendChild(btn); document.body.appendChild(panel);
     list = panel.querySelector("#kx-l"); input = panel.querySelector("#kx-i"); badge = btn.querySelector("em");
@@ -137,7 +137,7 @@
       K.rpc("chat_threads_list").then(function (rows) {
         var n = 0; rows.forEach(function (r) { n += +r.unread || 0; }); unread(n);
         list.innerHTML = '<div class="kx-new" id="kx-n">+ New chat</div>' + rows.map(function (r) {
-          return '<div class="kx-ti" data-id="' + esc(r.id) + '" data-n="' + esc(r.other_name) + '"><b>' + esc(r.other_name) + ' <span>(' + esc(r.other_role) + (r.order_number ? " \u00B7 " + esc(r.order_number) : "") + ')</span>' + (+r.unread ? ' \u{1F534}' : '') + '</b><span>' + esc(r.last || "No messages yet") + '</span></div>';
+          return '<div class="kx-ti" data-id="' + esc(r.id) + '" data-n="' + esc(r.other_name) + '"><b>' + esc(r.other_name) + ' <span>(' + esc(r.other_role) + (r.order_number ? " · " + esc(r.order_number) : "") + ')</span>' + (+r.unread ? ' 🔴' : '') + '</b><span>' + esc(r.last || "No messages yet") + '</span></div>';
         }).join("") || "";
       }).catch(function (e) { list.innerHTML = "<p style='padding:10px;color:#f88'>" + esc(e.message) + "</p>"; });
     }
@@ -192,7 +192,6 @@
       "#kx-upd button,.kx-inst button.go{background:#FE980F;color:#0D0D0D;border:0;border-radius:16px;padding:6px 14px;font-weight:700;cursor:pointer}" +
       ".kx-inst{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9000;max-width:calc(100vw - 24px);background:#262423;color:#fff;border:1px solid #FE980F;border-radius:22px;padding:8px 10px 8px 14px;font:13px/1.35 system-ui,sans-serif;display:flex;gap:8px;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,.5)}" +
       ".kx-inst button.x{background:none;border:0;color:#b3b1ae;font-size:18px;cursor:pointer;padding:0 6px}");
-
     var offBar = null, offTimer = null;
     function setOnline(first) {
       if (!offBar) { offBar = document.createElement("div"); offBar.id = "kx-off"; offBar.className = "kx-bar"; offBar.setAttribute("role", "status"); offBar.setAttribute("aria-live", "polite"); offBar.hidden = true; document.body.appendChild(offBar); }
@@ -204,7 +203,6 @@
     window.addEventListener("online", function () { setOnline(false); });
     window.addEventListener("offline", function () { setOnline(false); });
     setOnline(true);
-
     var isPrivate = (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1");
     if ("serviceWorker" in navigator && isPrivate) {
       var reloading = false, hadController = !!navigator.serviceWorker.controller;
@@ -232,15 +230,11 @@
     var standalone =
       (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
       window.navigator.standalone === true;
-
     if (standalone || page === "admin.html") return;
-
     var snoozed = false;
     try { snoozed = Number(store("kx_inst_snooze")) > Date.now(); } catch (e) {}
     if (snoozed) return;
-
     var deferredPrompt = null, modal = null;
-
     css(
       ".kx-install-overlay{position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.76);backdrop-filter:blur(5px)}" +
       ".kx-install-card{position:relative;width:min(390px,100%);box-sizing:border-box;padding:28px 22px 22px;text-align:center;background:#171717;color:#fff;border:1px solid #FE980F;border-radius:22px;box-shadow:0 18px 55px rgba(0,0,0,.55);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}" +
@@ -254,27 +248,15 @@
       ".kx-install-close{position:absolute;right:12px;top:9px;border:0;background:transparent;color:#aaa;font-size:25px;cursor:pointer}" +
       ".kx-install-hint{display:block;margin-top:14px;color:#aaa;font-size:11px}"
     );
-
     function closeInstallPrompt(remember) {
-      if (remember) {
-        try { store("kx_inst_snooze", String(Date.now() + 7 * 24 * 60 * 60 * 1000)); } catch (e) {}
-      }
+      if (remember) { try { store("kx_inst_snooze", String(Date.now() + 7 * 24 * 60 * 60 * 1000)); } catch (e) {} }
       if (modal) { modal.remove(); modal = null; }
     }
-
     function showInstallPrompt(isIOS) {
       if (modal || document.getElementById("kx-install-overlay")) return;
-      modal = document.createElement("div");
-      modal.id = "kx-install-overlay";
-      modal.className = "kx-install-overlay";
-      modal.setAttribute("role", "dialog");
-      modal.setAttribute("aria-modal", "true");
-      modal.setAttribute("aria-labelledby", "kx-install-title");
-
-      var instructions = isIOS
-        ? "Tap the Share icon in Safari, then choose “Add to Home Screen”."
-        : "Install the app on your phone for a faster, app-like shopping experience.";
-
+      modal = document.createElement("div"); modal.id = "kx-install-overlay"; modal.className = "kx-install-overlay";
+      modal.setAttribute("role", "dialog"); modal.setAttribute("aria-modal", "true"); modal.setAttribute("aria-labelledby", "kx-install-title");
+      var instructions = isIOS ? "Tap the Share icon in Safari, then choose “Add to Home Screen”." : "Install the app on your phone for a faster, app-like shopping experience.";
       modal.innerHTML =
         '<div class="kx-install-card">' +
           '<button type="button" class="kx-install-close" aria-label="Close">×</button>' +
@@ -282,68 +264,62 @@
           '<h2 id="kx-install-title">Get the KISAKALI App!</h2>' +
           '<p>Shop at Kisakali Shopping Mall and order from IMPULSE Cakes — right from your home screen.</p>' +
           '<div class="kx-install-actions">' +
-            (isIOS
-              ? '<button type="button" class="kx-install-primary">How to Install</button>'
-              : '<button type="button" class="kx-install-primary">Install App</button>') +
+            (isIOS ? '<button type="button" class="kx-install-primary">How to Install</button>' : '<button type="button" class="kx-install-primary">Install App</button>') +
             '<button type="button" class="kx-install-later">Maybe Later</button>' +
           '</div>' +
           '<span class="kx-install-hint">' + instructions + '</span>' +
         '</div>';
-
-      var primary = modal.querySelector(".kx-install-primary");
-      var later = modal.querySelector(".kx-install-later");
-      var close = modal.querySelector(".kx-install-close");
-      var hint = modal.querySelector(".kx-install-hint");
-
+      var primary = modal.querySelector(".kx-install-primary"), later = modal.querySelector(".kx-install-later");
+      var close = modal.querySelector(".kx-install-close"), hint = modal.querySelector(".kx-install-hint");
       primary.onclick = function () {
         if (isIOS) {
           hint.textContent = "In Safari: tap Share (the square with an upward arrow), then tap “Add to Home Screen”, and confirm.";
-          primary.textContent = "Got it";
-          primary.onclick = function () { closeInstallPrompt(true); };
-          return;
+          primary.textContent = "Got it"; primary.onclick = function () { closeInstallPrompt(true); }; return;
         }
         if (!deferredPrompt) {
           hint.textContent = "If the install option is unavailable, open your browser menu and choose “Install app” or “Add to Home screen”.";
           return;
         }
-        var promptEvent = deferredPrompt;
-        deferredPrompt = null;
-        promptEvent.prompt();
+        var promptEvent = deferredPrompt; deferredPrompt = null; promptEvent.prompt();
         if (promptEvent.userChoice && typeof promptEvent.userChoice.then === "function") {
-          promptEvent.userChoice.then(function (choice) {
-            closeInstallPrompt(!!(choice && choice.outcome === "accepted"));
-          }).catch(function () { closeInstallPrompt(false); });
-        } else {
-          closeInstallPrompt(false);
-        }
+          promptEvent.userChoice.then(function (choice) { closeInstallPrompt(!!(choice && choice.outcome === "accepted")); }).catch(function () { closeInstallPrompt(false); });
+        } else closeInstallPrompt(false);
       };
-
       later.onclick = function () { closeInstallPrompt(true); };
       close.onclick = function () { closeInstallPrompt(true); };
-      modal.addEventListener("click", function (event) {
-        if (event.target === modal) closeInstallPrompt(true);
-      });
+      modal.addEventListener("click", function (event) { if (event.target === modal) closeInstallPrompt(true); });
       document.body.appendChild(modal);
     }
-
-    window.addEventListener("beforeinstallprompt", function (event) {
-      event.preventDefault();
-      deferredPrompt = event;
-      showInstallPrompt(false);
-    });
-
-    window.addEventListener("appinstalled", function () {
-      deferredPrompt = null;
-      closeInstallPrompt(true);
-    });
-
+    window.addEventListener("beforeinstallprompt", function (event) { event.preventDefault(); deferredPrompt = event; showInstallPrompt(false); });
+    window.addEventListener("appinstalled", function () { deferredPrompt = null; closeInstallPrompt(true); });
     var userAgent = navigator.userAgent || "";
     var isIOSSafari =
       /iphone|ipad|ipod/i.test(userAgent) &&
       /safari/i.test(userAgent) &&
       !/crios|fxios|edgios|opios/i.test(userAgent);
-
     if (isIOSSafari) showInstallPrompt(true);
+
+    /* Android/Chrome fallback: show manual install instructions if Chrome
+       does not dispatch beforeinstallprompt. Native install prompt cannot be forced. */
+    var forceInstallTest = false;
+    try { forceInstallTest = new URLSearchParams(location.search).get("showInstall") === "1"; } catch (e) {}
+    var isAndroidChrome =
+      /android/i.test(userAgent) &&
+      /chrome/i.test(userAgent) &&
+      !/edg|opr|opera|samsungbrowser/i.test(userAgent);
+    if (forceInstallTest) {
+      showInstallPrompt(false);
+    } else if (isAndroidChrome && !deferredPrompt) {
+      window.setTimeout(function () {
+        if (!deferredPrompt && !modal && !standalone) {
+          showInstallPrompt(false);
+          var hint = modal && modal.querySelector(".kx-install-hint");
+          if (hint) {
+            hint.textContent = "To install: open Chrome menu (⋮), then choose “Install app” or “Add to Home screen”. If you don't see it, use Chrome's menu after visiting the site again.";
+          }
+        }
+      }, 1800);
+    }
   }
 
   function boot() {
